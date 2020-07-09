@@ -1,0 +1,21 @@
+{
+  "name": "virrvarr-documentation",
+  "version": "0.0.1",
+  "description": "Another network graph",
+  "main": "index.js",
+  "authors": {
+    "name": "Ortelius",
+    "email": "helpdesk@ortelius.com"
+  },
+  "repository": "https://www.npmjs.com/package/@ortelius/ortelius-network-graph/ortelius-network-graph",
+  "scripts": {
+    "start": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.3.1",
+    "@vuepress/plugin-back-to-top": "^1.3.1",
+    "@vuepress/plugin-medium-zoom": "^1.3.1"
+  }
+}

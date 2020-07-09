@@ -1,0 +1,39 @@
+{
+  "name": "@ortelius/virrvarr",
+  "version": "0.1.8",
+  "description": "An awesome network graph ",
+  "private": false,
+  "main": "./src/index.js",
+  "scripts": {
+    "build": "npm run build:wbp & npm run build:lib & npm run build:docs",
+    "build:wbp": "webpack --config webpack.config.js",
+    "build:lib": "babel src --out-dir dist/lib --copy-files",
+    "build:docs": "cd docs & npm run build & cd ..",
+    "start": "webpack-dev-server --hot --inline"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrteliusAB/virrvarr.git"
+  },
+  "author": "Ortelius AB",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "copy-webpack-plugin": "^5.0.4",
+    "css-loader": "^3.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.8.0"
+  },
+  "dependencies": {
+    "core-js": "^3.2.1",
+    "d3": "^5.11.0",
+    "uuid": "^3.3.3"
+  }
+}

@@ -1,0 +1,52 @@
+/* This is a rule for all paths unless specified otherwise */
+.virrvarr path {
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.virrvarr-context-menu {
+  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: block;
+  background: #FFFFFF;
+}
+
+.virrvarr-context-menu-options {
+  min-width: 150px;
+  list-style: none;
+  padding: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.virrvarr-context-menu-option {
+  font-size: 14px;
+  padding: 7px 20px 7px 20px;
+  cursor: pointer;
+}
+
+.virrvarr-context-menu-divider {
+  width: 90%;
+  height: 1px;
+  margin-right: 5%;
+  margin-left: 5%;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background: #d5d5d5;
+}
+
+.virrvarr-context-menu-option:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.virrvarr-node-edge-counter-badge {
+  fill: coral;
+  rx: 4px;
+  ry: 4px;
+}
+
+.virrvarr-node-edge-counter-badge-text {
+  dominant-baseline: central;
+  text-anchor: middle;
+  fill: white;
+}
