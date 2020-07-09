@@ -92,5 +92,5 @@ module.exports = {
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
   ],
-  base: "/virrvarr/docs/dist/"
+  base: "/virrvarr/docs/docs/.vuepress/dist/"
 }
