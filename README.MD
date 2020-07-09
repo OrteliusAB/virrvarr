@@ -5,7 +5,7 @@
   <br>
   Virrvarr is an awesome network graph built and supported by Ortelius.
   <br>
-  <a href="https://orteliusab.github.io/virrvarr/dist/">Demo</a> | <a href="https://orteliusab.github.io/virrvarr/docs/dist/index.html">Documentation</a>
+  <a target="_blank" href="https://orteliusab.github.io/virrvarr/dist/">Demo</a> | <a target="_blank" href="https://orteliusab.github.io/virrvarr/docs/dist/index.html">Documentation</a>
 </div>
 
 # Contribute
