@@ -2,11 +2,10 @@
 
 <div align="center">
   <img src="https://www.ortelius.com/wp-content/uploads/2020/05/Ortelius-logo-black.png" />
+  Virrvarr is an awesome network graph built and supported by Ortelius.
+
+  [Demo](https://www.ortelius.com/) | [Documentation](https://www.ortelius.com/)
 </div>
-
-Virrvarr is an awesome network graph built and supported by Ortelius.
-
-[Demo](https://www.ortelius.com/) | [Documentation](https://www.ortelius.com/)
 
 ## Get started
 To get started with virrvarr please check out the documentation page:
