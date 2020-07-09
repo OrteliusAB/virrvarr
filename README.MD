@@ -5,6 +5,7 @@
 </div>
 <div align="center">
   Virrvarr is an awesome network graph built and supported by Ortelius.
+  <br>
   [Demo](https://www.ortelius.com/) | [Documentation](https://www.ortelius.com/)
 </div>
 
