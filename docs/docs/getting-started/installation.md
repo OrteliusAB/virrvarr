@@ -3,14 +3,14 @@
 First you need to install virrvarr in your project.
 ## npm
 ```bash
-npm install @ortelius/ortelius-network-graph
+npm install @ortelius/virrvarr
 ```
 ```javascript
-import Virrvarr from "@ortelius/ortelius-network-graph"
+import Virrvarr from "@ortelius/virrvarr"
 ```
 
 ## unpkg cdn
 ```html
-<script src="https://unpkg.com/@ortelius/ortelius-network-graph/"></script>
+<script src="https://unpkg.com/@ortelius/virrvarr/dist/bundle.js"></script>
 ```
 
