@@ -13,7 +13,7 @@ const data = {
         {id: "N2", name: "Node Two"}
     ]
     edges: [
-        {id: "L1", sorceNode: "N1", targetNode: "N2", nameTo: "Connects"}
+        {id: "L1", sourceNode: "N1", targetNode: "N2", nameTo: "Connects"}
     ]
 }
 const graph = new Virrvarr(graphContainer, data, {})
