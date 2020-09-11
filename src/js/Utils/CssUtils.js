@@ -213,8 +213,8 @@ const initializeGraphStyles = (style, id) => {
         })
     }
 
-    const css = document.createElement('style');
-    css.type = 'text/css';
+    const css = document.createElement('style')
+    css.type = 'text/css'
     css.id = id
     css.appendChild(document.createTextNode(cssString))
     document.getElementsByTagName("head")[0].appendChild(css)
