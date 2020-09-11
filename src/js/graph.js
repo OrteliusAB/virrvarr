@@ -143,7 +143,6 @@ export default class Virrvarr {
     destroyGraph() {
         //All unmount listeners must be synchronous!!
         this.ee.trigger(EventEnum.GRAPH_WILL_UNMOUNT)
-        this.UI.graphContainerElement.remove()
         Object.keys(this).forEach(key => {
             delete this[key]
         })
