@@ -18,8 +18,6 @@ require("core-js/modules/es.regexp.to-string");
 
 require("core-js/modules/es.string.iterator");
 
-require("core-js/modules/es.string.edge");
-
 require("core-js/modules/web.dom-collections.for-each");
 
 require("core-js/modules/web.dom-collections.iterator");

@@ -86,7 +86,7 @@ function () {
 
       var width = this.graphContainerElement.offsetWidth;
       var height = this.graphContainerElement.offsetHeight;
-      var rootG = d3.select(this.graphContainerElement).insert("svg", "div").attr("class", "virrvarr").classed("svgGraph", true).attr("width", width).attr("height", height).attr("viewBox", "0 0 " + width + " " + height).on("click", function () {
+      var rootG = d3.select(this.graphContainerElement).insert("svg", "*").attr("class", "virrvarr").classed("svgGraph", true).attr("width", width).attr("height", height).attr("viewBox", "0 0 " + width + " " + height).on("click", function () {
         //Do not bubble the event
         d3.event.stopPropagation();
 
@@ -111,7 +111,7 @@ function () {
       this.rootG.select("#multiplicity-container").selectAll(".multiplicity").remove();
       this.rootG.select("#node-container").selectAll(".node").remove();
       this.rootG.select("#label-container").selectAll(".label").remove();
-      this.graphContainerElement.remove();
+      d3.select(this.graphContainerElement).select("svg").remove();
       d3.select("#".concat(this.stylesID)).remove();
     }
   }, {
