@@ -8,6 +8,7 @@ export default class ZoomHandler {
         this.enableZoomButtons = options.enableZoomButtons !== undefined ? options.enableZoomButtons : Env.ENABLE_ZOOM_BUTTONS
         this.ee = eventEmitter
         this.ee.on(EventEnum.ZOOM_REQUESTED, (x, y, scale) => { this.handleZoomRequest(x, y, scale) })
+        this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
         this.zoom = d3.zoom()
             .scaleExtent(Env.SCALE_EXTENT)
             .on("zoom", () => {
@@ -17,12 +18,17 @@ export default class ZoomHandler {
         if (this.enableZoomButtons) {
             this.initializeZoomButtons()
         }
+        else {
+            this.zoomButtonContainer = null
+        }
     }
 
     initializeZoomButtons() {
-        const zoomButtons = d3.select(this.graphContainerElement)
+        this.zoomButtonContainer = d3.select(this.graphContainerElement)
             .append("div")
             .attr("style", "position:relative;")
+
+        const zoomButtons = this.zoomButtonContainer
             .append("svg")
             .attr("filter", "drop-shadow(0px 0px 2px rgba(0, 0, 0, .5))")
             .attr("style", "position:absolute;height:110px;width:34px;right:15px;bottom:30px;")
@@ -39,8 +45,8 @@ export default class ZoomHandler {
             .attr("transform", "translate(0, 0)")
             .append("defs")
             .append("path")
-            .attr("id","prefix__zoomin_a")
-            .attr("d","M12.5 11h-.79l-.28-.27C12.41 9.59 13 8.11 13 6.5 13 2.91 10.09 0 6.5 0S0 2.91 0 6.5 2.91 13 6.5 13c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L17.49 16l-4.99-5zm-6-9C8.99 2 11 4.01 11 6.5S8.99 11 6.5 11 2 8.99 2 6.5 4.01 2 6.5 2zM7 4H6v2H4v1h2v2h1V7h2V6H7V4z")
+            .attr("id", "prefix__zoomin_a")
+            .attr("d", "M12.5 11h-.79l-.28-.27C12.41 9.59 13 8.11 13 6.5 13 2.91 10.09 0 6.5 0S0 2.91 0 6.5 2.91 13 6.5 13c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L17.49 16l-4.99-5zm-6-9C8.99 2 11 4.01 11 6.5S8.99 11 6.5 11 2 8.99 2 6.5 4.01 2 6.5 2zM7 4H6v2H4v1h2v2h1V7h2V6H7V4z")
             .select(function () {
                 return this.parentNode;
             })
@@ -64,10 +70,10 @@ export default class ZoomHandler {
             .attr("fill-rule", "evenodd")
             .attr("transform", "translate(9 9)")
             .append("mask")
-            .attr("id","prefix__zoomin_b")
-            .attr("fill","#fff")
+            .attr("id", "prefix__zoomin_b")
+            .attr("fill", "#fff")
             .append("use")
-            .attr("xedge:href","#prefix__zoomin_a")
+            .attr("xedge:href", "#prefix__zoomin_a")
             .select(function () {
                 return this.parentNode;
             })
@@ -78,9 +84,9 @@ export default class ZoomHandler {
             .attr("fill", "#666")
             .attr("mask", "url(#prefix__zoomin_b)")
             .append("path")
-            .attr("d","M0 0H50V50H0z")
-            .attr("transform","translate(-16 -16)")
-                      
+            .attr("d", "M0 0H50V50H0z")
+            .attr("transform", "translate(-16 -16)")
+
         zoomButtons
             .append("g")
             .on('click', () => {
@@ -90,8 +96,8 @@ export default class ZoomHandler {
             .attr("transform", "translate(0, 38)")
             .append("defs")
             .append("path")
-            .attr("id","prefix__zoomout_a")
-            .attr("d","M12.5 11h-.79l-.28-.27C12.41 9.59 13 8.11 13 6.5 13 2.91 10.09 0 6.5 0S0 2.91 0 6.5 2.91 13 6.5 13c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L17.49 16l-4.99-5zm-6 0C4.01 11 2 8.99 2 6.5S4.01 2 6.5 2 11 4.01 11 6.5 8.99 11 6.5 11zM4 6h5v1H4V6z")
+            .attr("id", "prefix__zoomout_a")
+            .attr("d", "M12.5 11h-.79l-.28-.27C12.41 9.59 13 8.11 13 6.5 13 2.91 10.09 0 6.5 0S0 2.91 0 6.5 2.91 13 6.5 13c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L17.49 16l-4.99-5zm-6 0C4.01 11 2 8.99 2 6.5S4.01 2 6.5 2 11 4.01 11 6.5 8.99 11 6.5 11zM4 6h5v1H4V6z")
             .select(function () {
                 return this.parentNode;
             })
@@ -115,10 +121,10 @@ export default class ZoomHandler {
             .attr("fill-rule", "evenodd")
             .attr("transform", "translate(9 9)")
             .append("mask")
-            .attr("id","prefix__zoomout_b")
-            .attr("fill","#fff")
+            .attr("id", "prefix__zoomout_b")
+            .attr("fill", "#fff")
             .append("use")
-            .attr("xedge:href","#prefix__zoomout_a")
+            .attr("xedge:href", "#prefix__zoomout_a")
             .select(function () {
                 return this.parentNode;
             })
@@ -129,8 +135,8 @@ export default class ZoomHandler {
             .attr("fill", "#666")
             .attr("mask", "url(#prefix__zoomout_b)")
             .append("path")
-            .attr("d","M0 0H50V50H0z")
-            .attr("transform","translate(-16 -16)")
+            .attr("d", "M0 0H50V50H0z")
+            .attr("transform", "translate(-16 -16)")
 
         zoomButtons
             .append("g")
@@ -141,8 +147,8 @@ export default class ZoomHandler {
             .attr("transform", "translate(0, 76)")
             .append("defs")
             .append("path")
-            .attr("id","prefix__reset_a")
-            .attr("d","M15 10c.552 0 1 .448 1 1v5h-5c-.552 0-1-.448-1-1s.448-1 1-1h3v-3c0-.552.448-1 1-1zM1 10c.552 0 1 .448 1 1v3h3c.552 0 1 .448 1 1s-.448 1-1 1H0v-5c0-.552.448-1 1-1zM16 0v5c0 .552-.448 1-1 1s-1-.448-1-1V2h-3c-.552 0-1-.448-1-1s.448-1 1-1h5zM5 0c.552 0 1 .448 1 1s-.448 1-1 1H2v3c0 .552-.448 1-1 1s-1-.448-1-1V0z")
+            .attr("id", "prefix__reset_a")
+            .attr("d", "M15 10c.552 0 1 .448 1 1v5h-5c-.552 0-1-.448-1-1s.448-1 1-1h3v-3c0-.552.448-1 1-1zM1 10c.552 0 1 .448 1 1v3h3c.552 0 1 .448 1 1s-.448 1-1 1H0v-5c0-.552.448-1 1-1zM16 0v5c0 .552-.448 1-1 1s-1-.448-1-1V2h-3c-.552 0-1-.448-1-1s.448-1 1-1h5zM5 0c.552 0 1 .448 1 1s-.448 1-1 1H2v3c0 .552-.448 1-1 1s-1-.448-1-1V0z")
             .select(function () {
                 return this.parentNode;
             })
@@ -166,10 +172,10 @@ export default class ZoomHandler {
             .attr("fill-rule", "evenodd")
             .attr("transform", "translate(9 9)")
             .append("mask")
-            .attr("id","prefix__reset_b")
-            .attr("fill","#fff")
+            .attr("id", "prefix__reset_b")
+            .attr("fill", "#fff")
             .append("use")
-            .attr("xedge:href","#prefix__reset_a")
+            .attr("xedge:href", "#prefix__reset_a")
             .select(function () {
                 return this.parentNode;
             })
@@ -180,8 +186,8 @@ export default class ZoomHandler {
             .attr("fill", "#666")
             .attr("mask", "url(#prefix__reset_b)")
             .append("path")
-            .attr("d","M0 0H50V50H0z")
-            .attr("transform","translate(-16 -16)")
+            .attr("d", "M0 0H50V50H0z")
+            .attr("transform", "translate(-16 -16)")
     }
 
     scaleTo(scale) {
@@ -238,6 +244,12 @@ export default class ZoomHandler {
         }
         else {
             this.resetZoom()
+        }
+    }
+
+    destroy() {
+        if (this.zoomButtonContainer) {
+            this.zoomButtonContainer.remove()
         }
     }
 }

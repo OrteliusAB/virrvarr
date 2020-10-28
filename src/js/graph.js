@@ -11,7 +11,7 @@ export default class Virrvarr {
     constructor(graphContainerElement, inputData, options) {
         /* Init user input */
         this.options = Object.assign.apply(Object, [{}].concat(options))
-        this.style = JSON.parse(JSON.stringify(inputData.style))
+        this.style = inputData.style ? JSON.parse(JSON.stringify(inputData.style)) : {}
 
         /* Init EventEmitter */
         this.ee = new EventEmitter()
@@ -143,7 +143,6 @@ export default class Virrvarr {
     destroyGraph() {
         //All unmount listeners must be synchronous!!
         this.ee.trigger(EventEnum.GRAPH_WILL_UNMOUNT)
-        this.UI.graphContainerElement.remove()
         Object.keys(this).forEach(key => {
             delete this[key]
         })

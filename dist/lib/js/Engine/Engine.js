@@ -64,10 +64,10 @@ function () {
     _classCallCheck(this, Engine);
 
     this.ee = eventEmitter;
-    this.ee.on(_EventEnum.default.DOM_PROCESSOR_FINISHED, function (nodes, links) {
-      _this.updateSimulation(nodes, links);
+    this.ee.on(_EventEnum.default.DOM_PROCESSOR_FINISHED, function (nodes, edges) {
+      _this.updateSimulation(nodes, edges);
 
-      _this.ee.trigger(_EventEnum.default.ENGINE_UPDATE_FINISHED, nodes, links);
+      _this.ee.trigger(_EventEnum.default.ENGINE_UPDATE_FINISHED, nodes, edges);
     });
     this.ee.on(_EventEnum.default.NODE_DRAG_START, function () {
       _this.stop();
@@ -88,11 +88,11 @@ function () {
 
       _this.restart();
     });
-    this.ee.on(_EventEnum.default.ENGINE_LAYOUT_REQUESTED, function (nodes, links, attribute, filterFunction, sortFunction) {
-      _this.createLayout(nodes, links, attribute, filterFunction, sortFunction);
+    this.ee.on(_EventEnum.default.ENGINE_LAYOUT_REQUESTED, function (nodes, edges, attribute, filterFunction, sortFunction) {
+      _this.createLayout(nodes, edges, attribute, filterFunction, sortFunction);
     });
-    this.ee.on(_EventEnum.default.ENGINE_LAYOUT_RESET_REQUESTED, function (nodes, links) {
-      _this.resetLayout(nodes, links);
+    this.ee.on(_EventEnum.default.ENGINE_LAYOUT_RESET_REQUESTED, function (nodes, edges) {
+      _this.resetLayout(nodes, edges);
 
       _this.alpha(1);
 
@@ -112,20 +112,20 @@ function () {
       var _this2 = this;
 
       return d3.forceSimulation().force("charge", d3.forceManyBody().strength(_Env.default.CHARGE)).force("center", d3.forceCenter(this.forceCenterX, this.forceCenterY)).force("y", d3.forceY(0).strength(_Env.default.GRAVITY)).force("x", d3.forceX(0).strength(_Env.default.GRAVITY)).nodes([]).force("link", d3.forceLink().links([]).distance(function (l) {
-        return _this2.getLinkDistance(l);
-      }).strength(_Env.default.LINK_STRENGTH)).on("tick", function () {
+        return _this2.getEdgeDistance(l);
+      }).strength(_Env.default.EDGE_STRENGTH)).on("tick", function () {
         _this2.ee.trigger(_EventEnum.default.ENGINE_TICK);
       });
     }
   }, {
     key: "updateSimulation",
-    value: function updateSimulation(nodes, links) {
+    value: function updateSimulation(nodes, edges) {
       var _this3 = this;
 
       this.simulation.nodes(nodes);
-      this.simulation.force("link", d3.forceLink().links(links).distance(function (l) {
-        return _this3.getLinkDistance(l);
-      }).strength(_Env.default.LINK_STRENGTH));
+      this.simulation.force("link", d3.forceLink().links(edges).distance(function (l) {
+        return _this3.getEdgeDistance(l);
+      }).strength(_Env.default.EDGE_STRENGTH));
       this.simulation.alpha(1).restart();
     }
   }, {
@@ -155,7 +155,7 @@ function () {
     }
   }, {
     key: "createLayout",
-    value: function createLayout(nodes, links, attribute, filterFunction, sortFunction) {
+    value: function createLayout(nodes, edges, attribute, filterFunction, sortFunction) {
       var _this4 = this;
 
       if (sortFunction) {
@@ -212,28 +212,28 @@ function () {
         }
 
         return rowScale(matrix[xGroups.indexOf(value)][0]);
-      })).force("link", d3.forceLink().links(links).distance(function (l) {
-        return _this4.getLinkDistance(l);
+      })).force("link", d3.forceLink().links(edges).distance(function (l) {
+        return _this4.getEdgeDistance(l);
       }).strength(0)).force("charge", d3.forceManyBody().strength(-800)).alpha(1).restart();
     }
   }, {
     key: "resetLayout",
-    value: function resetLayout(nodes, links) {
+    value: function resetLayout(nodes, edges) {
       var _this5 = this;
 
-      this.simulation.force("y", d3.forceY(0).strength(_Env.default.GRAVITY)).force("x", d3.forceX(0).strength(_Env.default.GRAVITY)).force("link", d3.forceLink().links(links).distance(function (l) {
-        return _this5.getLinkDistance(l);
-      }).strength(_Env.default.LINK_STRENGTH)).force("charge", d3.forceManyBody().strength(_Env.default.CHARGE));
+      this.simulation.force("y", d3.forceY(0).strength(_Env.default.GRAVITY)).force("x", d3.forceX(0).strength(_Env.default.GRAVITY)).force("link", d3.forceLink().links(edges).distance(function (l) {
+        return _this5.getEdgeDistance(l);
+      }).strength(_Env.default.EDGE_STRENGTH)).force("charge", d3.forceManyBody().strength(_Env.default.CHARGE));
     }
-    /* Returns the distance of the passed link */
+    /* Returns the distance of the passed edge */
 
   }, {
-    key: "getLinkDistance",
-    value: function getLinkDistance(l) {
+    key: "getEdgeDistance",
+    value: function getEdgeDistance(l) {
       var targetRadius = l.target.radius !== undefined ? l.target.radius : 0;
       var sourceRadius = l.source.radius !== undefined ? l.source.radius : 0;
       var distance = targetRadius + sourceRadius;
-      return distance + l.linkDistance;
+      return distance + l.edgeDistance;
     }
   }]);
 

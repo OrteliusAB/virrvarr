@@ -1,6 +1,6 @@
 {
   "name": "@ortelius/virrvarr",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "An awesome network graph ",
   "private": false,
   "main": "./src/index.js",

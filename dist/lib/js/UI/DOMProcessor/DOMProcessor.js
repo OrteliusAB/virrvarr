@@ -155,11 +155,11 @@ function () {
           return l.multiplicityTo || l.multiplicityFrom;
         }).each(function (d, i, c) {
           if (d.multiplicityFrom) {
-            _this4.drawMultiplicity(d3.select(c[i]), "to");
+            _this4.drawMultiplicity(d3.select(c[i]), "from");
           }
 
           if (d.multiplicityTo) {
-            _this4.drawMultiplicity(d3.select(c[i]), "from");
+            _this4.drawMultiplicity(d3.select(c[i]), "to");
           }
         });
       } else {
@@ -238,7 +238,9 @@ function () {
           _this6.drawLabel(d3.select(c[i]), d, "from");
         }
 
-        _this6.drawLabel(d3.select(c[i]), d, "to");
+        if (d.nameTo) {
+          _this6.drawLabel(d3.select(c[i]), d, "to");
+        }
       });
       this.labels = this.rootG.select("#label-container").selectAll(".label").selectAll("g");
     }

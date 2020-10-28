@@ -56,28 +56,28 @@
                 "borderColor": "transparent",
                 "backgroundColor": "#dbd173",
                 "hoverColor": "#ff6363",
-                "textColor": "#000"
+                "textColor": "#000000"
             }
         ],
         "edges": [
             {
                 "id": "relation",
                 "dotted": true,
-                "color": "#000",
+                "color": "#000000",
                 "hoverColor": "#ff6363",
                 "labelBackgroundColor": "#f8f8f8",
-                "labelTextColor": "#000",
-                "arrowColor": "#fff",
+                "labelTextColor": "#000000",
+                "arrowColor": "#ffffff",
                 "labelBorderColor": "transparent"
             },
             {
                 "id": "attribute",
                 "edgeDistance": 120,
-                "color": "#000",
+                "color": "#000000",
                 "hoverColor": "#ff6363",
                 "labelBackgroundColor": "#c0c0c0",
-                "labelTextColor": "#fff",
-                "arrowColor": "#000",
+                "labelTextColor": "#ffffff",
+                "arrowColor": "#000000",
                 "borderRadiusX": "4px",
                 "borderRadiusY": "4px",
                 "labelTextHoverColor": "#FFFFFF",

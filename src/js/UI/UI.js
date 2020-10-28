@@ -69,7 +69,7 @@ export default class UI {
         const width = this.graphContainerElement.offsetWidth
         const height = this.graphContainerElement.offsetHeight
         const rootG = d3.select(this.graphContainerElement)
-            .insert("svg", "div")
+            .insert("svg", "*")
             .attr("class", "virrvarr")
             .classed("svgGraph", true)
             .attr("width", width)
@@ -102,7 +102,7 @@ export default class UI {
         this.rootG.select("#multiplicity-container").selectAll(".multiplicity").remove()
         this.rootG.select("#node-container").selectAll(".node").remove()
         this.rootG.select("#label-container").selectAll(".label").remove()
-        this.graphContainerElement.remove()
+        d3.select(this.graphContainerElement).select("svg").remove()
         d3.select(`#${this.stylesID}`).remove()
     }
 

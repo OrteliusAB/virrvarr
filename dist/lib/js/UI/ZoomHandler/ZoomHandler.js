@@ -39,6 +39,9 @@ function () {
     this.ee.on(_EventEnum.default.ZOOM_REQUESTED, function (x, y, scale) {
       _this.handleZoomRequest(x, y, scale);
     });
+    this.ee.on(_EventEnum.default.GRAPH_WILL_UNMOUNT, function () {
+      return _this.destroy();
+    });
     this.zoom = d3.zoom().scaleExtent(_Env.default.SCALE_EXTENT).on("zoom", function () {
       var rootG = d3.select(_this.graphContainerElement).select("g");
       rootG.attr("transform", d3.event.transform);
@@ -46,6 +49,8 @@ function () {
 
     if (this.enableZoomButtons) {
       this.initializeZoomButtons();
+    } else {
+      this.zoomButtonContainer = null;
     }
   }
 
@@ -54,7 +59,8 @@ function () {
     value: function initializeZoomButtons() {
       var _this2 = this;
 
-      var zoomButtons = d3.select(this.graphContainerElement).append("div").attr("style", "position:relative;").append("svg").attr("filter", "drop-shadow(0px 0px 2px rgba(0, 0, 0, .5))").attr("style", "position:absolute;height:110px;width:34px;right:15px;bottom:30px;").append("g").attr("class", "virrvarr-zoom-controls").attr("style", "cursor:pointer;");
+      this.zoomButtonContainer = d3.select(this.graphContainerElement).append("div").attr("style", "position:relative;");
+      var zoomButtons = this.zoomButtonContainer.append("svg").attr("filter", "drop-shadow(0px 0px 2px rgba(0, 0, 0, .5))").attr("style", "position:absolute;height:110px;width:34px;right:15px;bottom:30px;").append("g").attr("class", "virrvarr-zoom-controls").attr("style", "cursor:pointer;");
       zoomButtons.append("g").on('click', function () {
         _this2.scaleBy(1.5);
       }).attr("class", "virrvarr-zoom-in").attr("transform", "translate(0, 0)").append("defs").append("path").attr("id", "prefix__zoomin_a").attr("d", "M12.5 11h-.79l-.28-.27C12.41 9.59 13 8.11 13 6.5 13 2.91 10.09 0 6.5 0S0 2.91 0 6.5 2.91 13 6.5 13c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L17.49 16l-4.99-5zm-6-9C8.99 2 11 4.01 11 6.5S8.99 11 6.5 11 2 8.99 2 6.5 4.01 2 6.5 2zM7 4H6v2H4v1h2v2h1V7h2V6H7V4z").select(function () {
@@ -141,6 +147,13 @@ function () {
         this.zoomToCoordinates(x, y, scale);
       } else {
         this.resetZoom();
+      }
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.zoomButtonContainer) {
+        this.zoomButtonContainer.remove();
       }
     }
   }]);
