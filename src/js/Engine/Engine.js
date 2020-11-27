@@ -12,11 +12,23 @@ export default class Engine {
 			this.updateSimulation(nodes, edges)
 			this.ee.trigger(EventEnum.ENGINE_UPDATE_FINISHED, nodes, edges)
 		})
-		this.ee.on(EventEnum.NODE_DRAG_START, () => { this.stop(); this.target(0.5) })
-		this.ee.on(EventEnum.NODE_DRAG_DRAGGED, () => { this.restart() })
-		this.ee.on(EventEnum.NODE_DRAG_ENDED, () => { this.target(0) })
-		this.ee.on(EventEnum.CLICK_ENTITY, () => { this.alpha(0) })
-		this.ee.on(EventEnum.NODE_FIXATION_REQUESTED, () => { this.alpha(1); this.restart() })
+		this.ee.on(EventEnum.NODE_DRAG_START, () => {
+			this.stop()
+			this.target(0.5)
+		})
+		this.ee.on(EventEnum.NODE_DRAG_DRAGGED, () => {
+			this.restart()
+		})
+		this.ee.on(EventEnum.NODE_DRAG_ENDED, () => {
+			this.target(0)
+		})
+		this.ee.on(EventEnum.CLICK_ENTITY, () => {
+			this.alpha(0)
+		})
+		this.ee.on(EventEnum.NODE_FIXATION_REQUESTED, () => {
+			this.alpha(1)
+			this.restart()
+		})
 		this.ee.on(EventEnum.ENGINE_LAYOUT_REQUESTED, (nodes, edges, attribute, filterFunction, sortFunction) => {
 			this.createLayout(nodes, edges, attribute, filterFunction, sortFunction)
 		})

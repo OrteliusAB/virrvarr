@@ -10,7 +10,8 @@ export default class DOMProcessor {
 	constructor(rootG, eventEmitter, userDefinedOptions) {
 		this.enableFadeOnHover = userDefinedOptions.enableFadeOnHover !== undefined ? userDefinedOptions.enableFadeOnHover : Env.DEFAULT_FADE_ON_HOVER
 		this.showMultiplicity = true
-		this.enableMultiLineNodeLabels = userDefinedOptions.enableMultiLineNodeLabels !== undefined ? userDefinedOptions.enableMultiLineNodeLabels : Env.DEFAULT_NODE_TEXT_MULTILINE
+		this.enableMultiLineNodeLabels =
+			userDefinedOptions.enableMultiLineNodeLabels !== undefined ? userDefinedOptions.enableMultiLineNodeLabels : Env.DEFAULT_NODE_TEXT_MULTILINE
 		this.rotateLabels = userDefinedOptions.rotateLabels !== undefined ? userDefinedOptions.rotateLabels : Env.ROTATE_LABELS
 
 		this.rootG = rootG
@@ -450,25 +451,23 @@ export default class DOMProcessor {
 		this.drawTextBlock(element)
 		//Draw the text inside the block
 		if (!this.enableMultiLineNodeLabels) {
-			this.drawTextline(element.select("text"), data.name.truncate(data.maxTextWidth), (data.type ? data.type : "default"), 0)
-		}
-		else {
+			this.drawTextline(element.select("text"), data.name.truncate(data.maxTextWidth), data.type ? data.type : "default", 0)
+		} else {
 			const text = data.name
 			let truncatedText = text.truncate(data.maxTextWidth)
 			if (truncatedText.length < text.length && truncatedText.lastIndexOf(" ") > -1) {
 				truncatedText = truncatedText.substring(0, truncatedText.lastIndexOf(" "))
 				let otherStringTruncated = text.substring(truncatedText.length + 1).truncate(data.maxTextWidth)
-				if ((otherStringTruncated.length + truncatedText.length + 1) < text.length) {
+				if (otherStringTruncated.length + truncatedText.length + 1 < text.length) {
 					otherStringTruncated = otherStringTruncated.substring(0, otherStringTruncated.length - 3) + "..."
 				}
-				this.drawTextline(element.select("text"), truncatedText, (data.type ? data.type : "default"), -(Env.SPACE_BETWEEN_SPANS / 2))
-				this.drawTextline(element.select("text"), otherStringTruncated, (data.type ? data.type : "default"), Env.SPACE_BETWEEN_SPANS / 2)
-			}
-			else {
+				this.drawTextline(element.select("text"), truncatedText, data.type ? data.type : "default", -(Env.SPACE_BETWEEN_SPANS / 2))
+				this.drawTextline(element.select("text"), otherStringTruncated, data.type ? data.type : "default", Env.SPACE_BETWEEN_SPANS / 2)
+			} else {
 				if (truncatedText.length < text.length) {
 					truncatedText = truncatedText.substring(0, truncatedText.length - 3) + "..."
 				}
-				this.drawTextline(element.select("text"), truncatedText, (data.type ? data.type : "default"), 0)
+				this.drawTextline(element.select("text"), truncatedText, data.type ? data.type : "default", 0)
 			}
 		}
 	}
@@ -723,8 +722,7 @@ export default class DOMProcessor {
 			}
 			if (l.angle) {
 				return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
-			}
-			else {
+			} else {
 				return "translate(" + midX + "," + midY + ")"
 			}
 		})

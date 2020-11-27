@@ -79,22 +79,22 @@ const calculateIntersection = (source, target, additionalDistance) => {
 
 /**
  * Calculates the angle for a label in the graph
- * @param {number} point1 - First vector of the edge 
+ * @param {number} point1 - First vector of the edge
  * @param {number} point2 - Second vector of the edge
  */
 const calculateLabelAngle = (point1, point2) => {
-    //Get the angle in degrees
-    const dx = point1.x - point2.x
-    const dy = point1.y - point2.y
-    const theta = Math.atan2(dy, dx)
-    let angle = theta * (180 / Math.PI)
-    //Convert to a 360 scale
-    angle += 180
-    //Make sure the label is never upside-down
-    if(angle > 90 && angle < 270){
-        angle -= 180
-    }
-    return angle
+	//Get the angle in degrees
+	const dx = point1.x - point2.x
+	const dy = point1.y - point2.y
+	const theta = Math.atan2(dy, dx)
+	let angle = theta * (180 / Math.PI)
+	//Convert to a 360 scale
+	angle += 180
+	//Make sure the label is never upside-down
+	if (angle > 90 && angle < 270) {
+		angle -= 180
+	}
+	return angle
 }
 
 /**
@@ -207,5 +207,5 @@ export default {
 	curveFunction,
 	loopFunction,
 	calculateSelfEdgePath,
-    calculateLabelAngle
+	calculateLabelAngle
 }

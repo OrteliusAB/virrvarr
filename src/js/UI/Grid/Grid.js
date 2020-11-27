@@ -12,8 +12,7 @@ export default class Grid {
 		this.ee = eventEmitter
 		if (this.enableGrid) {
 			this.initializeGrid()
-		}
-		else if (this.enableSecondaryGrid) {
+		} else if (this.enableSecondaryGrid) {
 			this.initializeAlternativeGrid()
 		}
 	}
@@ -45,18 +44,9 @@ export default class Grid {
 	 * Initialize the secondary grid
 	 */
 	initializeAlternativeGrid() {
-		const defs = d3.select(this.graphContainerElement)
-			.select("svg")
-			.select("g")
-			.select("defs")
-		const gridPattern = defs.append("pattern")
-			.attr("id", "grid")
-			.attr("width", 60)
-			.attr("height", 60)
-			.attr("patternUnits", "userSpaceOnUse")
-		gridPattern.append("path")
-			.attr("d", "M 60 0 L 0 0 0 60")
-			.attr("style", "fill: none; stroke: #a0a0a0; stroke-width: 1; stroke-dasharray: 2;")
+		const defs = d3.select(this.graphContainerElement).select("svg").select("g").select("defs")
+		const gridPattern = defs.append("pattern").attr("id", "grid").attr("width", 60).attr("height", 60).attr("patternUnits", "userSpaceOnUse")
+		gridPattern.append("path").attr("d", "M 60 0 L 0 0 0 60").attr("style", "fill: none; stroke: #a0a0a0; stroke-width: 1; stroke-dasharray: 2;")
 		d3.select(this.graphContainerElement)
 			.select("svg")
 			.insert("rect", ":first-child")
