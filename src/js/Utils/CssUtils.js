@@ -1,9 +1,13 @@
 import Env from "../Config/Env.js"
 
-/* This function writes user defined CSS classes to the DOM dynamically on start */
+/**
+ * Writes user defined styles as CSS classes to the DOM dynamically.
+ * @param {object} style - User provided styles parameters
+ * @param {string} id - ID of the UI-class of this Virrvarr instance
+ */
 const initializeGraphStyles = (style, id) => {
-    let cssString = ""
-    cssString = `
+	let cssString = ""
+	cssString = `
                 /* Text */
                 .virrvarr .multiplicity {
                     font-size: ${Env.DEFAULT_MULTIPLICITY_FONT_SIZE};
@@ -25,6 +29,60 @@ const initializeGraphStyles = (style, id) => {
                   border-radius: ${Env.TOOLTIP_BORDER_RADIUS};
                 }
 
+                /* Context Menu Styles */
+                /* This is a rule for all paths unless specified otherwise */
+                .virrvarr path {
+                  stroke: #000;
+                  stroke-width: 2px;
+                }
+                
+                .virrvarr-context-menu {
+                  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+                  position: relative;
+                  display: block;
+                  background: #FFFFFF;
+                }
+                
+                .virrvarr-context-menu-options {
+                  min-width: 150px;
+                  list-style: none;
+                  padding: 0px;
+                  margin-top: 10px;
+                  margin-bottom: 10px;
+                }
+                
+                .virrvarr-context-menu-option {
+                  font-size: 14px;
+                  padding: 7px 20px 7px 20px;
+                  cursor: pointer;
+                }
+                
+                .virrvarr-context-menu-divider {
+                  width: 90%;
+                  height: 1px;
+                  margin-right: 5%;
+                  margin-left: 5%;
+                  margin-top: 8px;
+                  margin-bottom: 8px;
+                  background: #d5d5d5;
+                }
+                
+                .virrvarr-context-menu-option:hover {
+                  background: rgba(0, 0, 0, 0.2);
+                }
+                
+                .virrvarr-node-edge-counter-badge {
+                  fill: coral;
+                  rx: 4px;
+                  ry: 4px;
+                }
+                
+                .virrvarr-node-edge-counter-badge-text {
+                  dominant-baseline: central;
+                  text-anchor: middle;
+                  fill: white;
+                }
+                
                 /* Search Highlighting */
                 .virrvarr .highlighted-node {
                   stroke-width: ${Env.HIGHLIGHTING_BORDER_WIDTH};
@@ -119,9 +177,9 @@ const initializeGraphStyles = (style, id) => {
                 }
                 `
 
-    if (style && style.nodes) {
-        style.nodes.forEach(nodeType => {
-            cssString = `
+	if (style && style.nodes) {
+		style.nodes.forEach(nodeType => {
+			cssString = `
                 ${cssString}
                 .node-${nodeType.id} {
                     cursor: pointer;
@@ -131,7 +189,9 @@ const initializeGraphStyles = (style, id) => {
                     stroke-dasharray: ${nodeType.dotted ? Env.DEFAULT_NODE_DOTTED_DASHARRAY : 0};
                     rx: ${nodeType.borderRadiusX ? nodeType.borderRadiusX : Env.DEFAULT_NODE_BORDER_RADIUS_X};
                     ry: ${nodeType.borderRadiusY ? nodeType.borderRadiusY : Env.DEFAULT_NODE_BORDER_RADIUS_Y};
-                    filter: ${nodeType.shadow ? `drop-shadow(${nodeType.shadow})` : Env.DEFAULT_NODE_SHADOW ? `drop-shadow(${Env.DEFAULT_NODE_SHADOW})` : "none"};
+                    filter: ${
+	nodeType.shadow ? `drop-shadow(${nodeType.shadow})` : Env.DEFAULT_NODE_SHADOW ? `drop-shadow(${Env.DEFAULT_NODE_SHADOW})` : "none"
+};
                 }
                 .node-${nodeType.id}:hover {
                     fill: ${nodeType.hoverColor ? nodeType.hoverColor : Env.DEFAULT_NODE_HOVER_COLOR};
@@ -151,12 +211,12 @@ const initializeGraphStyles = (style, id) => {
                     stroke-width: ${nodeType.focusedBorderWidth ? nodeType.focusedBorderWidth : Env.DEFAULT_NODE_FOCUSED_BORDER_WIDTH} !important;
                 }
                 `
-        })
-    }
+		})
+	}
 
-    if (style && style.edges) {
-        style.edges.forEach(edgeType => {
-            cssString = `
+	if (style && style.edges) {
+		style.edges.forEach(edgeType => {
+			cssString = `
                 ${cssString}
                 .edge-path-${edgeType.id}{
                     fill: none !important;
@@ -210,16 +270,16 @@ const initializeGraphStyles = (style, id) => {
                     stroke: ${edgeType.focusedColor ? edgeType.focusedColor : Env.DEFAULT_FOCUS_COLOR} !important;
                 }
                 `
-        })
-    }
+		})
+	}
 
-    const css = document.createElement('style')
-    css.type = 'text/css'
-    css.id = id
-    css.appendChild(document.createTextNode(cssString))
-    document.getElementsByTagName("head")[0].appendChild(css)
+	const css = document.createElement("style")
+	css.type = "text/css"
+	css.id = id
+	css.appendChild(document.createTextNode(cssString))
+	document.getElementsByTagName("head")[0].appendChild(css)
 }
 
 export default {
-    initializeGraphStyles: initializeGraphStyles,
+	initializeGraphStyles
 }

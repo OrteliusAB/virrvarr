@@ -79,17 +79,19 @@ focusedColor   |   String
 ### Options
 Function | Function Blueprint
 --- | ---
-entityClickListener   |   Function{(data => { data.id; data.data; })}
+entityClickedListener   |   Function{(data => { data.id; data.data; })}
 entityHoveredListener   |   Function{(data => { data.id; data.data; data.eventType; } )}
 entityDoubleClickedListener   |   Function{(data => { data.id; data.data; })}
-enableGrid   |   Boolean
 fixededgeLabelWidth   |   Boolean
 maxedgeLabelWidth   |   String {Measurement}
 edgeLabelWidth   |   String {Measurement}
 enableZoomButtons   |   Boolean
-showContextMenu   |   Boolean
+enableContextMenu   |   Boolean
+enableFadeOnHover   |   boolean
+enableGrid   |   Boolean
 customContextMenu   |   Object
-fadeOnHover   |   boolean
+enableMultiLineNodeLabels   |   Boolean
+rotateLabels   |   Boolean
 
 ## Graph API
 Function | Function Blueprint | Description
