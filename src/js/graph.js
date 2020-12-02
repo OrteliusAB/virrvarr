@@ -224,6 +224,28 @@ export class Virrvarr {
 	}
 
 	/**
+	 * Exports the graph dataset into a JSON file that can be loaded into the graph at a later time
+	 * @param {boolean} includeOnlyLiveData - Should only live data be included in the export, or the entire dataset?
+	 */
+	saveGraphAsJSON(includeOnlyLiveData) {
+		if (!this._datastore.allNodes && !this._datastore.allEdges) {
+			return
+		}
+		const filename = "virrvarr.json"
+		const data = {
+			style: this._style,
+			nodes: includeOnlyLiveData ? this._datastore.liveNodes : this._datastore.allNodes,
+			edges: includeOnlyLiveData ? this._datastore.liveEdges : this._datastore.allEdges
+		}
+		const blob = new Blob([JSON.stringify(data, null, null)], { type: "text/json" })
+		const aElement = document.createElement("a")
+		aElement.download = filename
+		aElement.href = window.URL.createObjectURL(blob)
+		aElement.dataset.downloadurl = ["text/json", aElement.download, aElement.href].join(":")
+		aElement.click()
+	}
+
+	/**
 	 * Completely dismount and remove the graph
 	 * @return {void}
 	 */
