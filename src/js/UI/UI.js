@@ -22,7 +22,7 @@ export default class UI {
 		this.highlighter = new Highlighter(this.ee)
 		this.tooltip = new Tooltip(this.graphContainerElement, this.ee)
 
-		this.stylesID = "A" + Math.random()
+		this.stylesID = ("A" + Math.random()).replace(".", "")
 		CSSUtil.initializeGraphStyles(this.style, this.stylesID)
 
 		this.rootG = this.initializeDOM()
