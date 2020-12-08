@@ -1,2 +1,3 @@
-node_modules/
-.DS_STORE
+bundle
+node_modules
+coverage
