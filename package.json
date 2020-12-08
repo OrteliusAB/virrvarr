@@ -1,6 +1,6 @@
 {
   "name": "@ortelius/virrvarr",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "An awesome network graph ",
   "private": false,
   "main": "./bundle/inorigojs.umd.full.min.js",
