@@ -2,6 +2,7 @@
   "name": "@ortelius/virrvarr",
   "version": "0.1.11",
   "description": "An awesome network graph ",
+  "homepage": "https://github.com/OrteliusAB/virrvarr",
   "private": false,
   "main": "./bundle/virrvarr.umd.full.min.js",
   "module": "./bundle/virrvarr.esm.js",

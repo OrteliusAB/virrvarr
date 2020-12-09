@@ -255,6 +255,17 @@ export default [
 				extensions: [".js"],
 				babelHelpers: "bundled"
 			}),
+			terser({
+				format: {
+					comments(node, comment) {
+						const text = comment.value
+						const type = comment.type
+						if (type == "comment2") {
+							return /@preserve|@license|@cc_on/i.test(text)
+						}
+					}
+				}
+			}),
 			copy({
 				targets: [
 					{ src: "src/data", dest: "bundle/example" },
