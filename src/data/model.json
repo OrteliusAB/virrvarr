@@ -44,6 +44,21 @@
                 "focusedBorderWidth": "6px"
             },
             {
+                "id": "largeliteral",
+                "shape": "rectangle",
+                "borderColor": "transparent",
+                "backgroundColor": "#77c0d9",
+                "hoverColor": "lightgray",
+                "maxHeight": "40",
+                "maxWidth": "160",
+                "textColor": "#fff",
+                "dotted": true,
+                "borderRadiusX": "4px",
+                "borderRadiusY": "4px",
+                "textHoverColor": "#000000",
+                "focusedBorderWidth": "6px"
+            },
+            {
                 "id": "equivalent",
                 "shape": "layeredCircle",
                 "backgroundColor": "#ffffff",
@@ -87,10 +102,10 @@
         ]
     },
     "nodes": [
-        {"id": "n0", "name": "panda", "type": "external"},
+        {"id": "n0", "name": "panda", "type": "external", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n1", "name": "Thing", "type": "thing"},
         {"id": "n2", "name": "Person", "type": "equivalent", "data": {"something": "something"}},
-        {"id": "n3", "name": "Literal", "type": "literal"},
+        {"id": "n3", "name": "Literal Literal Literal Literal Literal Literal", "type": "largeliteral", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n4", "name": "Literal", "type": "literal"},
         {"id": "n5", "name": "Literal", "type": "literal"},
         {"id": "n6", "name": "Literal", "type": "literal"},
@@ -109,7 +124,7 @@
         {"id": "n19", "name": "Online Account", "type": "class"},
         {"id": "n20", "name": "Online Chat Account", "type": "class"},
         {"id": "n21", "name": "Online E-commerce account", "type": "class"},
-        {"id": "n22", "name": "Online Gaming Account", "type": "class"},
+        {"id": "n22", "name": "Online Gaming Account", "type": "class", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n23", "name": "Literal", "type": "literal"},
         {"id": "n24", "name": "Literal", "type": "literal"},
         {"id": "n25", "name": "Literal", "type": "literal"},

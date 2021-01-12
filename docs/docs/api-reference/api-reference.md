@@ -54,6 +54,7 @@ textHoverColor   |   String
 focusedColor   |   String
 focusedBorderWidth   |   String {Measurement}
 shadow   |   string {CSS shadow filter}
+icon    |    string
 
 ###	Data.style.edges{Array}
 Attribute | Datatype

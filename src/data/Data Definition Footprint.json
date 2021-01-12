@@ -16,7 +16,8 @@
                 "borderRadiusY": "Integer",
                 "textHoverColor": "String",
                 "focusedColor": "String",
-                "focusedBorderWidth": "Integer"
+                "focusedBorderWidth": "Integer",
+                "icon": "String"
             }
         ],
         "edges": [

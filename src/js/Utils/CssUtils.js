@@ -162,7 +162,7 @@ const initializeGraphStyles = (style, id) => {
                     fill: ${Env.DEFAULT_NODE_HOVER_COLOR};
                 }
                 .node-text-default {
-                    dominant-baseline: central;
+                    dominant-baseline: hanging;
                     pointer-events: none;
                     font-family: ${Env.DEFAULT_FONT_FAMILY};
                     font-size: ${Env.DEFAULT_FONT_SIZE};
@@ -199,7 +199,7 @@ const initializeGraphStyles = (style, id) => {
                 .node-text-${nodeType.id} {
                     font-family: ${Env.DEFAULT_FONT_FAMILY};
                     font-size: ${Env.DEFAULT_FONT_SIZE};
-                    dominant-baseline: central;
+                    dominant-baseline: hanging;
                     pointer-events: none;
                     fill: ${nodeType.textColor ? nodeType.textColor : Env.DEFAULT_NODE_TEXT_COLOR};
                 }

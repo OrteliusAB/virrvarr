@@ -403,34 +403,53 @@ export default class DOMProcessor {
 	 * @param {object} data - Node object
 	 */
 	drawNode(element, data) {
+		let contentGroupElement = element.append("g")
+		let contentGroupOffsetX = 0
+		let textOffsetY = 0
+		let textAnchor = "middle"
 		switch (data.shape) {
 			case "circle":
 				element
-					.append("circle")
+					.insert("circle", "g")
 					.attr("r", d => d.radius)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
 					.attr("id", data.id)
+				if (data.icon) {
+					this.drawIcon(contentGroupElement, data.icon)
+					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
+				}
 				break
 			case "layeredCircle":
 				element
-					.append("circle")
+					.insert("circle", "g")
 					.attr("r", d => d.radius)
 					.attr("style", "stroke-width:2;fill:#fff;stroke:#000;stroke-dasharray:0;pointer-events:none;")
 					.attr("id", data.id)
 				element
-					.append("circle")
+					.insert("circle", "g")
 					.attr("r", d => d.radius - 4)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
+				if (data.icon) {
+					this.drawIcon(contentGroupElement, data.icon)
+					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
+				}
 				break
 			case "rectangle":
 				element
-					.append("rect")
+					.insert("rect", "g")
 					.attr("x", d => -d.width / 2)
 					.attr("y", d => -d.height / 2)
 					.attr("width", d => d.width)
 					.attr("height", d => d.height)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
 					.attr("id", data.id)
+				if (data.icon) {
+					const icon = this.drawIcon(element, data.icon)
+					icon.attr("y", -Env.DEFAULT_NODE_ICON_SIZE / 2)
+					icon.attr("x", -element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE)
+					contentGroupOffsetX += -element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE + Env.DEFAULT_NODE_ICON_SIZE + Env.DEFAULT_NODE_ICON_PADDING
+					textAnchor = "start"
+				}
 				break
 			default:
 				console.error("NO SHAPE FOUND FOR NODE")
@@ -448,10 +467,10 @@ export default class DOMProcessor {
 			.on("mouseout", d => {
 				this.ee.trigger(EventEnum.MOUSE_LEFT_NODE, d)
 			})
-		this.drawTextBlock(element)
+		this.drawTextBlock(contentGroupElement, textAnchor)
 		//Draw the text inside the block
 		if (!this.enableMultiLineNodeLabels) {
-			this.drawTextline(element.select("text"), data.name.truncate(data.maxTextWidth), data.type ? data.type : "default", 0)
+			this.drawTextline(contentGroupElement.select("text"), data.name.truncate(data.maxTextWidth), data.type ? data.type : "default", contentGroupElement.node().getBBox().height + textOffsetY)
 		} else {
 			const text = data.name
 			let truncatedText = text.truncate(data.maxTextWidth)
@@ -461,23 +480,39 @@ export default class DOMProcessor {
 				if (otherStringTruncated.length + truncatedText.length + 1 < text.length) {
 					otherStringTruncated = otherStringTruncated.substring(0, otherStringTruncated.length - 3) + "..."
 				}
-				this.drawTextline(element.select("text"), truncatedText, data.type ? data.type : "default", -(Env.SPACE_BETWEEN_SPANS / 2))
-				this.drawTextline(element.select("text"), otherStringTruncated, data.type ? data.type : "default", Env.SPACE_BETWEEN_SPANS / 2)
+				this.drawTextline(contentGroupElement.select("text"), truncatedText, data.type ? data.type : "default", contentGroupElement.node().getBBox().height + textOffsetY)
+				this.drawTextline(contentGroupElement.select("text"), otherStringTruncated, data.type ? data.type : "default", contentGroupElement.node().getBBox().height)
 			} else {
 				if (truncatedText.length < text.length) {
 					truncatedText = truncatedText.substring(0, truncatedText.length - 3) + "..."
 				}
-				this.drawTextline(element.select("text"), truncatedText, data.type ? data.type : "default", 0)
+				this.drawTextline(contentGroupElement.select("text"), truncatedText, data.type ? data.type : "default", contentGroupElement.node().getBBox().height + textOffsetY)
 			}
 		}
+		contentGroupElement.attr("transform", `translate(${contentGroupOffsetX}, ${-contentGroupElement.node().getBBox().height / 2 - contentGroupElement.node().getBBox().y})`)
+	}
+
+	/**
+	 * Draws an <image> block to a given element with an icon in it
+	 * @param {D3Selection} element - The element that the text block should be written to
+	 * @param {string} icon - The source icon
+	 */
+	drawIcon(element, icon) {
+		return element
+			.append("image")
+			.attr("href", icon)
+			.attr("width", Env.DEFAULT_NODE_ICON_SIZE)
+			.attr("height", Env.DEFAULT_NODE_ICON_SIZE)
+			.attr("x", -Env.DEFAULT_NODE_ICON_SIZE / 2)
+			.attr("style", "pointer-events: none;")
 	}
 
 	/**
 	 * Draws a <text> block to a given element
 	 * @param {D3Selection} element - The element that the text block should be written to
 	 */
-	drawTextBlock(element) {
-		element.append("text").attr("text-anchor", "middle")
+	drawTextBlock(element, anchor) {
+		element.append("text").attr("text-anchor", anchor ? anchor : "middle")
 	}
 
 	/**
@@ -670,6 +705,10 @@ export default class DOMProcessor {
 	 * Animation tick
 	 */
 	tick() {
+		//Nodes
+		this.nodeElements.attr("transform", node => {
+			return "translate(" + node.x + "," + node.y + ")"
+		})
 		//Edges
 		this.edgePath.attr("d", l => {
 			if (l.source === l.target) {
@@ -687,10 +726,6 @@ export default class DOMProcessor {
 				curvePoint,
 				MathUtil.calculateIntersection(l.curvePoint, l.target, 1)
 			])
-		})
-		//Nodes
-		this.nodeElements.attr("transform", node => {
-			return "translate(" + node.x + "," + node.y + ")"
 		})
 		//Multiplicities
 		this.activeMultiplicities.attr("transform", function (l) {

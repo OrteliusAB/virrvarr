@@ -14,7 +14,8 @@ String.prototype.width = function (textStyle) {
 		.select("body")
 		.append("div")
 		.attr("class", textStyle)
-		.attr("style", "position: absolute;float: left;white-space: nowrap;visibility: hidden;")
+		//The font size defaults to 12px right now. This may need to be changed in the future.
+		.attr("style", "font-size:12px; position: absolute;float: left;white-space: nowrap;visibility: hidden;")
 		.attr("id", "width-test") // tag this element to identify it
 		.text(this)
 	const w = document.getElementById("width-test").offsetWidth
