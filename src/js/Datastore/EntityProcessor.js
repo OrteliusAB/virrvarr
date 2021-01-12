@@ -168,7 +168,11 @@ export default class EntityProcessor {
 						case "rectangle":
 							node.height = style.maxHeight ? style.maxHeight : Env.DEFAULT_RECTANGLE_MAX_HEIGHT
 							node.width = style.maxWidth ? style.maxWidth : Env.DEFAULT_RECTANGLE_MAX_WIDTH
-							node.maxTextWidth = style.maxWidth ? node.icon ? style.maxWidth - Env.DEFAULT_NODE_ICON_SIZE - Env.ADDITIONAL_TEXT_SPACE / 2 - Env.DEFAULT_NODE_ICON_PADDING : style.maxWidth : Env.DEFAULT_RECTANGLE_MAX_WIDTH
+							node.maxTextWidth = style.maxWidth
+								? node.icon
+									? style.maxWidth - Env.DEFAULT_NODE_ICON_SIZE - Env.ADDITIONAL_TEXT_SPACE / 2 - Env.DEFAULT_NODE_ICON_PADDING
+									: style.maxWidth
+								: Env.DEFAULT_RECTANGLE_MAX_WIDTH
 							node.shape = style.shape
 							break
 

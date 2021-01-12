@@ -403,7 +403,7 @@ export default class DOMProcessor {
 	 * @param {object} data - Node object
 	 */
 	drawNode(element, data) {
-		let contentGroupElement = element.append("g")
+		const contentGroupElement = element.append("g")
 		let contentGroupOffsetX = 0
 		let textOffsetY = 0
 		let textAnchor = "middle"
@@ -447,7 +447,8 @@ export default class DOMProcessor {
 					const icon = this.drawIcon(element, data.icon)
 					icon.attr("y", -Env.DEFAULT_NODE_ICON_SIZE / 2)
 					icon.attr("x", -element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE)
-					contentGroupOffsetX += -element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE + Env.DEFAULT_NODE_ICON_SIZE + Env.DEFAULT_NODE_ICON_PADDING
+					contentGroupOffsetX +=
+						-element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE + Env.DEFAULT_NODE_ICON_SIZE + Env.DEFAULT_NODE_ICON_PADDING
 					textAnchor = "start"
 				}
 				break
@@ -470,7 +471,12 @@ export default class DOMProcessor {
 		this.drawTextBlock(contentGroupElement, textAnchor)
 		//Draw the text inside the block
 		if (!this.enableMultiLineNodeLabels) {
-			this.drawTextline(contentGroupElement.select("text"), data.name.truncate(data.maxTextWidth), data.type ? data.type : "default", contentGroupElement.node().getBBox().height + textOffsetY)
+			this.drawTextline(
+				contentGroupElement.select("text"),
+				data.name.truncate(data.maxTextWidth),
+				data.type ? data.type : "default",
+				contentGroupElement.node().getBBox().height + textOffsetY
+			)
 		} else {
 			const text = data.name
 			let truncatedText = text.truncate(data.maxTextWidth)
@@ -480,16 +486,34 @@ export default class DOMProcessor {
 				if (otherStringTruncated.length + truncatedText.length + 1 < text.length) {
 					otherStringTruncated = otherStringTruncated.substring(0, otherStringTruncated.length - 3) + "..."
 				}
-				this.drawTextline(contentGroupElement.select("text"), truncatedText, data.type ? data.type : "default", contentGroupElement.node().getBBox().height + textOffsetY)
-				this.drawTextline(contentGroupElement.select("text"), otherStringTruncated, data.type ? data.type : "default", contentGroupElement.node().getBBox().height)
+				this.drawTextline(
+					contentGroupElement.select("text"),
+					truncatedText,
+					data.type ? data.type : "default",
+					contentGroupElement.node().getBBox().height + textOffsetY
+				)
+				this.drawTextline(
+					contentGroupElement.select("text"),
+					otherStringTruncated,
+					data.type ? data.type : "default",
+					contentGroupElement.node().getBBox().height
+				)
 			} else {
 				if (truncatedText.length < text.length) {
 					truncatedText = truncatedText.substring(0, truncatedText.length - 3) + "..."
 				}
-				this.drawTextline(contentGroupElement.select("text"), truncatedText, data.type ? data.type : "default", contentGroupElement.node().getBBox().height + textOffsetY)
+				this.drawTextline(
+					contentGroupElement.select("text"),
+					truncatedText,
+					data.type ? data.type : "default",
+					contentGroupElement.node().getBBox().height + textOffsetY
+				)
 			}
 		}
-		contentGroupElement.attr("transform", `translate(${contentGroupOffsetX}, ${-contentGroupElement.node().getBBox().height / 2 - contentGroupElement.node().getBBox().y})`)
+		contentGroupElement.attr(
+			"transform",
+			`translate(${contentGroupOffsetX}, ${-contentGroupElement.node().getBBox().height / 2 - contentGroupElement.node().getBBox().y})`
+		)
 	}
 
 	/**
