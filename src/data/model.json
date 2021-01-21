@@ -5,8 +5,9 @@
                 "id": "external",
                 "shape": "circle",
                 "borderColor": "transparent",
+                "borderHoverColor": "transparent",
                 "backgroundColor": "#96cc7b",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#ffffff"
             },
             {
@@ -15,7 +16,7 @@
                 "radius": 30,
                 "borderColor": "transparent",
                 "backgroundColor": "#7096cc",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#fff",
                 "dotted": true
             },
@@ -24,16 +25,18 @@
                 "shape": "circle",
                 "borderColor": "transparent",
                 "backgroundColor": "#ffffff",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#000000",
-                "shadow": "0px 0px 10px rgba(0, 0, 0, .2)"
+                "filter": "drop-shadow(0px 0px 10px rgba(0, 0, 0, .2))",
+                "hoverFilter": "drop-shadow(0px 0px 15px rgba(0, 0, 0, .3))",
+                "focusedFilter": "drop-shadow(0px 0px 15px rgba(0, 0, 0, .3))"
             },
             {
                 "id": "literal",
                 "shape": "rectangle",
                 "borderColor": "transparent",
                 "backgroundColor": "#77c0d9",
-                "hoverColor": "lightgray",
+                "backgroundHoverColor": "lightgray",
                 "maxHeight": "20",
                 "maxWidth": "60",
                 "textColor": "#fff",
@@ -41,14 +44,14 @@
                 "borderRadiusX": "4px",
                 "borderRadiusY": "4px",
                 "textHoverColor": "#000000",
-                "focusedBorderWidth": "6px"
+                "borderFocusedWidth": "10px"
             },
             {
                 "id": "largeliteral",
                 "shape": "rectangle",
                 "borderColor": "transparent",
                 "backgroundColor": "#77c0d9",
-                "hoverColor": "lightgray",
+                "backgroundHoverColor": "lightgray",
                 "maxHeight": "40",
                 "maxWidth": "160",
                 "textColor": "#fff",
@@ -56,21 +59,25 @@
                 "borderRadiusX": "4px",
                 "borderRadiusY": "4px",
                 "textHoverColor": "#000000",
-                "focusedBorderWidth": "6px"
+                "borderFocusedWidth": "6px"
             },
             {
                 "id": "equivalent",
                 "shape": "layeredCircle",
+                "borderColor": "#000000",
+                "borderWidth": "2px",
+                "borderHoverColor": "#000000",
                 "backgroundColor": "#ffffff",
-                "hoverColor": "#ff6363",
-                "textColor": "#000000"
+                "backgroundHoverColor": "#ff6363",
+                "textColor": "#000000",
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "deprecated",
                 "shape": "circle",
                 "borderColor": "transparent",
                 "backgroundColor": "#dbd173",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#000000"
             }
         ],
@@ -148,7 +155,8 @@
         {"id": "n43", "name": "Literal", "type": "literal"},
         {"id": "n44", "name": "Literal", "type": "literal"},
         {"id": "n45", "name": "Literal", "type": "literal"},
-        {"id": "n46", "name": "Literal", "type": "literal"}	
+        {"id": "n46", "name": "Literal", "type": "literal"},
+        {"id": "n47", "name": "DEFAULT NODE"}	
     ],
     "edges": [
         {"id": "L0", "sourceNode": "n0", "targetNode": "n1", "nameTo": "focus"},

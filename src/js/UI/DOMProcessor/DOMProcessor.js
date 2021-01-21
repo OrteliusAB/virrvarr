@@ -561,22 +561,31 @@ export default class DOMProcessor {
 		const fontSize = 14
 		const areaHeight = data.radius ? data.radius * 2 : data.height
 		const areaWidth = data.radius ? data.radius * 2 : data.width
-		const marginX = 12
-		const marginY = 12
-		const translateY = -(areaHeight / 2)
+		const paddingX = 16
+		const paddingY = 16
+		const translateY = areaHeight / 2 //(make this number negative to switch between top and bottom quadrant)
 		const translateX = areaWidth / 2
-		const rectHeight = fontSize + marginY
-		const rectWidth = textWidth + marginX
+		const rectHeight = fontSize + paddingY
+		const rectWidth = textWidth + paddingX
+
+		const rightTopRoundedRect = (x, y, width, height, radius) => {
+			return "M" + x + "," + y
+				+ "h" + (width - radius)
+				+ "q" + radius + ",0 " + radius + "," + radius
+				+ "v" + (height - 2 * radius)
+				+ "q" + "0," + radius + " " + -radius + "," + radius
+				+ "h" + (radius * 2 - width)
+				+ "q" + -radius + ",0 " + -radius + "," + -radius
+				+ "z"
+		}
+
 		element
 			.append("g")
 			.attr("id", "badge-" + data.id + "-hidden-edge-counter")
 			.attr("style", "pointer-events:none;")
 			.attr("transform", `translate(${translateX} ${translateY})`)
-			.append("rect")
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.attr("y", -(rectHeight / 2))
-			.attr("x", -(rectWidth / 2))
+			.append("path")
+			.attr("d", rightTopRoundedRect(-(rectWidth / 2), -(rectHeight / 2), rectWidth, rectHeight, 10))
 			.attr("class", "virrvarr-node-edge-counter-badge")
 			.select(function () {
 				return this.parentNode

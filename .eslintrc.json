@@ -37,7 +37,7 @@
 		"prefer-const": [2, { "destructuring": "all" }],
 		"arrow-spacing": 2,
 		"curly": [2, "multi-line"],
-		"max-lines": [2, { "max": 600, "skipComments": true, "skipBlankLines": true }],
+		"max-lines": [2, { "max": 700, "skipComments": true, "skipBlankLines": true }],
 		"arrow-parens": [2, "as-needed"],
 		"object-curly-spacing": [2, "always", { "arraysInObjects": false }],
 		"lines-between-class-members": [2, "always", { "exceptAfterSingleLine": true }],

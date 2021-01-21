@@ -6,7 +6,7 @@
                 "shape": "circle",
                 "borderColor": "#000",
                 "backgroundColor": "#36c",
-                "hoverColor": "#f00",
+                "backgroundHoverColor": "#f00",
                 "textColor": "#fff"
             },
             {
@@ -15,7 +15,7 @@
                 "radius": 30,
                 "borderColor": "#000",
                 "backgroundColor": "#fff",
-                "hoverColor": "#f00",
+                "backgroundHoverColor": "#f00",
                 "textColor": "#000",
                 "dotted": true
             },
@@ -24,7 +24,7 @@
                 "shape": "circle",
                 "borderColor": "#000",
                 "backgroundColor": "#acf",
-                "hoverColor": "#f00",
+                "backgroundHoverColor": "#f00",
                 "textColor": "#000"
             },
             {
@@ -32,7 +32,7 @@
                 "shape": "rectangle",
                 "borderColor": "#000",
                 "backgroundColor": "#fc3",
-                "hoverColor": "#f00",
+                "backgroundHoverColor": "#f00",
                 "maxHeight": "20",
                 "maxWidth": "60",
                 "textColor": "#000",
@@ -43,7 +43,7 @@
                 "shape": "layeredCircle",
                 "borderColor": "#000",
                 "backgroundColor": "#acf",
-                "hoverColor": "#f00",
+                "backgroundHoverColor": "#f00",
                 "textColor": "#000"
             },
             {
@@ -51,7 +51,7 @@
                 "shape": "circle",
                 "borderColor": "#000",
                 "backgroundColor": "#ccc",
-                "hoverColor": "#f00",
+                "backgroundHoverColor": "#f00",
                 "textColor": "#000"
             }
         ],

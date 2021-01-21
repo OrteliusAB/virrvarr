@@ -5,8 +5,9 @@
                 "id": "external",
                 "shape": "circle",
                 "borderColor": "transparent",
+                "borderHoverColor": "transparent",
                 "backgroundColor": "#96cc7b",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#ffffff"
             },
             {
@@ -15,7 +16,7 @@
                 "radius": 30,
                 "borderColor": "transparent",
                 "backgroundColor": "#7096cc",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#fff",
                 "dotted": true
             },
@@ -24,16 +25,18 @@
                 "shape": "circle",
                 "borderColor": "transparent",
                 "backgroundColor": "#ffffff",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#000000",
-                "shadow": "0px 0px 10px rgba(0, 0, 0, .2)"
+                "filter": "drop-shadow(0px 0px 10px rgba(0, 0, 0, .2))",
+                "hoverFilter": "drop-shadow(0px 0px 15px rgba(0, 0, 0, .3))",
+                "focusedFilter": "drop-shadow(0px 0px 15px rgba(0, 0, 0, .3))"
             },
             {
                 "id": "literal",
                 "shape": "rectangle",
                 "borderColor": "transparent",
                 "backgroundColor": "#77c0d9",
-                "hoverColor": "lightgray",
+                "backgroundHoverColor": "lightgray",
                 "maxHeight": "20",
                 "maxWidth": "60",
                 "textColor": "#fff",
@@ -41,21 +44,40 @@
                 "borderRadiusX": "4px",
                 "borderRadiusY": "4px",
                 "textHoverColor": "#000000",
-                "focusedBorderWidth": "6px"
+                "borderFocusedWidth": "10px"
+            },
+            {
+                "id": "largeliteral",
+                "shape": "rectangle",
+                "borderColor": "transparent",
+                "backgroundColor": "#77c0d9",
+                "backgroundHoverColor": "lightgray",
+                "maxHeight": "40",
+                "maxWidth": "160",
+                "textColor": "#fff",
+                "dotted": true,
+                "borderRadiusX": "4px",
+                "borderRadiusY": "4px",
+                "textHoverColor": "#000000",
+                "borderFocusedWidth": "6px"
             },
             {
                 "id": "equivalent",
                 "shape": "layeredCircle",
+                "borderColor": "#000000",
+                "borderWidth": "2px",
+                "borderHoverColor": "#000000",
                 "backgroundColor": "#ffffff",
-                "hoverColor": "#ff6363",
-                "textColor": "#000000"
+                "backgroundHoverColor": "#ff6363",
+                "textColor": "#000000",
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "deprecated",
                 "shape": "circle",
                 "borderColor": "transparent",
                 "backgroundColor": "#dbd173",
-                "hoverColor": "#ff6363",
+                "backgroundHoverColor": "#ff6363",
                 "textColor": "#000000"
             }
         ],
@@ -87,10 +109,10 @@
         ]
     },
     "nodes": [
-        {"id": "n0", "name": "panda", "type": "external"},
+        {"id": "n0", "name": "panda", "type": "external", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n1", "name": "Thing", "type": "thing"},
         {"id": "n2", "name": "Person", "type": "equivalent", "data": {"something": "something"}},
-        {"id": "n3", "name": "Literal", "type": "literal"},
+        {"id": "n3", "name": "Literal Literal Literal Literal Literal Literal", "type": "largeliteral", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n4", "name": "Literal", "type": "literal"},
         {"id": "n5", "name": "Literal", "type": "literal"},
         {"id": "n6", "name": "Literal", "type": "literal"},
@@ -109,7 +131,7 @@
         {"id": "n19", "name": "Online Account", "type": "class"},
         {"id": "n20", "name": "Online Chat Account", "type": "class"},
         {"id": "n21", "name": "Online E-commerce account", "type": "class"},
-        {"id": "n22", "name": "Online Gaming Account", "type": "class"},
+        {"id": "n22", "name": "Online Gaming Account", "type": "class", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n23", "name": "Literal", "type": "literal"},
         {"id": "n24", "name": "Literal", "type": "literal"},
         {"id": "n25", "name": "Literal", "type": "literal"},
@@ -133,7 +155,8 @@
         {"id": "n43", "name": "Literal", "type": "literal"},
         {"id": "n44", "name": "Literal", "type": "literal"},
         {"id": "n45", "name": "Literal", "type": "literal"},
-        {"id": "n46", "name": "Literal", "type": "literal"}	
+        {"id": "n46", "name": "Literal", "type": "literal"},
+        {"id": "n47", "name": "DEFAULT NODE"}	
     ],
     "edges": [
         {"id": "L0", "sourceNode": "n0", "targetNode": "n1", "nameTo": "focus"},

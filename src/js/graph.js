@@ -29,6 +29,10 @@ export class Virrvarr {
 	 * @param {object} options.customContextMenu - Custom context menu.
 	 * @param {boolean} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
 	 * @param {rotateLabels} options.customContextMenu - Make edge labels perpendicular to the edge.
+	 * @param {boolean} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
+	 * @param {number} options.focusedOnionNumberOfLayers - How many layers should onion borders have by default?
+	 * @param {string} options.focusedOnionBaseColor - What should the base color be of the onion borders?
+	 * @param {number} options.focusedOnionLayerSize - How big should each layer in the onion border be by default?
 	 *
 	 */
 	constructor(graphContainerElement, inputData, options) {
@@ -106,12 +110,42 @@ export class Virrvarr {
 				if (filterFunction) {
 					return filterFunction(node.data)
 				}
-				return node[attribute].toUpperCase().startsWith(value.toUpperCase())
+				return node[attribute].toUpperCase().includes(value.toUpperCase())
 			})
 			this._ee.trigger(EventEnum.HIGHLIGHT_NODE_REQUESTED, nodesToHighlight)
 		} else {
 			throw new Error("No attribute, value or filterfunction provided")
 		}
+	}
+
+	/**
+	  * Fades (dims) nodes in the graph based on input criteria.
+	  * @param {string} attribute - Attribute name to look for
+	  * @param {string} value - Value that the attribute should start with
+	  * @param {Function} filterFunction  - Optional filter function that can be used instead of an attribute. Should return true if the node is to be highlighted
+	  * @return {void}
+	  */
+	fade(attribute, value, filterFunction) {
+		if ((attribute && value) || filterFunction) {
+			const nodesToFade = this._datastore.nodes.filter(node => {
+				if (filterFunction) {
+					return filterFunction(node.data)
+				}
+				return node[attribute].toUpperCase().includes(value.toUpperCase())
+			}).map(node => node.id)
+			this._ee.trigger(EventEnum.FADE_NODE_REQUESTED, nodesToFade)
+		}
+		else {
+			throw new Error("No attribute, value or filterfunction provided")
+		}
+	}
+
+	/**
+	 * Resets the fading of nodes set by the "fade()" function.
+	 * @return {void}
+	 */
+	clearFade() {
+		this._ee.trigger(EventEnum.CLEAR_FADE_NODE_REQUESTED)
 	}
 
 	/**
