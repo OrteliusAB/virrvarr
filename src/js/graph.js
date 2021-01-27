@@ -51,7 +51,6 @@ export class Virrvarr {
 		this._UI = new UI(graphContainerElement, this._ee, this._style, options)
 
 		/* Init Datastore */
-		this._entityProcessor = new EntityProcessor(this._ee, this._style, this._options)
 		this._datastore = new Datastore(inputData.nodes, inputData.edges, this._ee, this._style, this._options)
 
 		/* Init Engine */
@@ -119,12 +118,12 @@ export class Virrvarr {
 	}
 
 	/**
-	  * Fades (dims) nodes in the graph based on input criteria.
-	  * @param {string} attribute - Attribute name to look for
-	  * @param {string} value - Value that the attribute should start with
-	  * @param {Function} filterFunction  - Optional filter function that can be used instead of an attribute. Should return true if the node is to be highlighted
-	  * @return {void}
-	  */
+	 * Fades (dims) nodes in the graph based on input criteria.
+	 * @param {string} attribute - Attribute name to look for
+	 * @param {string} value - Value that the attribute should start with
+	 * @param {Function} filterFunction  - Optional filter function that can be used instead of an attribute. Should return true if the node is to be highlighted
+	 * @return {void}
+	 */
 	fade(attribute, value, filterFunction) {
 		if ((attribute && value) || filterFunction) {
 			const nodesToFade = this._datastore.nodes.filter(node => {

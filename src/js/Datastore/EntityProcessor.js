@@ -197,4 +197,52 @@ export default class EntityProcessor {
 			}
 		})
 	}
+
+	/**
+	 * Animates all node positions from source to target
+	 * Nodes without a source/target will be frozen during the animation
+	 * @param {object[]} nodes - All nodes in the data store
+	 */
+	animateNodePositions(nodes) {
+		return new Promise(resolve => {
+			const tween = (startTime, animationTime) => {
+				const deltaTime = Date.now() - startTime
+				if (deltaTime > animationTime) {
+					nodes.forEach(node => {
+						delete node.targetX
+						delete node.targetY
+						delete node.sourceX
+						delete node.sourceY
+						delete node.fx
+						delete node.fy
+						if (node.originalFx) {
+							node.fx = node.originalFx
+							delete node.originalFx
+						}
+						if (node.originalFy) {
+							node.fy = node.originalFy
+							delete node.originalFy
+						}
+					})
+					resolve()
+				} else {
+					const percentOfAnimation = deltaTime / animationTime
+					nodes.filter(node => node.targetX && node.targetY)
+						.forEach(node => {
+							node.fx = node.sourceX + (node.targetX - node.sourceX) * percentOfAnimation
+							node.fy = node.sourceY + (node.targetY - node.sourceY) * percentOfAnimation
+						})
+					setTimeout(() => tween(startTime, animationTime), 1)
+				}
+			}
+			nodes.forEach(node => {
+				node.originalFx = node.fx
+				node.originalFy = node.fy
+				node.fx = node.x
+				node.fy = node.y
+			})
+			tween(Date.now(), Env.IMPLOSION_EXPLOSION_ANIMATION_TIME)
+		})
+	}
+
 }

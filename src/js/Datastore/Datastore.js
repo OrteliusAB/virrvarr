@@ -1,4 +1,5 @@
 import EventEnum from "../Events/EventEnum"
+import EntityProcessor from "./EntityProcessor"
 
 /* TODO:: Implement deep clone utility instead of JSON.stringify/parse */
 /**
@@ -6,7 +7,7 @@ import EventEnum from "../Events/EventEnum"
  * The data store decides what nodes and edges are live, as well as makes sure they have the correct data set on them.
  */
 export default class Datastore {
-	constructor(nodes, edges, eventEmitter) {
+	constructor(nodes, edges, eventEmitter, styles, userDefinedOptions) {
 		this.allNodes = JSON.parse(JSON.stringify(nodes))
 		this.allEdges = JSON.parse(JSON.stringify(edges))
 		this.liveNodes = this.allNodes
@@ -35,23 +36,24 @@ export default class Datastore {
 		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, (id, isImplode) => {
 			this.implodeOrExplodeNode(id, isImplode)
 			this.updateNumberOfHiddenEdgesOnNodes()
-			this.updateLiveData()
+			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
 		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, (id, isImplode) => {
 			this.implodeOrExplodeNodeLeafs(id, isImplode)
 			this.updateNumberOfHiddenEdgesOnNodes()
-			this.updateLiveData()
+			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
 		this.ee.on(EventEnum.IMPLODE_EXPLODE_RECURSIVE_REQUESTED, (id, isImplode) => {
 			this.implodeOrExplodeNodeRecursive(id, isImplode)
 			this.updateNumberOfHiddenEdgesOnNodes()
-			this.updateLiveData()
+			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
 		this.ee.on(EventEnum.IMPLODE_EXPLODE_NON_CIRCULAR_REQUESTED, (id, isImplode) => {
 			this.implodeOrExplodeNodeNonCircular(id, isImplode)
 			this.updateNumberOfHiddenEdgesOnNodes()
-			this.updateLiveData()
+			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
+		this.entityProcessor = new EntityProcessor(this.ee, styles, userDefinedOptions)
 		this.updateEdgeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
@@ -69,6 +71,23 @@ export default class Datastore {
 	 */
 	get nodes() {
 		return this.liveNodes
+	}
+
+	/**
+	 * Bootstraps the update animation for implosion and explosions of nodes, and ensures things happen a correct order
+	 */
+	implodeExplodedNodesAnimation(id, isImplode) {
+		const rootNode = this.getNodeByID(id)
+		this.stageNodePositions(isImplode ? null : rootNode.x, isImplode ? null : rootNode.y, isImplode ? rootNode.x : null, isImplode ? rootNode.y : null)
+		if (isImplode) {
+			this.entityProcessor.animateNodePositions(this.allNodes).then(() => {
+				this.updateLiveData()
+			})
+		}
+		else {
+			this.updateLiveData()
+			this.entityProcessor.animateNodePositions(this.allNodes)
+		}
 	}
 
 	/**
@@ -193,6 +212,77 @@ export default class Datastore {
 
 			edge.isFiltered = isFiltered
 		})
+	}
+
+	/**
+	 * Creates source and target coordinates for nodes that are staged to go live from an implosion/explosion.
+	 * The result of this function is primarily used to animate the graph into a new state
+	 * @param {number?} rootX - Start position for the transition
+	 * @param {number?} rootY - Start position for the transition
+	 * @param {number?} targetX - End position for the transition
+	 * @param {number?} targetY - End position for the transition
+	 */
+	stageNodePositions(rootX, rootY, targetX, targetY) {
+		if (!rootX && !targetX) {
+			return
+		}
+		if (targetX && !rootX) {
+			const nodes = this.allNodes.filter(node => !this.isNodeLive(node) && this.liveNodes.find(onScreenNode => onScreenNode.id === node.id))
+			nodes.forEach(node => {
+				node.targetX = targetX
+				node.targetY = targetY
+				node.sourceX = node.x
+				node.sourceY = node.y
+			})
+		} else if (rootX && !targetX) {
+			const nodes = this.allNodes.filter(node => this.isNodeLive(node) && !this.liveNodes.find(onScreenNode => onScreenNode.id === node.id))
+			const leafAncestryMap = {}
+			const connectionMap = {}
+			nodes.forEach(node => {
+				const connectedNodes = this.allEdges
+					.filter(edge => (edge.targetNode === node.id || edge.sourceNode === node.id) && edge.targetNode !== edge.sourceNode)
+					.map(edge => (
+						edge.sourceNode === node.id
+							? { node: this.getNodeByID(edge.targetNode), edgeDistance: edge.edgeDistance }
+							: { node: this.getNodeByID(edge.sourceNode), edgeDistance: edge.edgeDistance }))
+					.filter(connectedNode => this.liveNodes.includes(connectedNode.node))
+					.reduce((acc, connectedNode) => {
+						if (!acc.map(connection => connection.node.id).includes(connectedNode.node.id)) {
+							acc.push(connectedNode)
+						}
+						return acc
+					}, [])
+				connectionMap[node.id] = connectedNodes
+				if (connectedNodes.length === 1) {
+					Array.isArray(leafAncestryMap[connectedNodes[0].node.id])
+						? leafAncestryMap[connectedNodes[0].node.id].push(node.id)
+						: (leafAncestryMap[connectedNodes[0].node.id] = [node.id])
+				}
+			})
+			nodes.forEach(node => {
+				node.sourceX = rootX + 2 //I can't be the exact point of the root or there will be divisional errors
+				node.sourceY = rootY + 2
+				if (connectionMap[node.id].length === 1) {
+					const multiplier = leafAncestryMap[connectionMap[node.id][0].node.id].indexOf(node.id) + 1
+					const divider = leafAncestryMap[connectionMap[node.id][0].node.id].length
+					const angle = Math.floor((359 / divider) * multiplier)
+					node.targetX = connectionMap[node.id][0].node.x + connectionMap[node.id][0].edgeDistance * 2 * Math.cos((angle * Math.PI) / 180)
+					node.targetY = connectionMap[node.id][0].node.y + connectionMap[node.id][0].edgeDistance * 2 * Math.sin((angle * Math.PI) / 180)
+				} else if (connectionMap[node.id].length === 0) {
+					node.targetX = 0
+					node.targetY = 0
+				} else {
+					node.targetX =
+						connectionMap[node.id].reduce((acc, connection) => {
+							return acc + connection.node.x
+						}, 0) / connectionMap[node.id].length
+					node.targetY =
+						connectionMap[node.id].reduce((acc, connection) => {
+							return acc + connection.node.y
+						}, 0) / connectionMap[node.id].length
+				}
+			})
+		}
 	}
 
 	/**
@@ -361,11 +451,6 @@ export default class Datastore {
 
 		this.setNodesAndEdgesHiddenStatus(nodes, edges, isImplode)
 		connectedNodes.forEach(nodeID => this.implodeOrExplodeNodeRecursive(nodeID, isImplode))
-
-		return {
-			updatedNodes: nodes,
-			updatedEdges: edges
-		}
 	}
 
 	/**

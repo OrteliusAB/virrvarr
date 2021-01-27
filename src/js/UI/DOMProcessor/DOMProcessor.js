@@ -174,7 +174,7 @@ export default class DOMProcessor {
 			})
 		//Draw counter badges for imploded edges
 		nodes.forEach(node => {
-			d3.select("#badge-" + node.id + "-hidden-edge-counter").remove()
+			d3.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
 			if (node.hiddenEdgeCount) {
 				const element = d3.select(`[id='${node.id}']`).select(function () {
 					return this.parentNode
@@ -345,7 +345,7 @@ export default class DOMProcessor {
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 		setTimeout(() => {
 			const marker = d3.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
-			if (marker.classed("hovered")) {
+			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
 				this.handleHoverEvent(edgeData, "enter")
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
@@ -744,6 +744,10 @@ export default class DOMProcessor {
 		})
 		//Edges
 		this.edgePath.attr("d", l => {
+			if (l.source.x === l.target.x && l.source.y === l.target.y) {
+				//The two nodes are at the exact same position
+				return ""
+			}
 			if (l.source === l.target) {
 				return MathUtil.calculateSelfEdgePath(l)
 			}
@@ -778,6 +782,9 @@ export default class DOMProcessor {
 		})
 		//Labels
 		this.labels.attr("transform", function (l) {
+			if (l.source.x === l.target.x && l.source.y === l.target.y) {
+				return ""
+			}
 			const group = d3.select(this)
 			const midX = l.curvePoint.x
 			let midY = l.curvePoint.y

@@ -8,7 +8,8 @@ import CssUtils from "../../Utils/CssUtils"
  * This includes both highlighting on selections as well as highlighting on search.
  */
 export default class Highlighter {
-	constructor(eventEmitter, userDefinedOptions) {
+	constructor(graphContainerElement, eventEmitter, userDefinedOptions) {
+		this.graphContainerElement = graphContainerElement
 		this.ee = eventEmitter
 		this.ee.on(EventEnum.CLICK_ENTITY, data => {
 			data && this.setElementFocus(data.id, data.direction)
@@ -26,9 +27,31 @@ export default class Highlighter {
 			this.clearFade()
 		})
 		this.enableOnionOnFocus = typeof userDefinedOptions.enableOnionOnFocus === "boolean" ? userDefinedOptions.enableOnionOnFocus : Env.ENABLE_ONION_ON_FOCUS
-		this.focusedOnionNumberOfLayers = userDefinedOptions.focusedOnionNumberOfLayers ? userDefinedOptions.focusedOnionNumberOfLayers : Env.DEFAULT_ONION_FOCUSED_LAYERS
+		this.focusedOnionNumberOfLayers = userDefinedOptions.focusedOnionNumberOfLayers
+			? userDefinedOptions.focusedOnionNumberOfLayers
+			: Env.DEFAULT_ONION_FOCUSED_LAYERS
 		this.focusedOnionBaseColor = userDefinedOptions.focusedOnionBaseColor ? userDefinedOptions.focusedOnionBaseColor : Env.DEFAULT_ONION_FOCUSED_COLOR
 		this.focusedOnionLayerSize = userDefinedOptions.focusedOnionLayerSize ? userDefinedOptions.focusedOnionLayerSize : Env.DEFAULT_ONION_FOCUSED_SIZE
+		this.writeHighlightFilters()
+	}
+
+	/**
+	 * Adds default filter definitions for node
+	 */
+	writeHighlightFilters() {
+		const shadowFilter = (id, deviation, opacity) => {
+			d3.select(this.graphContainerElement)
+				.select("defs")
+				.append("filter")
+				.attr("id", id)
+				.append("feDropShadow")
+				.attr("dx", "0")
+				.attr("dy", "0")
+				.attr("stdDeviation", deviation)
+				.attr("flood-opacity", opacity)
+		}
+		shadowFilter("shadow-filter", 3, 0.5)
+		shadowFilter("shadow-dark-filter", 5, 0.5)
 	}
 
 	/**
@@ -97,7 +120,6 @@ export default class Highlighter {
 	 * @param {number} size - Size of the onion layers
 	 * @param {string} color - Base color of the layers
 	 * @param {number} layers - number of layers
-	 * 
 	 * @param {boolean} wasTurnedOn - Returns true if the onion border was toggled on, and false if it was toggled off
 	 */
 	toggleOnionBorder(DOMElement, size, color, layers = 2) {
@@ -145,7 +167,15 @@ export default class Highlighter {
 				clone.setAttribute("opacity", 0.5 / i)
 				clone.setAttribute("class", "onion-clone")
 				DOMElement.parentElement.insertBefore(clone, previousNode)
-				CssUtils.tween(clone, "scale", DOMElement.getBoundingClientRect().width / clone.getBoundingClientRect().width, 1, Date.now(), Env.DEFAULT_ONION_ANIMATION_TIME * i)
+				CssUtils.tween(
+					clone,
+					"transform",
+					DOMElement.getBoundingClientRect().width / clone.getBoundingClientRect().width,
+					1,
+					Date.now(),
+					Env.DEFAULT_ONION_ANIMATION_TIME * i,
+					(newValue) => `scale(${newValue})`
+				)
 				previousNode = clone
 			}
 			return true
@@ -201,9 +231,9 @@ export default class Highlighter {
 	}
 
 	/**
-	  * Fades (dims) nodes and their connected edges.
-	  * @param {string[]} nodes - Array of node IDs to fade
-	  */
+	 * Fades (dims) nodes and their connected edges.
+	 * @param {string[]} nodes - Array of node IDs to fade
+	 */
 	fadeNodes(nodeIDsToFade) {
 		d3.selectAll(".node")
 			.filter(d => {
@@ -223,9 +253,9 @@ export default class Highlighter {
 	}
 
 	/**
-	  * Clears all fading for nodes and connected edges set by "fadeNodes".
-	  * @param {string[]} nodes - Array of node IDs to fade
-	  */
+	 * Clears all fading for nodes and connected edges set by "fadeNodes".
+	 * @param {string[]} nodes - Array of node IDs to fade
+	 */
 	clearFade() {
 		d3.selectAll(".faded")
 			.classed("faded", false)

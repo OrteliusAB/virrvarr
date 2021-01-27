@@ -37,7 +37,7 @@ export default Object.freeze({
 	DEFAULT_STROKE_WIDTH: 2,
 	DEFAULT_FONT_FAMILY: "Helvetica, Arial, sans-serif",
 	DEFAULT_FONT_SIZE: "12px",
-	DEFAULT_FADE_OPACITY: 0.5,
+	DEFAULT_FADE_OPACITY: 0.3,
 	DEFAULT_FOCUS_COLOR: "#ff6363",
 
 	//Edges
@@ -104,6 +104,7 @@ export default Object.freeze({
 	ZOOM_TIME: 1000, //ms
 	HIGHLIGHT_TIME: 1000, //ms
 	HIGHLIGHT_TIME_REMOVE: 1000, //ms
+	IMPLOSION_EXPLOSION_ANIMATION_TIME: 200, //ms
 
 	//Force Layout
 	EDGE_STRENGTH: 0.7,

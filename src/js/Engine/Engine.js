@@ -37,6 +37,22 @@ export default class Engine {
 			this.alpha(1)
 			this.restart()
 		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, (id, isImplode) => {
+			this.alpha(1)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, (id, isImplode) => {
+			this.alpha(1)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_RECURSIVE_REQUESTED, (id, isImplode) => {
+			this.alpha(1)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_NON_CIRCULAR_REQUESTED, (id, isImplode) => {
+			this.alpha(1)
+			this.restart()
+		})
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.stop())
 		this.forceCenterX = forceCenterX
 		this.forceCenterY = forceCenterY

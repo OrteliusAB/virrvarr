@@ -97,7 +97,8 @@ const initializeGraphStyles = (style, id) => {
                 }
 
                 .virrvarr .faded {
-                    opacity: ${Env.DEFAULT_FADE_OPACITY}
+                    opacity: ${Env.DEFAULT_FADE_OPACITY};
+                    pointer-events: none;
                 }
 
                 /* Default edge style */
@@ -154,6 +155,19 @@ const initializeGraphStyles = (style, id) => {
                 .marker-default path.focused{
                     fill: ${Env.DEFAULT_FOCUS_COLOR} !important;
                     stroke: ${Env.DEFAULT_FOCUS_COLOR} !important;
+                }
+
+                .node, .edge, .multiplicity {
+                    animation: fadeInFromNone 0.2s ease-out;
+                }
+
+                @keyframes fadeInFromNone {
+                    0% {
+                        opacity: 0;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
                 }
 
                 /* Default node values */
@@ -299,16 +313,17 @@ const initializeGraphStyles = (style, id) => {
     document.getElementsByTagName("head")[0].appendChild(css)
 }
 
-const tween = (element, property, initialValue, target, startTime, animationTime) => {
+const tween = (element, property, initialValue, target, startTime, animationTime, setter) => {
     const deltaTime = Date.now() - startTime
     if (deltaTime > animationTime) {
         element.style.removeProperty(property)
         return
     }
     const percentOfAnimation = deltaTime / animationTime
-    const newValue = initialValue + (target - initialValue) * percentOfAnimation
+    const tweenedValue = initialValue + (target - initialValue) * percentOfAnimation
+    const newValue = setter ? setter(tweenedValue) : tweenedValue
     element.style[property] = newValue
-    setTimeout(() => tween(element, property, initialValue, target, startTime, animationTime), 1)
+    setTimeout(() => tween(element, property, initialValue, target, startTime, animationTime, setter), 1)
 }
 
 export default {

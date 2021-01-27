@@ -19,13 +19,13 @@ export default class UI {
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
 		this.zoomHandler = new ZoomHandler(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.contextMenu = new ContextMenu(this.graphContainerElement, this.ee, userDefinedOptions)
-		this.highlighter = new Highlighter(this.ee, userDefinedOptions)
 		this.tooltip = new Tooltip(this.graphContainerElement, this.ee)
 
 		this.stylesID = ("A" + Math.random()).replace(".", "")
 		CSSUtil.initializeGraphStyles(this.style, this.stylesID)
 
 		this.rootG = this.initializeDOM()
+		this.highlighter = new Highlighter(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.grid = new Grid(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.DOMProcessor = new DOMProcessor(this.rootG, this.ee, userDefinedOptions)
 	}
