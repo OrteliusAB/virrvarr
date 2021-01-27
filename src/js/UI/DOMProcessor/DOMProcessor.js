@@ -24,7 +24,7 @@ export default class DOMProcessor {
 			this.showMultiplicity = !this.showMultiplicity
 			this.updateMultiplicityCounters(this.edges)
 		})
-		this.ee.on(EventEnum.DATA_PROCESSOR_FINISHED, (nodes, edges) => {
+		this.ee.on(EventEnum.DATASTORE_UPDATED, (nodes, edges) => {
 			this.nodes = nodes
 			this.edges = edges
 			//The order of these matters, don't rearrange

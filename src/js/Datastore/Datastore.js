@@ -19,6 +19,7 @@ export default class Datastore {
 		this.ee = eventEmitter
 		this.ee.on(EventEnum.DATA_UPDATE_REQUESTED, (nodes, edges) => this.updateDataset(nodes, edges))
 		this.ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
+			this.entityProcessor.executePreProcessor(this.nodes, this.edges)
 			this.ee.trigger(EventEnum.DATASTORE_UPDATED, this.nodes, this.edges)
 		})
 		this.ee.on(EventEnum.DATA_FILTER_REQUESTED, filters => {
@@ -312,6 +313,7 @@ export default class Datastore {
 			return edges.find(newEdge => oldEdge.id === newEdge.id)
 		})
 
+		this.entityProcessor.executePreProcessor(this.nodes, this.edges)
 		this.ee.trigger(EventEnum.DATASTORE_UPDATED, this.nodes, this.edges)
 	}
 

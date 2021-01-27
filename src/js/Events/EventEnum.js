@@ -32,8 +32,6 @@ const EVENTS = Object.freeze({
 	// Params: [...nodes], [...edges]
 	DATASTORE_UPDATED: "LIVE_DATA_UPDATED_EVENT",
 	// Params: [...nodes], [...edges]
-	DATA_PROCESSOR_FINISHED: "DATA_PROCESSOR_FINISHED",
-	// Params: [...nodes], [...edges]
 	DOM_PROCESSOR_FINISHED: "DOM_PROCESSOR_FINISHED",
 	// Params: [...nodes], [...edges]
 	ENGINE_UPDATE_FINISHED: "ENGINE_UPDATE_FINISHED_EVENT",

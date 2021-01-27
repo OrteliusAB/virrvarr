@@ -19,14 +19,19 @@ export default class EntityProcessor {
 		this.ee.on(EventEnum.NODE_FIXATION_REQUESTED, (node, x, y) => {
 			this.repositionNode(node, x, y)
 		})
-		this.ee.on(EventEnum.DATASTORE_UPDATED, (nodes, edges) => {
-			this.updateEdgeedNodeIDs(edges, nodes)
-			this.updateEdgeDistances(edges)
-			this.updateEdgeLabelWidths(edges)
-			this.updateEdgeCounters(edges)
-			this.updateNodeParameters(nodes)
-			this.ee.trigger(EventEnum.DATA_PROCESSOR_FINISHED, nodes, edges)
-		})
+	}
+
+	/**
+	 * Executes the preprocessor for when data is about to go live
+	 * @param {object[]} nodes 
+	 * @param {object[]} edges 
+	 */
+	executePreProcessor(nodes, edges) {
+		this.updateEdgeNodeIDs(edges, nodes)
+		this.updateEdgeDistances(edges)
+		this.updateEdgeLabelWidths(edges)
+		this.updateEdgeCounters(edges)
+		this.updateNodeParameters(nodes)
 	}
 
 	/**
@@ -45,7 +50,7 @@ export default class EntityProcessor {
 	 * @param {object[]} edges - Edges to be updated
 	 * @param {object[]} nodes - List of all nodes
 	 */
-	updateEdgeedNodeIDs(edges, nodes) {
+	updateEdgeNodeIDs(edges, nodes) {
 		edges.forEach(edge => {
 			//D3 uses the index of the node as source and target. Convert from the ID specified
 			edge.source = nodes.findIndex(node => node.id === edge.sourceNode)
