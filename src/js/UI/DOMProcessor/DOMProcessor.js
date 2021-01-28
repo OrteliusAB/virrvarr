@@ -744,7 +744,7 @@ export default class DOMProcessor {
 		})
 		//Edges
 		this.edgePath.attr("d", l => {
-			if (l.source.x === l.target.x && l.source.y === l.target.y) {
+			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
 				//The two nodes are at the exact same position
 				return ""
 			}
@@ -782,7 +782,7 @@ export default class DOMProcessor {
 		})
 		//Labels
 		this.labels.attr("transform", function (l) {
-			if (l.source.x === l.target.x && l.source.y === l.target.y) {
+			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
 				return ""
 			}
 			const group = d3.select(this)
