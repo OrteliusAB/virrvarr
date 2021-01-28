@@ -53,6 +53,10 @@ export default class Engine {
 			this.alpha(0.5)
 			this.restart()
 		})
+		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, (id, isImplode) => {
+			this.alpha(0.01)
+			this.restart()
+		})
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.stop())
 		this.forceCenterX = forceCenterX
 		this.forceCenterY = forceCenterY
