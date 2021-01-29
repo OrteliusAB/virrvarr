@@ -5,7 +5,6 @@ import EventEmitter from "./Events/EventEmitter"
 import UI from "./UI/UI"
 import Engine from "./Engine/Engine"
 import EventEnum from "./Events/EventEnum"
-import EntityProcessor from "./Datastore/EntityProcessor.js"
 
 /**
  * The main graph class
@@ -126,15 +125,16 @@ export class Virrvarr {
 	 */
 	disable(attribute, value, filterFunction) {
 		if ((attribute && value) || filterFunction) {
-			const nodesToDisable = this._datastore.nodes.filter(node => {
-				if (filterFunction) {
-					return filterFunction(node.data)
-				}
-				return node[attribute].toUpperCase().includes(value.toUpperCase())
-			}).map(node => node.id)
+			const nodesToDisable = this._datastore.nodes
+				.filter(node => {
+					if (filterFunction) {
+						return filterFunction(node.data)
+					}
+					return node[attribute].toUpperCase().includes(value.toUpperCase())
+				})
+				.map(node => node.id)
 			this._ee.trigger(EventEnum.DISABLE_NODES_REQUESTED, nodesToDisable)
-		}
-		else {
+		} else {
 			throw new Error("No attribute, value or filterfunction provided")
 		}
 	}

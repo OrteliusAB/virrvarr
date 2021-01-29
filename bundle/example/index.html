@@ -232,8 +232,8 @@
                     <hr />
                     <input type="text" id="search-input" placeholder="Highlight... (try 'person')" />
                     <button class="menu-button menu-button-confirm" onclick="highlight()">Search</button>
-                    <button class="menu-button menu-button-confirm" onclick="fade()">Fade</button>
-                    <button class="menu-button menu-button-confirm" onclick="clearFade()">Clear Fade</button>
+                    <button class="menu-button menu-button-confirm" onclick="disable()">Disable</button>
+                    <button class="menu-button menu-button-confirm" onclick="clearDisable()">Clear Disable</button>
                 </details>
 
                 <details>
@@ -370,15 +370,15 @@
             }
         }
 
-        function fade() {
+        function disable() {
             const value = document.getElementById("search-input").value
             if (value && value.length >= 3) {
-                window.graph.fade("name", value)
+                window.graph.disable("name", value)
             }
         }
 
-        function clearFade() {
-            window.graph.clearFade()
+        function clearDisable() {
+            window.graph.clearDisable()
         }
 
         function zoomToNode() {

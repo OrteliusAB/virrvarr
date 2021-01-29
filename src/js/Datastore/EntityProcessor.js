@@ -23,8 +23,8 @@ export default class EntityProcessor {
 
 	/**
 	 * Executes the preprocessor for when data is about to go live
-	 * @param {object[]} nodes 
-	 * @param {object[]} edges 
+	 * @param {object[]} nodes
+	 * @param {object[]} edges
 	 */
 	executePreProcessor(nodes, edges) {
 		this.updateEdgeNodeIDs(edges, nodes)
@@ -232,7 +232,8 @@ export default class EntityProcessor {
 					resolve()
 				} else {
 					const percentOfAnimation = deltaTime / animationTime
-					nodes.filter(node => node.targetX && node.targetY)
+					nodes
+						.filter(node => node.targetX && node.targetY)
 						.forEach(node => {
 							node.fx = node.sourceX + (node.targetX - node.sourceX) * percentOfAnimation
 							node.fy = node.sourceY + (node.targetY - node.sourceY) * percentOfAnimation
@@ -249,5 +250,4 @@ export default class EntityProcessor {
 			tween(Date.now(), Env.IMPLOSION_EXPLOSION_ANIMATION_TIME)
 		})
 	}
-
 }

@@ -569,14 +569,14 @@ export default class DOMProcessor {
 		const rectWidth = textWidth + paddingX
 
 		const rightTopRoundedRect = (x, y, width, height, radius) => {
-			return "M" + x + "," + y
-				+ "h" + (width - radius)
-				+ "q" + radius + ",0 " + radius + "," + radius
-				+ "v" + (height - 2 * radius)
-				+ "q" + "0," + radius + " " + -radius + "," + radius
-				+ "h" + (radius * 2 - width)
-				+ "q" + -radius + ",0 " + -radius + "," + -radius
-				+ "z"
+			return `M${x},${y}
+				h${width - radius}
+				q${radius},0 ${radius},${radius}
+				v${height - 2 * radius}
+				q0,${radius} ${-radius},${radius}
+				h${radius * 2 - width}
+				q${-radius},0 ${-radius},${-radius}
+				z`
 		}
 
 		element

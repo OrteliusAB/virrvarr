@@ -6,8 +6,8 @@ import Env from "../Config/Env.js"
  * @param {string} id - ID of the UI-class of this Virrvarr instance
  */
 const initializeGraphStyles = (style, id) => {
-    let cssString = ""
-    cssString = /*css*/`
+	let cssString = ""
+	cssString = /*css*/ `
                 /* Global Transitions */
                 .virrvarr * {
                     transition: fill 0.1s, opacity 0.1s;
@@ -199,9 +199,9 @@ const initializeGraphStyles = (style, id) => {
                 }
                 `
 
-    if (style && style.nodes) {
-        style.nodes.forEach(nodeType => {
-            cssString = `
+	if (style && style.nodes) {
+		style.nodes.forEach(nodeType => {
+			cssString = `
                 ${cssString}
                 .node-${nodeType.id} {
                     cursor: pointer;
@@ -239,12 +239,12 @@ const initializeGraphStyles = (style, id) => {
                     ${nodeType.textFocusedColor ? `fill:${nodeType.textFocusedColor};` : ""}
                 }
                 `
-        })
-    }
+		})
+	}
 
-    if (style && style.edges) {
-        style.edges.forEach(edgeType => {
-            cssString = `
+	if (style && style.edges) {
+		style.edges.forEach(edgeType => {
+			cssString = `
                 ${cssString}
                 .edge-path-${edgeType.id}{
                     fill: none !important;
@@ -303,30 +303,30 @@ const initializeGraphStyles = (style, id) => {
                     ${edgeType.focusedColor ? `stroke:${edgeType.focusedColor};` : ""}
                 }
                 `
-        })
-    }
+		})
+	}
 
-    const css = document.createElement("style")
-    css.type = "text/css"
-    css.id = id
-    css.appendChild(document.createTextNode(cssString))
-    document.getElementsByTagName("head")[0].appendChild(css)
+	const css = document.createElement("style")
+	css.type = "text/css"
+	css.id = id
+	css.appendChild(document.createTextNode(cssString))
+	document.getElementsByTagName("head")[0].appendChild(css)
 }
 
 const tween = (element, property, initialValue, target, startTime, animationTime, setter) => {
-    const deltaTime = Date.now() - startTime
-    if (deltaTime > animationTime) {
-        element.style.removeProperty(property)
-        return
-    }
-    const percentOfAnimation = deltaTime / animationTime
-    const tweenedValue = initialValue + (target - initialValue) * percentOfAnimation
-    const newValue = setter ? setter(tweenedValue) : tweenedValue
-    element.style[property] = newValue
-    setTimeout(() => tween(element, property, initialValue, target, startTime, animationTime, setter), 1)
+	const deltaTime = Date.now() - startTime
+	if (deltaTime > animationTime) {
+		element.style.removeProperty(property)
+		return
+	}
+	const percentOfAnimation = deltaTime / animationTime
+	const tweenedValue = initialValue + (target - initialValue) * percentOfAnimation
+	const newValue = setter ? setter(tweenedValue) : tweenedValue
+	element.style[property] = newValue
+	setTimeout(() => tween(element, property, initialValue, target, startTime, animationTime, setter), 1)
 }
 
 export default {
-    initializeGraphStyles,
-    tween
+	initializeGraphStyles,
+	tween
 }

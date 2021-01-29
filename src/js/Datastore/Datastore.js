@@ -84,8 +84,7 @@ export default class Datastore {
 			this.entityProcessor.animateNodePositions(this.allNodes).then(() => {
 				this.updateLiveData()
 			})
-		}
-		else {
+		} else {
 			this.updateLiveData()
 			this.entityProcessor.animateNodePositions(this.allNodes)
 		}
@@ -242,10 +241,11 @@ export default class Datastore {
 			nodes.forEach(node => {
 				const connectedNodes = this.allEdges
 					.filter(edge => (edge.targetNode === node.id || edge.sourceNode === node.id) && edge.targetNode !== edge.sourceNode)
-					.map(edge => (
+					.map(edge =>
 						edge.sourceNode === node.id
 							? { node: this.getNodeByID(edge.targetNode), edgeDistance: edge.edgeDistance }
-							: { node: this.getNodeByID(edge.sourceNode), edgeDistance: edge.edgeDistance }))
+							: { node: this.getNodeByID(edge.sourceNode), edgeDistance: edge.edgeDistance }
+					)
 					.filter(connectedNode => this.liveNodes.includes(connectedNode.node))
 					.reduce((acc, connectedNode) => {
 						if (!acc.map(connection => connection.node.id).includes(connectedNode.node.id)) {

@@ -128,12 +128,7 @@ export default class Highlighter {
 		Array.from(DOMNeighborhood).forEach(node => {
 			if (node.classList.contains("onion-clone")) {
 				found = true
-				d3.select(node)
-					.attr("class", null)
-					.transition()
-					.duration(Env.DEFAULT_ONION_ANIMATION_TIME)
-					.style("transform", "scale(0.8)")
-					.remove()
+				d3.select(node).attr("class", null).transition().duration(Env.DEFAULT_ONION_ANIMATION_TIME).style("transform", "scale(0.8)").remove()
 			}
 		})
 		if (!found) {
@@ -174,7 +169,7 @@ export default class Highlighter {
 					1,
 					Date.now(),
 					Env.DEFAULT_ONION_ANIMATION_TIME * i,
-					(newValue) => `scale(${newValue})`
+					newValue => `scale(${newValue})`
 				)
 				previousNode = clone
 			}
@@ -257,7 +252,6 @@ export default class Highlighter {
 	 * @param {string[]} nodes - Array of node IDs to fade
 	 */
 	clearDisabled() {
-		d3.selectAll(".disabled")
-			.classed("disabled", false)
+		d3.selectAll(".disabled").classed("disabled", false)
 	}
 }

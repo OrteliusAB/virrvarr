@@ -37,23 +37,23 @@ export default class Engine {
 			this.alpha(2)
 			this.restart()
 		})
-		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, (id, isImplode) => {
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, () => {
 			this.alpha(0.5)
 			this.restart()
 		})
-		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, (id, isImplode) => {
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, () => {
 			this.alpha(0.5)
 			this.restart()
 		})
-		this.ee.on(EventEnum.IMPLODE_EXPLODE_RECURSIVE_REQUESTED, (id, isImplode) => {
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_RECURSIVE_REQUESTED, () => {
 			this.alpha(0.5)
 			this.restart()
 		})
-		this.ee.on(EventEnum.IMPLODE_EXPLODE_NON_CIRCULAR_REQUESTED, (id, isImplode) => {
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_NON_CIRCULAR_REQUESTED, () => {
 			this.alpha(0.5)
 			this.restart()
 		})
-		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, (id, isImplode) => {
+		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
 			this.alpha(0.01)
 			this.restart()
 		})
