@@ -19,14 +19,19 @@ export default class EntityProcessor {
 		this.ee.on(EventEnum.NODE_FIXATION_REQUESTED, (node, x, y) => {
 			this.repositionNode(node, x, y)
 		})
-		this.ee.on(EventEnum.DATASTORE_UPDATED, (nodes, edges) => {
-			this.updateEdgeedNodeIDs(edges, nodes)
-			this.updateEdgeDistances(edges)
-			this.updateEdgeLabelWidths(edges)
-			this.updateEdgeCounters(edges)
-			this.updateNodeParameters(nodes)
-			this.ee.trigger(EventEnum.DATA_PROCESSOR_FINISHED, nodes, edges)
-		})
+	}
+
+	/**
+	 * Executes the preprocessor for when data is about to go live
+	 * @param {object[]} nodes
+	 * @param {object[]} edges
+	 */
+	executePreProcessor(nodes, edges) {
+		this.updateEdgeNodeIDs(edges, nodes)
+		this.updateEdgeDistances(edges)
+		this.updateEdgeLabelWidths(edges)
+		this.updateEdgeCounters(edges)
+		this.updateNodeParameters(nodes)
 	}
 
 	/**
@@ -45,7 +50,7 @@ export default class EntityProcessor {
 	 * @param {object[]} edges - Edges to be updated
 	 * @param {object[]} nodes - List of all nodes
 	 */
-	updateEdgeedNodeIDs(edges, nodes) {
+	updateEdgeNodeIDs(edges, nodes) {
 		edges.forEach(edge => {
 			//D3 uses the index of the node as source and target. Convert from the ID specified
 			edge.source = nodes.findIndex(node => node.id === edge.sourceNode)
@@ -168,7 +173,11 @@ export default class EntityProcessor {
 						case "rectangle":
 							node.height = style.maxHeight ? style.maxHeight : Env.DEFAULT_RECTANGLE_MAX_HEIGHT
 							node.width = style.maxWidth ? style.maxWidth : Env.DEFAULT_RECTANGLE_MAX_WIDTH
-							node.maxTextWidth = style.maxWidth ? style.maxWidth : Env.DEFAULT_RECTANGLE_MAX_WIDTH
+							node.maxTextWidth = style.maxWidth
+								? node.icon
+									? style.maxWidth - Env.DEFAULT_NODE_ICON_SIZE - Env.ADDITIONAL_TEXT_SPACE / 2 - Env.DEFAULT_NODE_ICON_PADDING
+									: style.maxWidth
+								: Env.DEFAULT_RECTANGLE_MAX_WIDTH
 							node.shape = style.shape
 							break
 
@@ -191,6 +200,54 @@ export default class EntityProcessor {
 				node.maxTextWidth = 2 * node.radius
 				node.shape = "circle"
 			}
+		})
+	}
+
+	/**
+	 * Animates all node positions from source to target
+	 * Nodes without a source/target will be frozen during the animation
+	 * @param {object[]} nodes - All nodes in the data store
+	 */
+	animateNodePositions(nodes) {
+		return new Promise(resolve => {
+			const tween = (startTime, animationTime) => {
+				const deltaTime = Date.now() - startTime
+				if (deltaTime > animationTime) {
+					nodes.forEach(node => {
+						delete node.targetX
+						delete node.targetY
+						delete node.sourceX
+						delete node.sourceY
+						delete node.fx
+						delete node.fy
+						if (node.originalFx) {
+							node.fx = node.originalFx
+							delete node.originalFx
+						}
+						if (node.originalFy) {
+							node.fy = node.originalFy
+							delete node.originalFy
+						}
+					})
+					resolve()
+				} else {
+					const percentOfAnimation = deltaTime / animationTime
+					nodes
+						.filter(node => node.targetX && node.targetY)
+						.forEach(node => {
+							node.fx = node.sourceX + (node.targetX - node.sourceX) * percentOfAnimation
+							node.fy = node.sourceY + (node.targetY - node.sourceY) * percentOfAnimation
+						})
+					setTimeout(() => tween(startTime, animationTime), 1)
+				}
+			}
+			nodes.forEach(node => {
+				node.originalFx = node.fx
+				node.originalFy = node.fy
+				node.fx = node.x
+				node.fy = node.y
+			})
+			tween(Date.now(), Env.IMPLOSION_EXPLOSION_ANIMATION_TIME)
 		})
 	}
 }

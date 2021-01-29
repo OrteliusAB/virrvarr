@@ -34,7 +34,27 @@ export default class Engine {
 		})
 		this.ee.on(EventEnum.ENGINE_LAYOUT_RESET_REQUESTED, (nodes, edges) => {
 			this.resetLayout(nodes, edges)
-			this.alpha(1)
+			this.alpha(2)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, () => {
+			this.alpha(0.5)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, () => {
+			this.alpha(0.5)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_RECURSIVE_REQUESTED, () => {
+			this.alpha(0.5)
+			this.restart()
+		})
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_NON_CIRCULAR_REQUESTED, () => {
+			this.alpha(0.5)
+			this.restart()
+		})
+		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
+			this.alpha(0.01)
 			this.restart()
 		})
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.stop())

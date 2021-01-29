@@ -42,18 +42,26 @@ Attribute | Datatype
 shape   |   String{“circle”, “layeredCircle”, “rectangle”}
 radius   |   String {Measurement} (if circle!)
 borderColor   |   String{CSS compatible color description}
+borderHoverColor   |   String{CSS compatible color description}
 backgroundColor   |   String{CSS compatible color description}
-hoverColor   |   String{CSS compatible color description}
+backgroundHoverColor   |   String{CSS compatible color description}
+backgroundFocusedColor   |   String{CSS compatible color description}
 textColor   |   String{CSS compatible color description}
+textFocusedColor   |   String{CSS compatible color description}
 dotted   |   Boolean
 maxHeight   |   String {Measurement} (if rectangle!)
 maxWidth   |   String {Measurement} (if rectangle!)
 borderRadiusX   |   String {Measurement}
 borderRadiusY   |   String {Measurement}
 textHoverColor   |   String
-focusedColor   |   String
-focusedBorderWidth   |   String {Measurement}
-shadow   |   string {CSS shadow filter}
+borderFocusedColor   |   String
+borderWidth    |    String {Measurement}
+borderHoverWidth    |    String {Measurement}
+borderFocusedWidth   |   String {Measurement}
+filter   |   string {CSS filter}
+hoverFilter   |   string {CSS filter}
+focusedFilter   |   string {CSS filter}
+icon    |    string
 
 ###	Data.style.edges{Array}
 Attribute | Datatype
@@ -70,7 +78,11 @@ borderRadiusX   |   String {Measurement}
 borderRadiusY   |   String {Measurement}
 labelTextHoverColor   |   String
 labelBorderColor   |   String
+labelHoveredBorderColor    |    String
+labelFocusedBorderColor    |    String
 labelBorderWidth   |   String {Measurement}
+labelHoveredBorderWidth    |    String {Measurement}
+labelFocusedBorderWidth    |    String {Measurement}
 focusedColor   |   String
 
 
@@ -92,6 +104,10 @@ enableGrid   |   Boolean
 customContextMenu   |   Object
 enableMultiLineNodeLabels   |   Boolean
 rotateLabels   |   Boolean
+enableOnionOnFocus   |   Boolean
+focusedOnionNumberOfLayers   |   Number
+focusedOnionBaseColor   |   String {Measurement}
+focusedOnionLayerSize   |   Number
 
 ## Graph API
 Function | Function Blueprint | Description
@@ -101,6 +117,8 @@ resetAllFilters   |   Function(<()>)   |   This function clears all filters.
 getFilters   |   Function(<()>)   |   This function returns all current filters
 toggleMultiplicity   |   Function(<()>)   |   Toggles multiplicity on and off
 highlight   |   Function<(attribute, value, filterFunction)>   |   Highlights a selection in the graph based on an attribute and a value, or a custom function.
+disable   |   Function<(attribute, value, filterFunction)>   |   Disables a selection in the graph based on an attribute and a value, or a custom function.
+clearDisable   |   Function<(attribute, value, filterFunction)>   |   Clears all disabling made by the disable function.
 updateDataset   |   Function<(newDataset)>   |   This function updates the dataset in the graph, applies all existing filters, and then updates the selection, DOM, and simulation.
 resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph

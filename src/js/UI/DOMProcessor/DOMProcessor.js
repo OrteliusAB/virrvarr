@@ -24,7 +24,7 @@ export default class DOMProcessor {
 			this.showMultiplicity = !this.showMultiplicity
 			this.updateMultiplicityCounters(this.edges)
 		})
-		this.ee.on(EventEnum.DATA_PROCESSOR_FINISHED, (nodes, edges) => {
+		this.ee.on(EventEnum.DATASTORE_UPDATED, (nodes, edges) => {
 			this.nodes = nodes
 			this.edges = edges
 			//The order of these matters, don't rearrange
@@ -174,7 +174,7 @@ export default class DOMProcessor {
 			})
 		//Draw counter badges for imploded edges
 		nodes.forEach(node => {
-			d3.select("#badge-" + node.id + "-hidden-edge-counter").remove()
+			d3.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
 			if (node.hiddenEdgeCount) {
 				const element = d3.select(`[id='${node.id}']`).select(function () {
 					return this.parentNode
@@ -345,7 +345,7 @@ export default class DOMProcessor {
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 		setTimeout(() => {
 			const marker = d3.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
-			if (marker.classed("hovered")) {
+			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
 				this.handleHoverEvent(edgeData, "enter")
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
@@ -403,34 +403,54 @@ export default class DOMProcessor {
 	 * @param {object} data - Node object
 	 */
 	drawNode(element, data) {
+		const contentGroupElement = element.append("g")
+		let contentGroupOffsetX = 0
+		let textOffsetY = 0
+		let textAnchor = "middle"
 		switch (data.shape) {
 			case "circle":
 				element
-					.append("circle")
+					.insert("circle", "g")
 					.attr("r", d => d.radius)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
 					.attr("id", data.id)
+				if (data.icon) {
+					this.drawIcon(contentGroupElement, data.icon)
+					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
+				}
 				break
 			case "layeredCircle":
 				element
-					.append("circle")
+					.insert("circle", "g")
 					.attr("r", d => d.radius)
 					.attr("style", "stroke-width:2;fill:#fff;stroke:#000;stroke-dasharray:0;pointer-events:none;")
 					.attr("id", data.id)
 				element
-					.append("circle")
+					.insert("circle", "g")
 					.attr("r", d => d.radius - 4)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
+				if (data.icon) {
+					this.drawIcon(contentGroupElement, data.icon)
+					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
+				}
 				break
 			case "rectangle":
 				element
-					.append("rect")
+					.insert("rect", "g")
 					.attr("x", d => -d.width / 2)
 					.attr("y", d => -d.height / 2)
 					.attr("width", d => d.width)
 					.attr("height", d => d.height)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
 					.attr("id", data.id)
+				if (data.icon) {
+					const icon = this.drawIcon(element, data.icon)
+					icon.attr("y", -Env.DEFAULT_NODE_ICON_SIZE / 2)
+					icon.attr("x", -element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE)
+					contentGroupOffsetX +=
+						-element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE + Env.DEFAULT_NODE_ICON_SIZE + Env.DEFAULT_NODE_ICON_PADDING
+					textAnchor = "start"
+				}
 				break
 			default:
 				console.error("NO SHAPE FOUND FOR NODE")
@@ -448,10 +468,15 @@ export default class DOMProcessor {
 			.on("mouseout", d => {
 				this.ee.trigger(EventEnum.MOUSE_LEFT_NODE, d)
 			})
-		this.drawTextBlock(element)
+		this.drawTextBlock(contentGroupElement, textAnchor)
 		//Draw the text inside the block
 		if (!this.enableMultiLineNodeLabels) {
-			this.drawTextline(element.select("text"), data.name.truncate(data.maxTextWidth), data.type ? data.type : "default", 0)
+			this.drawTextline(
+				contentGroupElement.select("text"),
+				data.name.truncate(data.maxTextWidth),
+				data.type ? data.type : "default",
+				contentGroupElement.node().getBBox().height + textOffsetY
+			)
 		} else {
 			const text = data.name
 			let truncatedText = text.truncate(data.maxTextWidth)
@@ -461,23 +486,57 @@ export default class DOMProcessor {
 				if (otherStringTruncated.length + truncatedText.length + 1 < text.length) {
 					otherStringTruncated = otherStringTruncated.substring(0, otherStringTruncated.length - 3) + "..."
 				}
-				this.drawTextline(element.select("text"), truncatedText, data.type ? data.type : "default", -(Env.SPACE_BETWEEN_SPANS / 2))
-				this.drawTextline(element.select("text"), otherStringTruncated, data.type ? data.type : "default", Env.SPACE_BETWEEN_SPANS / 2)
+				this.drawTextline(
+					contentGroupElement.select("text"),
+					truncatedText,
+					data.type ? data.type : "default",
+					contentGroupElement.node().getBBox().height + textOffsetY
+				)
+				this.drawTextline(
+					contentGroupElement.select("text"),
+					otherStringTruncated,
+					data.type ? data.type : "default",
+					contentGroupElement.node().getBBox().height
+				)
 			} else {
 				if (truncatedText.length < text.length) {
 					truncatedText = truncatedText.substring(0, truncatedText.length - 3) + "..."
 				}
-				this.drawTextline(element.select("text"), truncatedText, data.type ? data.type : "default", 0)
+				this.drawTextline(
+					contentGroupElement.select("text"),
+					truncatedText,
+					data.type ? data.type : "default",
+					contentGroupElement.node().getBBox().height + textOffsetY
+				)
 			}
 		}
+		contentGroupElement.attr(
+			"transform",
+			`translate(${contentGroupOffsetX}, ${-contentGroupElement.node().getBBox().height / 2 - contentGroupElement.node().getBBox().y})`
+		)
+	}
+
+	/**
+	 * Draws an <image> block to a given element with an icon in it
+	 * @param {D3Selection} element - The element that the text block should be written to
+	 * @param {string} icon - The source icon
+	 */
+	drawIcon(element, icon) {
+		return element
+			.append("image")
+			.attr("href", icon)
+			.attr("width", Env.DEFAULT_NODE_ICON_SIZE)
+			.attr("height", Env.DEFAULT_NODE_ICON_SIZE)
+			.attr("x", -Env.DEFAULT_NODE_ICON_SIZE / 2)
+			.attr("style", "pointer-events: none;")
 	}
 
 	/**
 	 * Draws a <text> block to a given element
 	 * @param {D3Selection} element - The element that the text block should be written to
 	 */
-	drawTextBlock(element) {
-		element.append("text").attr("text-anchor", "middle")
+	drawTextBlock(element, anchor) {
+		element.append("text").attr("text-anchor", anchor ? anchor : "middle")
 	}
 
 	/**
@@ -502,22 +561,31 @@ export default class DOMProcessor {
 		const fontSize = 14
 		const areaHeight = data.radius ? data.radius * 2 : data.height
 		const areaWidth = data.radius ? data.radius * 2 : data.width
-		const marginX = 12
-		const marginY = 12
-		const translateY = -(areaHeight / 2)
+		const paddingX = 16
+		const paddingY = 16
+		const translateY = areaHeight / 2 //(make this number negative to switch between top and bottom quadrant)
 		const translateX = areaWidth / 2
-		const rectHeight = fontSize + marginY
-		const rectWidth = textWidth + marginX
+		const rectHeight = fontSize + paddingY
+		const rectWidth = textWidth + paddingX
+
+		const rightTopRoundedRect = (x, y, width, height, radius) => {
+			return `M${x},${y}
+				h${width - radius}
+				q${radius},0 ${radius},${radius}
+				v${height - 2 * radius}
+				q0,${radius} ${-radius},${radius}
+				h${radius * 2 - width}
+				q${-radius},0 ${-radius},${-radius}
+				z`
+		}
+
 		element
 			.append("g")
 			.attr("id", "badge-" + data.id + "-hidden-edge-counter")
 			.attr("style", "pointer-events:none;")
 			.attr("transform", `translate(${translateX} ${translateY})`)
-			.append("rect")
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.attr("y", -(rectHeight / 2))
-			.attr("x", -(rectWidth / 2))
+			.append("path")
+			.attr("d", rightTopRoundedRect(-(rectWidth / 2), -(rectHeight / 2), rectWidth, rectHeight, 10))
 			.attr("class", "virrvarr-node-edge-counter-badge")
 			.select(function () {
 				return this.parentNode
@@ -670,8 +738,16 @@ export default class DOMProcessor {
 	 * Animation tick
 	 */
 	tick() {
+		//Nodes
+		this.nodeElements.attr("transform", node => {
+			return "translate(" + node.x + "," + node.y + ")"
+		})
 		//Edges
 		this.edgePath.attr("d", l => {
+			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
+				//The two nodes are at the exact same position
+				return ""
+			}
 			if (l.source === l.target) {
 				return MathUtil.calculateSelfEdgePath(l)
 			}
@@ -687,10 +763,6 @@ export default class DOMProcessor {
 				curvePoint,
 				MathUtil.calculateIntersection(l.curvePoint, l.target, 1)
 			])
-		})
-		//Nodes
-		this.nodeElements.attr("transform", node => {
-			return "translate(" + node.x + "," + node.y + ")"
 		})
 		//Multiplicities
 		this.activeMultiplicities.attr("transform", function (l) {
@@ -710,6 +782,9 @@ export default class DOMProcessor {
 		})
 		//Labels
 		this.labels.attr("transform", function (l) {
+			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
+				return ""
+			}
 			const group = d3.select(this)
 			const midX = l.curvePoint.x
 			let midY = l.curvePoint.y
