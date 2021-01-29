@@ -118,21 +118,21 @@ export class Virrvarr {
 	}
 
 	/**
-	 * Fades (dims) nodes in the graph based on input criteria.
+	 * Disables (dims) nodes in the graph based on input criteria.
 	 * @param {string} attribute - Attribute name to look for
 	 * @param {string} value - Value that the attribute should start with
-	 * @param {Function} filterFunction  - Optional filter function that can be used instead of an attribute. Should return true if the node is to be highlighted
+	 * @param {Function} filterFunction  - Optional filter function that can be used instead of an attribute. Should return true if the node is to be disabled
 	 * @return {void}
 	 */
-	fade(attribute, value, filterFunction) {
+	disable(attribute, value, filterFunction) {
 		if ((attribute && value) || filterFunction) {
-			const nodesToFade = this._datastore.nodes.filter(node => {
+			const nodesToDisable = this._datastore.nodes.filter(node => {
 				if (filterFunction) {
 					return filterFunction(node.data)
 				}
 				return node[attribute].toUpperCase().includes(value.toUpperCase())
 			}).map(node => node.id)
-			this._ee.trigger(EventEnum.FADE_NODE_REQUESTED, nodesToFade)
+			this._ee.trigger(EventEnum.DISABLE_NODES_REQUESTED, nodesToDisable)
 		}
 		else {
 			throw new Error("No attribute, value or filterfunction provided")
@@ -140,11 +140,11 @@ export class Virrvarr {
 	}
 
 	/**
-	 * Resets the fading of nodes set by the "fade()" function.
+	 * Resets the disabling of nodes set by the "disable" function.
 	 * @return {void}
 	 */
-	clearFade() {
-		this._ee.trigger(EventEnum.CLEAR_FADE_NODE_REQUESTED)
+	clearDisable() {
+		this._ee.trigger(EventEnum.CLEAR_DISABLE_NODES_REQUESTED)
 	}
 
 	/**

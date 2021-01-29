@@ -20,11 +20,11 @@ export default class Highlighter {
 		this.ee.on(EventEnum.HIGHLIGHT_NODE_REQUESTED, nodes => {
 			this.highlightNode(nodes.map(node => node.id))
 		})
-		this.ee.on(EventEnum.FADE_NODE_REQUESTED, nodeIDs => {
-			this.fadeNodes(nodeIDs)
+		this.ee.on(EventEnum.DISABLE_NODES_REQUESTED, nodeIDs => {
+			this.disableNodes(nodeIDs)
 		})
-		this.ee.on(EventEnum.CLEAR_FADE_NODE_REQUESTED, () => {
-			this.clearFade()
+		this.ee.on(EventEnum.CLEAR_DISABLE_NODES_REQUESTED, () => {
+			this.clearDisabled()
 		})
 		this.enableOnionOnFocus = typeof userDefinedOptions.enableOnionOnFocus === "boolean" ? userDefinedOptions.enableOnionOnFocus : Env.ENABLE_ONION_ON_FOCUS
 		this.focusedOnionNumberOfLayers = userDefinedOptions.focusedOnionNumberOfLayers
@@ -231,33 +231,33 @@ export default class Highlighter {
 	}
 
 	/**
-	 * Fades (dims) nodes and their connected edges.
+	 * Disables (dims) nodes and their connected edges.
 	 * @param {string[]} nodes - Array of node IDs to fade
 	 */
-	fadeNodes(nodeIDsToFade) {
+	disableNodes(nodeIDsToDisable) {
 		d3.selectAll(".node")
 			.filter(d => {
-				return nodeIDsToFade.includes(d.id)
+				return nodeIDsToDisable.includes(d.id)
 			})
-			.classed("faded", true)
+			.classed("disabled", true)
 		d3.selectAll(".edge")
 			.filter(d => {
-				return nodeIDsToFade.includes(d.sourceNode) || nodeIDsToFade.includes(d.targetNode)
+				return nodeIDsToDisable.includes(d.sourceNode) || nodeIDsToDisable.includes(d.targetNode)
 			})
-			.classed("faded", true)
+			.classed("disabled", true)
 		d3.selectAll(".label")
 			.filter(d => {
-				return nodeIDsToFade.includes(d.sourceNode) || nodeIDsToFade.includes(d.targetNode)
+				return nodeIDsToDisable.includes(d.sourceNode) || nodeIDsToDisable.includes(d.targetNode)
 			})
-			.classed("faded", true)
+			.classed("disabled", true)
 	}
 
 	/**
-	 * Clears all fading for nodes and connected edges set by "fadeNodes".
+	 * Clears all disabling for nodes and connected edges set by "disableNodes".
 	 * @param {string[]} nodes - Array of node IDs to fade
 	 */
-	clearFade() {
-		d3.selectAll(".faded")
-			.classed("faded", false)
+	clearDisabled() {
+		d3.selectAll(".disabled")
+			.classed("disabled", false)
 	}
 }

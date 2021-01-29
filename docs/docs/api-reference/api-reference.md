@@ -117,8 +117,8 @@ resetAllFilters   |   Function(<()>)   |   This function clears all filters.
 getFilters   |   Function(<()>)   |   This function returns all current filters
 toggleMultiplicity   |   Function(<()>)   |   Toggles multiplicity on and off
 highlight   |   Function<(attribute, value, filterFunction)>   |   Highlights a selection in the graph based on an attribute and a value, or a custom function.
-fade   |   Function<(attribute, value, filterFunction)>   |   Fades a selection in the graph based on an attribute and a value, or a custom function.
-clearFade   |   Function<(attribute, value, filterFunction)>   |   Clears all fading made by the fade function.
+disable   |   Function<(attribute, value, filterFunction)>   |   Disables a selection in the graph based on an attribute and a value, or a custom function.
+clearDisable   |   Function<(attribute, value, filterFunction)>   |   Clears all disabling made by the disable function.
 updateDataset   |   Function<(newDataset)>   |   This function updates the dataset in the graph, applies all existing filters, and then updates the selection, DOM, and simulation.
 resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph

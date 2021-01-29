@@ -96,7 +96,7 @@ const initializeGraphStyles = (style, id) => {
                   pointer-events: none;
                 }
 
-                .virrvarr .faded {
+                .virrvarr .disabled {
                     opacity: ${Env.DEFAULT_FADE_OPACITY};
                     pointer-events: none;
                 }
