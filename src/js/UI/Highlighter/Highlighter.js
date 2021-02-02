@@ -76,9 +76,12 @@ export default class Highlighter {
 	 * Removes focus from all nodes and edges
 	 */
 	removeAllEntityFocus() {
-		d3.selectAll(".focused").classed("focused", false)
+		d3.select(this.graphContainerElement)
+			.selectAll(".focused")
+			.classed("focused", false)
 		if (this.enableOnionOnFocus) {
-			d3.selectAll(".onion-clone")
+			d3.select(this.graphContainerElement)
+				.selectAll(".onion-clone")
 				.attr("class", "removing")
 				.transition()
 				.duration(Env.DEFAULT_ONION_ANIMATION_TIME)
@@ -101,7 +104,7 @@ export default class Highlighter {
 	 * @param {string} entityID - ID of the node to toggle focus for
 	 */
 	toggleNodeEntityFocus(entityID) {
-		const nodeElement = d3.select(`[id='${entityID}']`) //html4 support
+		const nodeElement = d3.select(this.graphContainerElement).select(`[id='${entityID}']`) //html4 support
 		if (nodeElement.node()) {
 			const DOMElement = nodeElement.node()
 			const DOMNeighborhood = DOMElement.parentElement.children
@@ -184,7 +187,7 @@ export default class Highlighter {
 	 * @param {boolean} isFrom - Is the edge in the from direction?
 	 */
 	toggleEdgeEntityFocus(entityID, isFrom) {
-		const labelGroup = d3.select(`#label${entityID}${isFrom ? "from" : "to"}`)
+		const labelGroup = d3.select(this.graphContainerElement).select(`#label${entityID}${isFrom ? "from" : "to"}`)
 		if (labelGroup) {
 			const label = labelGroup.select("rect:not(.removing)")
 			const focusedState = label.classed("focused")
@@ -192,11 +195,13 @@ export default class Highlighter {
 			if (this.enableOnionOnFocus) {
 				this.toggleOnionBorder(label.node(), this.focusedOnionLayerSize, this.focusedOnionBaseColor, this.focusedOnionNumberOfLayers)
 			}
-			d3.selectAll(`marker[id$="${entityID}${isFrom ? "inverse" : ""}"]`)
+			d3.select(this.graphContainerElement)
+				.selectAll(`marker[id$="${entityID}${isFrom ? "inverse" : ""}"]`)
 				.select("path")
 				.classed("focused", !focusedState)
 
-			d3.selectAll(`[class*="${entityID}${isFrom ? "inverse " : " "}"]`)
+			d3.select(this.graphContainerElement)
+				.selectAll(`[class*="${entityID}${isFrom ? "inverse " : " "}"]`)
 				.selectAll("path, text")
 				.classed("focused", !focusedState)
 			return true
@@ -209,7 +214,8 @@ export default class Highlighter {
 	 * @param {string[]} nodes - Array of node IDs to highlight
 	 */
 	highlightNode(nodes) {
-		d3.selectAll(".node")
+		d3.select(this.graphContainerElement)
+			.selectAll(".node")
 			.filter(d => {
 				return nodes.includes(d.id)
 			})
@@ -230,17 +236,20 @@ export default class Highlighter {
 	 * @param {string[]} nodes - Array of node IDs to fade
 	 */
 	disableNodes(nodeIDsToDisable) {
-		d3.selectAll(".node")
+		d3.select(this.graphContainerElement)
+			.selectAll(".node")
 			.filter(d => {
 				return nodeIDsToDisable.includes(d.id)
 			})
 			.classed("disabled", true)
-		d3.selectAll(".edge")
+		d3.select(this.graphContainerElement)
+			.selectAll(".edge")
 			.filter(d => {
 				return nodeIDsToDisable.includes(d.sourceNode) || nodeIDsToDisable.includes(d.targetNode)
 			})
 			.classed("disabled", true)
-		d3.selectAll(".label")
+		d3.select(this.graphContainerElement)
+			.selectAll(".label")
 			.filter(d => {
 				return nodeIDsToDisable.includes(d.sourceNode) || nodeIDsToDisable.includes(d.targetNode)
 			})
@@ -252,6 +261,8 @@ export default class Highlighter {
 	 * @param {string[]} nodes - Array of node IDs to fade
 	 */
 	clearDisabled() {
-		d3.selectAll(".disabled").classed("disabled", false)
+		d3.select(this.graphContainerElement)
+			.selectAll(".disabled")
+			.classed("disabled", false)
 	}
 }
