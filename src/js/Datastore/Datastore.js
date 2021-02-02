@@ -1,8 +1,8 @@
 import EventEnum from "../Events/EventEnum"
 import EntityProcessor from "./EntityProcessor"
 import VVNode from "../Model/Node"
+import VVEdge from "../Model/Edge"
 
-/* TODO:: Implement deep clone utility instead of JSON.stringify/parse */
 /**
  * The data store class is responsible to storing and managing all edges and nodes.
  * The data store decides what nodes and edges are live, as well as makes sure they have the correct data set on them.
@@ -10,7 +10,17 @@ import VVNode from "../Model/Node"
 export default class Datastore {
 	constructor(nodes, edges, eventEmitter, styles, userDefinedOptions) {
 		this.allNodes = nodes.map(node => new VVNode(node.id, node.type, node.name, node.icon, node.data))
-		this.allEdges = JSON.parse(JSON.stringify(edges))
+		this.allEdges = edges.map(edge => new VVEdge(
+			edge.id,
+			edge.type,
+			edge.sourceNode,
+			edge.targetNode,
+			edge.nameFrom,
+			edge.nameTo,
+			edge.multiplicityFrom,
+			edge.multiplicityTo,
+			edge.data
+		))
 		this.liveNodes = this.allNodes
 		this.liveEdges = this.allEdges
 		this.filters = {
