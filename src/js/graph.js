@@ -302,7 +302,7 @@ export class Virrvarr {
 		if (!this._datastore.allNodes && !this._datastore.allEdges) {
 			return
 		}
-		const filename = "nyang.json"
+		const filename = "virrvarr.json"
 		const data = {
 			style: this._style,
 			nodes: includeOnlyLiveData ? this._datastore.liveNodes : this._datastore.allNodes,

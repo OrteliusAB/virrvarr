@@ -1,5 +1,5 @@
 /**
- * All events in NYANG are stored here.
+ * All events in Virrvarr are stored here.
  */
 const EVENTS = Object.freeze({
 	/* PUBLIC EVENTS */
