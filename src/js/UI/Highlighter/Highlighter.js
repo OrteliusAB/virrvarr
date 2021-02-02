@@ -76,9 +76,7 @@ export default class Highlighter {
 	 * Removes focus from all nodes and edges
 	 */
 	removeAllEntityFocus() {
-		d3.select(this.graphContainerElement)
-			.selectAll(".focused")
-			.classed("focused", false)
+		d3.select(this.graphContainerElement).selectAll(".focused").classed("focused", false)
 		if (this.enableOnionOnFocus) {
 			d3.select(this.graphContainerElement)
 				.selectAll(".onion-clone")
@@ -261,8 +259,6 @@ export default class Highlighter {
 	 * @param {string[]} nodes - Array of node IDs to fade
 	 */
 	clearDisabled() {
-		d3.select(this.graphContainerElement)
-			.selectAll(".disabled")
-			.classed("disabled", false)
+		d3.select(this.graphContainerElement).selectAll(".disabled").classed("disabled", false)
 	}
 }

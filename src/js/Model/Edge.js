@@ -11,21 +11,20 @@ export default class VVEdge {
 		this.multiplicityTo = multiplicityTo
 		this.data = data
 
-        //Visual information
-        this.isFiltered = false
-        this.isHidden = false
-        
-        //Meta Data calculated at runtime
-        this.edgeDistance = undefined
-        this.nameToWidth = undefined
-        this.nameFromWidth = undefined
-        this.multiEdgeCount = undefined
-        this.multiEdgeIndex = undefined
-        this.curvePoint = undefined
+		//Visual information
+		this.isFiltered = false
+		this.isHidden = false
 
-        //D3 relevant attributes
-        this.index = 
-        this.source = undefined //index reference
-        this.target = undefined //index reference
+		//Meta Data calculated at runtime
+		this.edgeDistance = undefined
+		this.nameToWidth = undefined
+		this.nameFromWidth = undefined
+		this.multiEdgeCount = undefined
+		this.multiEdgeIndex = undefined
+		this.curvePoint = undefined
+
+		//D3 relevant attributes
+		this.index = this.source = undefined //index reference
+		this.target = undefined //index reference
 	}
 }

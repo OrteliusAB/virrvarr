@@ -266,6 +266,9 @@
                     <hr />
                     <input type="text" id="center-nodeid" placeholder="Center node... (try 'n35')" />
                     <button class="menu-button menu-button-confirm" onclick="centerNode()">Center Node</button>
+                    <button class="menu-button menu-button-confirm" onclick="pinGraph()">Pin Graph</button>
+                    <button class="menu-button menu-button-confirm" onclick="resetPins()">Reset Pins</button>
+                    <button class="menu-button menu-button-confirm" onclick="togglePinMode()">Toggle Pin Mode</button>
                 </details>
 
                 <details>
@@ -395,6 +398,19 @@
             }
         }
 
+        function togglePinMode() {
+            window.pinMode = !!!window.pinMode
+            window.graph.setPinMode(window.pinMode)
+        }
+
+        function pinGraph() {
+            window.graph.pinGraph()
+        }
+
+        function resetPins() {
+            window.graph.resetAllPins()
+        }
+
         function resetZoom() {
             window.graph.resetZoom()
         }
@@ -424,6 +440,17 @@
                 panel.style.transform = "translateX(-100%)"
             }
         }
+
+        window.addEventListener("keydown", e => {
+            if(e.shiftKey) {
+                window.graph.setPinMode(true)
+            }
+        })
+        window.addEventListener("keyup", e => {
+            if(!e.shiftKey) {
+                window.graph.setPinMode(false)
+            }
+        })
     </script>
     <script src="./virrvarr.js"></script>
 </body>

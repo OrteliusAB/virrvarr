@@ -10,17 +10,20 @@ import VVEdge from "../Model/Edge"
 export default class Datastore {
 	constructor(nodes, edges, eventEmitter, styles, userDefinedOptions) {
 		this.allNodes = nodes.map(node => new VVNode(node.id, node.type, node.name, node.icon, node.data))
-		this.allEdges = edges.map(edge => new VVEdge(
-			edge.id,
-			edge.type,
-			edge.sourceNode,
-			edge.targetNode,
-			edge.nameFrom,
-			edge.nameTo,
-			edge.multiplicityFrom,
-			edge.multiplicityTo,
-			edge.data
-		))
+		this.allEdges = edges.map(
+			edge =>
+				new VVEdge(
+					edge.id,
+					edge.type,
+					edge.sourceNode,
+					edge.targetNode,
+					edge.nameFrom,
+					edge.nameTo,
+					edge.multiplicityFrom,
+					edge.multiplicityTo,
+					edge.data
+				)
+		)
 		this.liveNodes = this.allNodes
 		this.liveEdges = this.allEdges
 		this.filters = {
