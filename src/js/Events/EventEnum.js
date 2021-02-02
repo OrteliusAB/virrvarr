@@ -1,5 +1,5 @@
 /**
- * All events in Virrvarr are stored here.
+ * All events in NYANG are stored here.
  */
 const EVENTS = Object.freeze({
 	/* PUBLIC EVENTS */
@@ -24,8 +24,8 @@ const EVENTS = Object.freeze({
 	// Params: N/A
 	MOUSE_LEFT_NODE: "MOUSE_MOVED_OUTSIDE_NODE_EVENT",
 
-	// Params: node
-	NODE_FIXATION_REQUESTED: "NODE_FIXATION_REQUESTED",
+	// Params: isEnabled
+	NODE_PIN_MODE_TOGGLED: "NODE_PIN_MODE_TOGGLED",
 
 	// Params: [...nodes], [...edges]
 	DATA_UPDATE_REQUESTED: "DATA_UPDATE_REQUESTED",

@@ -1,5 +1,6 @@
 import EventEnum from "../Events/EventEnum"
 import EntityProcessor from "./EntityProcessor"
+import VVNode from "../Model/Node"
 
 /* TODO:: Implement deep clone utility instead of JSON.stringify/parse */
 /**
@@ -8,7 +9,7 @@ import EntityProcessor from "./EntityProcessor"
  */
 export default class Datastore {
 	constructor(nodes, edges, eventEmitter, styles, userDefinedOptions) {
-		this.allNodes = JSON.parse(JSON.stringify(nodes))
+		this.allNodes = nodes.map(node => new VVNode(node.id, node.type, node.name, node.icon, node.data))
 		this.allEdges = JSON.parse(JSON.stringify(edges))
 		this.liveNodes = this.allNodes
 		this.liveEdges = this.allEdges

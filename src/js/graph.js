@@ -194,17 +194,55 @@ export class Virrvarr {
 	}
 
 	/**
-	 * Fixates a node to the center of the graph.
+	 * Pins a node to the center of the graph.
 	 * @param {string} nodeID - ID of the node to center
 	 * @return {void}
 	 */
 	centerNode(nodeID) {
 		const node = this._datastore.nodes.find(potentialNode => potentialNode.id === nodeID)
 		if (node) {
-			const width = this._UI.rootG.node().getBBox().width / 4
-			const height = this._UI.rootG.node().getBBox().height / 4
-			this._ee.trigger(EventEnum.NODE_FIXATION_REQUESTED, node, width, height)
+			const rootG = this._UI.rootG
+			const midX = rootG.node().getBBox().x + rootG.node().getBBox().width / 2
+			const midY = rootG.node().getBBox().y + rootG.node().getBBox().height / 2
+			node.reposition(midX, midY).then(() => {
+				node.pin(midX, midY)
+				this._UI.DOMProcessor.updateNodes(this._UI.DOMProcessor.nodes)
+				this._engine.alpha(1)
+				this._engine.restart()
+			})
 		}
+	}
+
+	/**
+	 * Sets the pin mode for nodes on and off
+	 * Pin mode is when nodes are fixated upon drag
+	 * @param {boolean} isEnabled
+	 * @return {void}
+	 */
+	setPinMode(isEnabled) {
+		this._ee.trigger(EventEnum.NODE_PIN_MODE_TOGGLED, isEnabled)
+	}
+
+	/**
+	 * Pins the entire graph
+	 * @return {void}
+	 */
+	pinGraph() {
+		const pins = this._datastore.nodes.map(node => node.pin(node.x, node.y))
+		Promise.all(pins).then(() => {
+			this._UI.DOMProcessor.updateNodes(this._UI.DOMProcessor.nodes)
+		})
+	}
+
+	/**
+	 * Resets all pins in the graph
+	 * @return {void}
+	 */
+	resetAllPins() {
+		this._datastore.allNodes.forEach(node => node.unPin())
+		this._UI.DOMProcessor.updateNodes(this._UI.DOMProcessor.nodes)
+		this._engine.alpha(1)
+		this._engine.restart(1)
 	}
 
 	/**
@@ -264,7 +302,7 @@ export class Virrvarr {
 		if (!this._datastore.allNodes && !this._datastore.allEdges) {
 			return
 		}
-		const filename = "virrvarr.json"
+		const filename = "nyang.json"
 		const data = {
 			style: this._style,
 			nodes: includeOnlyLiveData ? this._datastore.liveNodes : this._datastore.allNodes,
