@@ -5,6 +5,7 @@
   <img src="https://img.shields.io/npm/v/jhaystack?color=1" style="display:inline-block;">
   <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" style="display:inline-block;">
   <br>
+  <br>
   <img src="https://www.ortelius.com/wp-content/uploads/2020/05/Ortelius-logo-black.png"/>
   <br>
   Virrvarr is an awesome network graph built and supported by Ortelius.
