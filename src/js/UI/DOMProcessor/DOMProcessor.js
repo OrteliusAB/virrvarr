@@ -176,9 +176,9 @@ export default class DOMProcessor {
 			})
 		//Draw counter badges for imploded edges
 		nodes.forEach(node => {
-			d3.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
+			this.rootG.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
 			if (node.hiddenEdgeCount) {
-				const element = d3.select(`[id='${node.id}']`).select(function () {
+				const element = this.rootG.select(`[id='${node.id}']`).select(function () {
 					return this.parentNode
 				})
 				this.drawNodeCollapsedEdgeCounter(element, node)
@@ -186,9 +186,9 @@ export default class DOMProcessor {
 		})
 		//Draw pin badge for fixated nodes
 		nodes.forEach(node => {
-			d3.select(`[id='pin-${node.id}']`).remove()
+			this.rootG.select(`[id='pin-${node.id}']`).remove()
 			if (node.fx && node.fy && !node.animating) {
-				const element = d3.select(`[id='${node.id}']`).select(function () {
+				const element = this.rootG.select(`[id='${node.id}']`).select(function () {
 					return this.parentNode
 				})
 				this.drawPin(element, node)
@@ -348,15 +348,17 @@ export default class DOMProcessor {
 	 */
 	labelMouseEnter(edgeData, direction) {
 		const inverse = direction === "from"
-		d3.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
+		this.rootG
+			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
 			.select("path")
 			.classed("hovered", true)
-		d3.selectAll("." + this.getMarkerId(edgeData, inverse))
+		this.rootG
+			.selectAll("." + this.getMarkerId(edgeData, inverse))
 			.selectAll("path, text")
 			.classed("hovered", true)
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 		setTimeout(() => {
-			const marker = d3.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
+			const marker = this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
 			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
 				this.handleHoverEvent(edgeData, "enter")
 				//Sort the labels which brings the hovered one to the foreground
@@ -382,10 +384,12 @@ export default class DOMProcessor {
 	labelMouseLeave(edgeData, direction) {
 		this.handleHoverEvent(edgeData, "leave")
 		const inverse = direction === "from"
-		d3.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
+		this.rootG
+			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
 			.select("path")
 			.classed("hovered", false)
-		d3.selectAll("." + this.getMarkerId(edgeData, inverse))
+		this.rootG
+			.selectAll("." + this.getMarkerId(edgeData, inverse))
 			.selectAll("path, text")
 			.classed("hovered", false)
 	}
@@ -758,7 +762,8 @@ export default class DOMProcessor {
 				}, [])
 				validNodes.push(hoveredData.id)
 				const opacity = eventType === "enter" ? "" + Env.DEFAULT_FADE_OPACITY : "" + 1
-				d3.selectAll(".node")
+				this.rootG
+					.selectAll(".node")
 					.filter(d => {
 						return validNodes.find(node => node === d.id) === undefined
 					})
@@ -766,7 +771,8 @@ export default class DOMProcessor {
 					.duration(Env.FADE_TIME)
 					.ease(d3.easeLinear)
 					.style("opacity", opacity)
-				d3.selectAll(".edge")
+				this.rootG
+					.selectAll(".edge")
 					.filter(d => {
 						return filteredEdges.find(edge => edge.id === d.id) === undefined
 					})
@@ -774,7 +780,8 @@ export default class DOMProcessor {
 					.duration(Env.FADE_TIME)
 					.ease(d3.easeLinear)
 					.style("opacity", opacity)
-				d3.selectAll(".label")
+				this.rootG
+					.selectAll(".label")
 					.filter(d => {
 						return filteredEdges.find(edge => edge.id === d.id) === undefined
 					})
