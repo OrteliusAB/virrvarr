@@ -18,12 +18,14 @@ export default class DOMProcessor {
 		this.nodes = []
 		this.edges = []
 		this.listeningForTick = false
+		this.pinMode = false
 
 		this.ee = eventEmitter
 		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
 			this.showMultiplicity = !this.showMultiplicity
 			this.updateMultiplicityCounters(this.edges)
 		})
+		this.ee.on(EventEnum.NODE_PIN_MODE_TOGGLED, isEnabled => (this.pinMode = isEnabled))
 		this.ee.on(EventEnum.DATASTORE_UPDATED, (nodes, edges) => {
 			this.nodes = nodes
 			this.edges = edges
@@ -153,18 +155,18 @@ export default class DOMProcessor {
 					.on("start", d => {
 						//Stop force on start in case it was just a simple click
 						this.ee.trigger(EventEnum.NODE_DRAG_START, d)
-						d.fx = d.x
-						d.fy = d.y
+						d.pin(d.x, d.y)
 					})
 					.on("drag", d => {
 						//Restart force on drag
 						this.ee.trigger(EventEnum.NODE_DRAG_DRAGGED, d)
-						d.fx = d3.event.x
-						d.fy = d3.event.y
+						d.pin(d3.event.x, d3.event.y)
 					})
 					.on("end", d => {
-						d.fx = null
-						d.fy = null
+						if (!this.pinMode) {
+							d.unPin()
+						}
+						this.updateNodes(this.nodes)
 						this.ee.trigger(EventEnum.NODE_DRAG_ENDED, d)
 					})
 			)
@@ -180,6 +182,16 @@ export default class DOMProcessor {
 					return this.parentNode
 				})
 				this.drawNodeCollapsedEdgeCounter(element, node)
+			}
+		})
+		//Draw pin badge for fixated nodes
+		nodes.forEach(node => {
+			d3.select(`[id='pin-${node.id}']`).remove()
+			if (node.fx && node.fy && !node.animating) {
+				const element = d3.select(`[id='${node.id}']`).select(function () {
+					return this.parentNode
+				})
+				this.drawPin(element, node)
 			}
 		})
 		this.nodeElements = this.rootG.select("#node-container").selectAll(".node")
@@ -551,7 +563,7 @@ export default class DOMProcessor {
 	}
 
 	/**
-	 * Draws a badge in the top right corner of nodes with a number of a hidden edge count in it.
+	 * Draws a badge in the bottom right corner of nodes with a number of a hidden edge count in it.
 	 * @param {D3Selecton} element - Node element selection by D3
 	 * @param {Object} data - Node data
 	 */
@@ -567,7 +579,6 @@ export default class DOMProcessor {
 		const translateX = areaWidth / 2
 		const rectHeight = fontSize + paddingY
 		const rectWidth = textWidth + paddingX
-
 		const rightTopRoundedRect = (x, y, width, height, radius) => {
 			return `M${x},${y}
 				h${width - radius}
@@ -578,7 +589,6 @@ export default class DOMProcessor {
 				q${-radius},0 ${-radius},${-radius}
 				z`
 		}
-
 		element
 			.append("g")
 			.attr("id", "badge-" + data.id + "-hidden-edge-counter")
@@ -586,7 +596,7 @@ export default class DOMProcessor {
 			.attr("transform", `translate(${translateX} ${translateY})`)
 			.append("path")
 			.attr("d", rightTopRoundedRect(-(rectWidth / 2), -(rectHeight / 2), rectWidth, rectHeight, 10))
-			.attr("class", "virrvarr-node-edge-counter-badge")
+			.attr("class", "virrvarr-node-badge")
 			.select(function () {
 				return this.parentNode
 			})
@@ -595,6 +605,48 @@ export default class DOMProcessor {
 			.append("tspan")
 			.attr("style", `font-size:${fontSize};`)
 			.text(`${count}`)
+	}
+
+	/**
+	 * Draws a pin in the top right corner of a node.
+	 * @param {D3Selecton} element - Node element selection by D3
+	 * @param {Object} data - Node data
+	 */
+	drawPin(element, data) {
+		const areaHeight = data.radius ? data.radius * 2 : data.height
+		const areaWidth = data.radius ? data.radius * 2 : data.width
+		const translateY = -(areaHeight / 2)
+		const translateX = areaWidth / 2
+		const rectHeight = 25
+		const rectWidth = 25
+		const rightBottomRoundedRect = (x, y, width, height, radius) => {
+			return `M${radius},${y}
+				h${width - radius * 2}
+				q${radius},0 ${radius},${radius}
+				v${height - 2 * radius}
+				q0,${radius} ${-radius},${radius}
+				h${-width + radius}
+				v${-height + radius}
+				q0,${-radius} ${radius},${-radius}
+				z`
+		}
+		element
+			.append("g")
+			.attr("id", "pin-" + data.id)
+			.attr("style", "pointer-events:none;")
+			.attr("transform", `translate(${translateX - rectWidth / 2} ${translateY})`)
+			.append("path")
+			.attr("d", rightBottomRoundedRect(-(rectWidth / 2), -(rectHeight / 2), rectWidth, rectHeight, 10))
+			.attr("class", "virrvarr-node-badge")
+			.select(function () {
+				return this.parentNode
+			})
+			.append("path")
+			.attr(
+				"d",
+				"M24.715,261.811c-5.492,0-10.645-2.133-14.521-6.01c-8.011-8.017-8.011-21.054-0.006-29.064    l70.375-70.372L38.51,113.785c-7.073-7.179-7.928-18.303-2.039-26.466c0.855-1.184,21.314-28.839,58.964-28.839    c2.224,0,4.492,0.101,6.756,0.295L180.62,3.597c8.103-5.729,20.081-4.48,26.863,2.796l44.675,48.037    c6.919,7.436,7.319,19.006,0.926,26.906l-55.882,69.151c1.979,23.759,1.052,63.069-23.901,77.725    c-7.959,4.666-18.578,3.26-25.021-3.282l-38.837-39.316l-70.206,70.183C35.365,259.678,30.208,261.811,24.715,261.811z"
+			)
+			.attr("style", "fill:#ffffff;transform: scale(0.05) translate(120px, -130px);stroke:#ffffff;")
 	}
 
 	/**

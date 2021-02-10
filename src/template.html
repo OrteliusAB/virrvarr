@@ -21,16 +21,6 @@
             font-family: -apple-system, BedgeMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         }
 
-        #arch-layout {
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            margin-right: 32px;
-            margin-left: 32px;
-            overflow: hidden;
-            display: flex;
-            flex: auto;
-        }
-
         #main-title {
             text-align: center;
             color: #7c7c7c;
@@ -54,14 +44,14 @@
 
         #graph-area {
             flex: 1;
-            background-color: #f8f8f8
+            background-color: #e6e7e8;
         }
 
         #sidebar-area {
             background: #1e1f1f;
             color: #ffffff;
             box-shadow: 3px 0px 7px 2px rgba(0, 0, 0, 0.5);
-            min-width: 300px;
+            width: 360px;
             position: fixed;
             left: 0;
             top: 0;
@@ -173,10 +163,12 @@
 
         .menu-button-confirm:hover {
             background-color: #77afbd;
+            color: #ffffff;
         }
 
         .menu-button-warning:hover {
             background-color: #c27070;
+            color: #ffffff;
         }
     </style>
 </head>
@@ -191,10 +183,8 @@
                     <div class="burger-bar"></div>
                 </div>
                 <div id="main-title">Virrvarr</div>
-                <div id="arch-layout">
-                    <div id="graph-area">
-                        <div id="my-virrvarr-graph"></div>
-                    </div>
+                <div id="graph-area">
+                    <div id="my-virrvarr-graph"></div>
                 </div>
             </div>
         </div>
@@ -266,6 +256,9 @@
                     <hr />
                     <input type="text" id="center-nodeid" placeholder="Center node... (try 'n35')" />
                     <button class="menu-button menu-button-confirm" onclick="centerNode()">Center Node</button>
+                    <button class="menu-button menu-button-confirm" onclick="pinGraph()">Pin Graph</button>
+                    <button class="menu-button menu-button-confirm" onclick="resetPins()">Reset Pins</button>
+                    <button class="menu-button menu-button-confirm" onclick="togglePinMode()">Toggle Pin Mode</button>
                 </details>
 
                 <details>
@@ -342,7 +335,7 @@
                         maxEdgeLabelWidth: 130,
                         edgeLabelWidth: 80,
                         enableZoomButtons: true,
-                        enableGrid: true
+                        enableSecondaryGrid: true
                     }
                     window.graph = new Virrvarr(graphContainer, data, options)
                 }
@@ -395,6 +388,19 @@
             }
         }
 
+        function togglePinMode() {
+            window.pinMode = !!!window.pinMode
+            window.graph.setPinMode(window.pinMode)
+        }
+
+        function pinGraph() {
+            window.graph.pinGraph()
+        }
+
+        function resetPins() {
+            window.graph.resetAllPins()
+        }
+
         function resetZoom() {
             window.graph.resetZoom()
         }
@@ -424,6 +430,17 @@
                 panel.style.transform = "translateX(-100%)"
             }
         }
+
+        window.addEventListener("keydown", e => {
+            if (e.shiftKey) {
+                window.graph.setPinMode(true)
+            }
+        })
+        window.addEventListener("keyup", e => {
+            if (!e.shiftKey) {
+                window.graph.setPinMode(false)
+            }
+        })
     </script>
     <script src="./virrvarr.js"></script>
 </body>

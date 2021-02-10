@@ -6,79 +6,62 @@
                 "shape": "circle",
                 "borderColor": "transparent",
                 "borderHoverColor": "transparent",
-                "backgroundColor": "#96cc7b",
-                "backgroundHoverColor": "#ff6363",
-                "textColor": "#ffffff"
+                "backgroundColor": "#00594E",
+                "backgroundHoverColor": "#2A6D91",
+                "textColor": "#ffffff",
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "thing",
                 "shape": "circle",
                 "radius": 30,
                 "borderColor": "transparent",
-                "backgroundColor": "#7096cc",
-                "backgroundHoverColor": "#ff6363",
-                "textColor": "#fff",
-                "dotted": true
+                "backgroundColor": "#00AE8D",
+                "backgroundHoverColor": "#2A6D91",
+                "textColor": "#ffffff",
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "class",
                 "shape": "circle",
                 "borderColor": "transparent",
                 "backgroundColor": "#ffffff",
-                "backgroundHoverColor": "#ff6363",
+                "backgroundHoverColor": "#2A6D91",
                 "textColor": "#000000",
-                "filter": "drop-shadow(0px 0px 10px rgba(0, 0, 0, .2))",
-                "hoverFilter": "drop-shadow(0px 0px 15px rgba(0, 0, 0, .3))",
-                "focusedFilter": "drop-shadow(0px 0px 15px rgba(0, 0, 0, .3))"
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "literal",
                 "shape": "rectangle",
                 "borderColor": "transparent",
-                "backgroundColor": "#77c0d9",
-                "backgroundHoverColor": "lightgray",
+                "backgroundColor": "#9DD4CA",
+                "backgroundHoverColor": "#2A6D91",
                 "maxHeight": "20",
                 "maxWidth": "60",
-                "textColor": "#fff",
-                "dotted": true,
-                "borderRadiusX": "4px",
-                "borderRadiusY": "4px",
-                "textHoverColor": "#000000",
-                "borderFocusedWidth": "10px"
+                "textColor": "#ffffff",
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "largeliteral",
                 "shape": "rectangle",
                 "borderColor": "transparent",
-                "backgroundColor": "#77c0d9",
-                "backgroundHoverColor": "lightgray",
+                "backgroundColor": "#9DD4CA",
+                "backgroundHoverColor": "#2A6D91",
+                "textColor": "#ffffff",
+                "textHoverColor": "#ffffff",
                 "maxHeight": "40",
                 "maxWidth": "160",
-                "textColor": "#fff",
-                "dotted": true,
                 "borderRadiusX": "4px",
-                "borderRadiusY": "4px",
-                "textHoverColor": "#000000",
-                "borderFocusedWidth": "6px"
+                "borderRadiusY": "4px"
             },
             {
                 "id": "equivalent",
                 "shape": "layeredCircle",
                 "borderColor": "#000000",
-                "borderWidth": "2px",
-                "borderHoverColor": "#000000",
                 "backgroundColor": "#ffffff",
-                "backgroundHoverColor": "#ff6363",
+                "backgroundHoverColor": "#2A6D91",
                 "textColor": "#000000",
                 "textHoverColor": "#ffffff"
-            },
-            {
-                "id": "deprecated",
-                "shape": "circle",
-                "borderColor": "transparent",
-                "backgroundColor": "#dbd173",
-                "backgroundHoverColor": "#ff6363",
-                "textColor": "#000000"
             }
         ],
         "edges": [
@@ -86,25 +69,23 @@
                 "id": "relation",
                 "dotted": true,
                 "color": "#000000",
-                "hoverColor": "#ff6363",
-                "labelBackgroundColor": "#f8f8f8",
+                "hoverColor": "#2A6D91",
+                "labelBackgroundColor": "#e6e7e8",
                 "labelTextColor": "#000000",
                 "arrowColor": "#ffffff",
-                "labelBorderColor": "transparent"
+                "textHoverColor": "#ffffff"
             },
             {
                 "id": "attribute",
                 "edgeDistance": 120,
                 "color": "#000000",
-                "hoverColor": "#ff6363",
-                "labelBackgroundColor": "#c0c0c0",
+                "hoverColor": "#2A6D91",
+                "labelBackgroundColor": "#7B868C",
                 "labelTextColor": "#ffffff",
-                "arrowColor": "#000000",
+                "labelTextHoverColor": "#ffffff",
                 "borderRadiusX": "4px",
                 "borderRadiusY": "4px",
-                "labelTextHoverColor": "#FFFFFF",
-                "labelBorderColor": "transparent",
-                "labelBorderWidth": "2px"
+                "arrowColor": "#000000"
             }
         ]
     },
@@ -112,7 +93,7 @@
         {"id": "n0", "name": "panda", "type": "external", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n1", "name": "Thing", "type": "thing"},
         {"id": "n2", "name": "Person", "type": "equivalent", "data": {"something": "something"}},
-        {"id": "n3", "name": "Literal Literal Literal Literal Literal Literal", "type": "largeliteral", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
+        {"id": "n3", "name": "A very very very very very very very very long name", "type": "largeliteral", "icon": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16'><path fill='%237c7c7c' fill-rule='evenodd' d='M6.5 0a6.5 6.5 0 0 1 5.25 10.334l3.957 3.959a1 1 0 0 1-1.414 1.414l-3.96-3.957A6.5 6.5 0 1 1 6.5 0zm0 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z'/></svg>"},
         {"id": "n4", "name": "Literal", "type": "literal"},
         {"id": "n5", "name": "Literal", "type": "literal"},
         {"id": "n6", "name": "Literal", "type": "literal"},

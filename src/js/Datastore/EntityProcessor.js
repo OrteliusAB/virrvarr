@@ -1,4 +1,3 @@
-import EventEnum from "../Events/EventEnum"
 import Env from "../Config/Env"
 
 /**
@@ -16,9 +15,6 @@ export default class EntityProcessor {
 		this.maxEdgeLabelWidth = userDefinedOptions.maxEdgeLabelWidth ? userDefinedOptions.maxEdgeLabelWidth : Env.LABEL_WIDTH * 2
 
 		this.ee = eventEmitter
-		this.ee.on(EventEnum.NODE_FIXATION_REQUESTED, (node, x, y) => {
-			this.repositionNode(node, x, y)
-		})
 	}
 
 	/**
@@ -32,17 +28,6 @@ export default class EntityProcessor {
 		this.updateEdgeLabelWidths(edges)
 		this.updateEdgeCounters(edges)
 		this.updateNodeParameters(nodes)
-	}
-
-	/**
-	 * Fixate a node to a given position in the graph.
-	 * @param {object} node - Node object to be fixated
-	 * @param {number} x - X coordinate
-	 * @param {number} y - Y coordinate
-	 */
-	repositionNode(node, x, y) {
-		node.fx = x
-		node.fy = y
 	}
 
 	/**
