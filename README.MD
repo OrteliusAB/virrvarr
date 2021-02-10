@@ -1,8 +1,8 @@
 # virrvarr
 
 <div align="center">
-  <img src="https://img.shields.io/github/license/fukurosan/jhaystack" style="display:inline-block;">
-  <img src="https://img.shields.io/npm/v/jhaystack?color=1" style="display:inline-block;">
+  <img src="https://img.shields.io/github/license/orteliusab/virrvarr" style="display:inline-block;">
+  <img src="https://img.shields.io/npm/v/virrvarr?color=1" style="display:inline-block;">
   <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" style="display:inline-block;">
   <br>
   <br>
