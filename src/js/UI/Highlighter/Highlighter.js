@@ -26,12 +26,28 @@ export default class Highlighter {
 		this.ee.on(EventEnum.CLEAR_DISABLE_NODES_REQUESTED, () => {
 			this.clearDisabled()
 		})
+		this.ee.on(EventEnum.HOVER_ENTITY, data => {
+			if (this.enableOnionOnHover) {
+				const nodeElementNode = d3.select(this.graphContainerElement).select(`[id='${data.id}']`)
+				//If an edge label has been hovered then it then we have to dig a bit more:
+				const nodeElementLabel = d3
+					.select(this.graphContainerElement)
+					.select(`[id='label${data.id}${data.direction}']`)
+					.select("rect:not(.removing):not(.onion-clone)[class*='label-rect']")
+				const nodeElement = nodeElementNode.node() ? nodeElementNode : nodeElementLabel.node() ? nodeElementLabel : null
+				if (nodeElement) {
+					const DOMElement = nodeElement.node()
+					if (!(this.enableOnionOnFocus && DOMElement.classList.contains("focused"))) {
+						this.toggleOnionBorder(DOMElement, this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
+					}
+				}
+			}
+		})
 		this.enableOnionOnFocus = typeof userDefinedOptions.enableOnionOnFocus === "boolean" ? userDefinedOptions.enableOnionOnFocus : Env.ENABLE_ONION_ON_FOCUS
-		this.focusedOnionNumberOfLayers = userDefinedOptions.focusedOnionNumberOfLayers
-			? userDefinedOptions.focusedOnionNumberOfLayers
-			: Env.DEFAULT_ONION_FOCUSED_LAYERS
-		this.focusedOnionBaseColor = userDefinedOptions.focusedOnionBaseColor ? userDefinedOptions.focusedOnionBaseColor : Env.DEFAULT_ONION_FOCUSED_COLOR
-		this.focusedOnionLayerSize = userDefinedOptions.focusedOnionLayerSize ? userDefinedOptions.focusedOnionLayerSize : Env.DEFAULT_ONION_FOCUSED_SIZE
+		this.enableOnionOnHover = typeof userDefinedOptions.enableOnionOnHover === "boolean" ? userDefinedOptions.enableOnionOnHover : Env.ENABLE_ONION_ON_HOVER
+		this.onionNumberOfLayers = userDefinedOptions.onionNumberOfLayers ? userDefinedOptions.onionNumberOfLayers : Env.DEFAULT_ONION_LAYERS
+		this.onionBaseColor = userDefinedOptions.onionBaseColor ? userDefinedOptions.onionBaseColor : Env.DEFAULT_ONION_COLOR
+		this.onionLayerSize = userDefinedOptions.onionLayerSize ? userDefinedOptions.onionLayerSize : Env.DEFAULT_ONION_SIZE
 		this.writeHighlightFilters()
 	}
 
@@ -76,9 +92,12 @@ export default class Highlighter {
 	 * Removes focus from all nodes and edges
 	 */
 	removeAllEntityFocus() {
-		d3.select(this.graphContainerElement).selectAll(".focused").classed("focused", false)
+		const selector = d3.select(this.graphContainerElement).selectAll(".focused").classed("focused", false)
 		if (this.enableOnionOnFocus) {
-			d3.select(this.graphContainerElement)
+			selector
+				.select(function () {
+					return this.parentNode
+				})
 				.selectAll(".onion-clone")
 				.attr("class", "removing")
 				.transition()
@@ -108,7 +127,7 @@ export default class Highlighter {
 			const DOMNeighborhood = DOMElement.parentElement.children
 			d3.selectAll([...DOMNeighborhood]).classed("focused", !nodeElement.classed("focused"))
 			if (this.enableOnionOnFocus) {
-				this.toggleOnionBorder(DOMElement, this.focusedOnionLayerSize, this.focusedOnionBaseColor, this.focusedOnionNumberOfLayers)
+				this.toggleOnionBorder(DOMElement, this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
 			}
 			return true
 		}
@@ -161,7 +180,7 @@ export default class Highlighter {
 				clone.style.pointerEvents = "none"
 				clone.style.fill = color
 				clone.setAttribute("opacity", 0.5 / i)
-				clone.setAttribute("class", "onion-clone")
+				clone.classList.add("onion-clone")
 				DOMElement.parentElement.insertBefore(clone, previousNode)
 				CssUtils.tween(
 					clone,
@@ -187,11 +206,11 @@ export default class Highlighter {
 	toggleEdgeEntityFocus(entityID, isFrom) {
 		const labelGroup = d3.select(this.graphContainerElement).select(`#label${entityID}${isFrom ? "from" : "to"}`)
 		if (labelGroup) {
-			const label = labelGroup.select("rect:not(.removing)")
+			const label = labelGroup.select("rect:not(.removing)[class*='label-rect']")
 			const focusedState = label.classed("focused")
 			label.classed("focused", !focusedState)
 			if (this.enableOnionOnFocus) {
-				this.toggleOnionBorder(label.node(), this.focusedOnionLayerSize, this.focusedOnionBaseColor, this.focusedOnionNumberOfLayers)
+				this.toggleOnionBorder(label.node(), this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
 			}
 			d3.select(this.graphContainerElement)
 				.selectAll(`marker[id$="${entityID}${isFrom ? "inverse" : ""}"]`)

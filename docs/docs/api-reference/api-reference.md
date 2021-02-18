@@ -105,9 +105,10 @@ customContextMenu   |   Object
 enableMultiLineNodeLabels   |   Boolean
 rotateLabels   |   Boolean
 enableOnionOnFocus   |   Boolean
-focusedOnionNumberOfLayers   |   Number
-focusedOnionBaseColor   |   String {Measurement}
-focusedOnionLayerSize   |   Number
+enableOnionOnHover   |   Boolean
+onionNumberOfLayers   |   Number
+onionBaseColor   |   String {Measurement}
+onionLayerSize   |   Number
 
 ## Graph API
 Function | Function Blueprint | Description

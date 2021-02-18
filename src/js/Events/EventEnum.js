@@ -7,7 +7,7 @@ const EVENTS = Object.freeze({
 	CLICK_ENTITY: "ENTITY_CLICKED_EVENT",
 	// Params: data (.id, .data, .direction (undefined/"to"/"from"))
 	DBL_CLICK_ENTITY: "ENTITY_DBL_CLICKED_EVENT",
-	// Params: data (.id, .data, .eventType (enter/leave))
+	// Params: data (.id, .data, .eventType (enter/leave), direction)
 	HOVER_ENTITY: "ENTITY_HOVER_EVENT",
 
 	/* PRIVATE EVENTS */

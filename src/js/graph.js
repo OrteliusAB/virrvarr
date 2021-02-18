@@ -29,9 +29,10 @@ export class Virrvarr {
 	 * @param {boolean} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
 	 * @param {rotateLabels} options.customContextMenu - Make edge labels perpendicular to the edge.
 	 * @param {boolean} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
-	 * @param {number} options.focusedOnionNumberOfLayers - How many layers should onion borders have by default?
-	 * @param {string} options.focusedOnionBaseColor - What should the base color be of the onion borders?
-	 * @param {number} options.focusedOnionLayerSize - How big should each layer in the onion border be by default?
+	 * @param {boolean} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
+	 * @param {number} options.onionNumberOfLayers - How many layers should onion borders have by default?
+	 * @param {string} options.onionBaseColor - What should the base color be of the onion borders?
+	 * @param {number} options.onionLayerSize - How big should each layer in the onion border be by default?
 	 *
 	 */
 	constructor(graphContainerElement, inputData, options) {

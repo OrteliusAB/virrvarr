@@ -357,10 +357,10 @@ export default class DOMProcessor {
 			.selectAll("path, text")
 			.classed("hovered", true)
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
+		this.handleHoverEvent(edgeData, "enter", direction)
 		setTimeout(() => {
 			const marker = this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
 			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
-				this.handleHoverEvent(edgeData, "enter")
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
 					if (a.id === edgeData.id && b.id !== edgeData.id) {
@@ -382,7 +382,7 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction - Direction of the edge
 	 */
 	labelMouseLeave(edgeData, direction) {
-		this.handleHoverEvent(edgeData, "leave")
+		this.handleHoverEvent(edgeData, "leave", direction)
 		const inverse = direction === "from"
 		this.rootG
 			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
@@ -743,12 +743,14 @@ export default class DOMProcessor {
 	 * Handles what happens when an item is hovered
 	 * @param {object} hoveredData - Object that has been hovered
 	 * @param {"enter"|"exit"} eventType - What type of event it is.
+	 * @param {"to"|"from"} direction? - If an edge is hovered then this will show the potential direction.
 	 */
-	handleHoverEvent(hoveredData, eventType) {
+	handleHoverEvent(hoveredData, eventType, direction = undefined) {
 		this.ee.trigger(EventEnum.HOVER_ENTITY, {
 			eventType,
 			id: hoveredData.id,
-			data: hoveredData.data
+			data: hoveredData.data,
+			direction: direction
 		})
 		if (this.enableFadeOnHover) {
 			if (!hoveredData.sourceNode) {
