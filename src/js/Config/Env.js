@@ -73,6 +73,11 @@ export default Object.freeze({
 	DEFAULT_NODE_HOVER_FILTER: false,
 	DEFAULT_NODE_FOCUSED_FILTER: false,
 
+	//Cursor
+	DEFAULT_NODE_CURSOR: "pointer",
+	DEFAULT_EDGE_CURSOR: "pointer",
+	DEFAULT_CANVAS_CURSOR: "auto",
+
 	//Tooltip
 	TOOLTIP_MIN_WIDTH: "80px",
 	TOOLTIP_MAX_WIDTH: "150px",

@@ -233,8 +233,9 @@ export default class ZoomHandler {
 	resetZoom() {
 		const rootG = d3.select(this.graphContainerElement).select("g")
 		const currentTransformStr = rootG.attr("transform")
-		let currentScale = currentTransformStr.substring(currentTransformStr.indexOf("scale(") + 6, currentTransformStr.lastIndexOf(")"))
-		currentScale = parseFloat(currentScale)
+		let currentScale = currentTransformStr
+			? parseFloat(currentTransformStr.substring(currentTransformStr.indexOf("scale(") + 6, currentTransformStr.lastIndexOf(")")))
+			: 1
 		const parentWidth = this.graphContainerElement.clientWidth
 		const parentHeight = this.graphContainerElement.clientHeight
 		const width = (rootG.node().getBBox().width + Env.ZOOM_PADDING * 2) * currentScale

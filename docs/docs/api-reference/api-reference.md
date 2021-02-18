@@ -32,8 +32,19 @@ data   |   Any (data bound to object)
 ###	Data.style{Object}
 Attribute | Datatype
 --- | ---
+common   |   Object
 nodes   |   Array {Object}
 edges   |   Array {Object}
+
+###	Data.style.common{Object}
+Attribute | Datatype
+--- | ---
+nodeCursor   |   String
+nodeCursorActive   |   String
+edgeCursor   |   String
+edgeCursorActive   |   String
+canvasCursor   |   String
+canvasCursorActive   |   String
 
 ###	Data.style.nodes{Array}
 Attribute | Datatype
@@ -43,24 +54,28 @@ shape   |   String{“circle”, “layeredCircle”, “rectangle”}
 radius   |   String {Measurement} (if circle!)
 borderColor   |   String{CSS compatible color description}
 borderHoverColor   |   String{CSS compatible color description}
+borderFocusedColor   |   String{CSS compatible color description}
+borderFocusedHoverColor   |   String{CSS compatible color description}
 backgroundColor   |   String{CSS compatible color description}
 backgroundHoverColor   |   String{CSS compatible color description}
 backgroundFocusedColor   |   String{CSS compatible color description}
+backgroundFocusedHoverColor   |   String{CSS compatible color description}
 textColor   |   String{CSS compatible color description}
+textHoverColor   |   String{CSS compatible color description}
 textFocusedColor   |   String{CSS compatible color description}
+textFocusedHoverColor   |   String{CSS compatible color description}
 dotted   |   Boolean
 maxHeight   |   String {Measurement} (if rectangle!)
 maxWidth   |   String {Measurement} (if rectangle!)
 borderRadiusX   |   String {Measurement}
 borderRadiusY   |   String {Measurement}
-textHoverColor   |   String
-borderFocusedColor   |   String
 borderWidth    |    String {Measurement}
 borderHoverWidth    |    String {Measurement}
 borderFocusedWidth   |   String {Measurement}
 filter   |   string {CSS filter}
 hoverFilter   |   string {CSS filter}
 focusedFilter   |   string {CSS filter}
+focusedHoverFilter   |   string {CSS filter}
 icon    |    string
 
 ###	Data.style.edges{Array}
@@ -68,22 +83,25 @@ Attribute | Datatype
 --- | ---
 `id*`   |   String
 labelBackgroundColor   |   String{CSS compatible color description}
-hoverColor   |   String{CSS compatible color description}
 labelTextColor   |   String{CSS compatible color description}
+labelTextFocusedColor   |   String{CSS compatible color description}
+labelTextFocusedHoverColor   |   String{CSS compatible color description}
 dotted   |   Boolean
 arrowColor   |   String{CSS compatible color description}
 color   |   String{CSS compatible color description}
+hoverColor   |   String{CSS compatible color description}
+focusedColor   |   String{CSS compatible color description}
+focusedHoverColor   |   String{CSS compatible color description}
 edgeDistance   |   String {Measurement}
 borderRadiusX   |   String {Measurement}
 borderRadiusY   |   String {Measurement}
-labelTextHoverColor   |   String
 labelBorderColor   |   String
 labelHoveredBorderColor    |    String
 labelFocusedBorderColor    |    String
+labelFocusedHoverBorderColor    |    String
 labelBorderWidth   |   String {Measurement}
 labelHoveredBorderWidth    |    String {Measurement}
 labelFocusedBorderWidth    |    String {Measurement}
-focusedColor   |   String
 
 
 

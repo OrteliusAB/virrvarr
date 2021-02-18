@@ -8,9 +8,22 @@ import Env from "../Config/Env.js"
 const initializeGraphStyles = (style, id) => {
 	let cssString = ""
 	cssString = /*css*/ `
-                /* Global Transitions */
+                /* Global */
                 .virrvarr * {
                     transition: fill 0.1s, opacity 0.1s;
+                }
+                
+                .virrvarr {
+                    cursor: ${style.common && style.common.canvasCursor ? style.common.canvasCursor : Env.DEFAULT_CANVAS_CURSOR};
+                }
+                .virrvarr:active {
+                    cursor: ${
+						style.common && style.common.canvasCursorActive
+							? style.common.canvasCursorActive
+							: style.common && style.common.canvasCursor
+							? style.common.canvasCursor
+							: Env.DEFAULT_CANVAS_CURSOR
+					};
                 }
 
                 /* Text */
@@ -116,17 +129,26 @@ const initializeGraphStyles = (style, id) => {
                 }
                 
                 .label-rect-default{
-                    cursor: pointer;
+                    cursor: ${style.common && style.common.edgeCursor ? style.common.edgeCursor : Env.DEFAULT_EDGE_CURSOR};
                     fill: ${Env.DEFAULT_LABEL_BACKGROUND_COLOR};
                     rx: ${Env.DEFAULT_LABEL_BORDER_RADIUS_X};
                     ry: ${Env.DEFAULT_LABEL_BORDER_RADIUS_Y};
                     stroke: ${Env.DEFAULT_LABEL_BORDER_COLOR} !important;
                     stroke-width: ${Env.DEFAULT_LABEL_BORDER_WIDTH} !important; 
                 }
+                .label-rect-default:active {
+                    cursor: ${
+						style.common && style.common.edgeCursorActive
+							? style.common.edgeCursorActive
+							: style.common && style.common.edgeCursor
+							? style.common.edgeCursor
+							: Env.DEFAULT_EDGE_CURSOR
+					};
+                }
                 .label-rect-default:hover{
                     fill: ${Env.DEFAULT_LABEL_HOVER_BACKGROUND_COLOR};
-                    cursor: pointer;
                 }
+
                 .label g .label-rect-default.focused {
                     stroke-width: ${Env.DEFAULT_NODE_FOCUSED_BORDER_WIDTH} !important;
                     stroke: ${Env.DEFAULT_FOCUS_COLOR} !important;
@@ -150,7 +172,6 @@ const initializeGraphStyles = (style, id) => {
                 .marker-default path.hovered{
                     stroke: ${Env.DEFAULT_LABEL_HOVER_BACKGROUND_COLOR} !important;
                     fill: ${Env.DEFAULT_LABEL_HOVER_BACKGROUND_COLOR} !important;
-                    cursor: pointer;
                 }
                 .marker-default path.focused{
                     fill: ${Env.DEFAULT_FOCUS_COLOR} !important;
@@ -172,7 +193,7 @@ const initializeGraphStyles = (style, id) => {
 
                 /* Default node values */
                 .node-default {
-                    cursor: pointer;
+                    cursor: ${style.common && style.common.nodeCursor ? style.common.nodeCursor : Env.DEFAULT_NODE_CURSOR};
                     stroke-width: ${Env.DEFAULT_STROKE_WIDTH};
                     stroke: ${Env.DEFAULT_NODE_STROKE_COLOR};
                     fill: ${Env.DEFAULT_NODE_COLOR};
@@ -183,6 +204,16 @@ const initializeGraphStyles = (style, id) => {
                 .node-default:hover {
                     fill: ${Env.DEFAULT_NODE_HOVER_COLOR};
                 }
+                .node-default:active {
+                    cursor: ${
+						style.common && style.common.nodeCursorActive
+							? style.common.nodeCursorActive
+							: style.common && style.common.nodeCursor
+							? style.common.nodeCursor
+							: Env.DEFAULT_NODE_CURSOR
+					};
+                }
+
                 .node-text-default {
                     dominant-baseline: hanging;
                     pointer-events: none;
@@ -204,7 +235,7 @@ const initializeGraphStyles = (style, id) => {
 			cssString = `
                 ${cssString}
                 .node-${nodeType.id} {
-                    cursor: pointer;
+                    cursor: ${style.common && style.common.nodeCursor ? style.common.nodeCursor : Env.DEFAULT_NODE_CURSOR};
                     ${nodeType.borderWidth ? `stroke-width:${nodeType.borderWidth};` : ""}
                     ${nodeType.borderColor ? `stroke:${nodeType.borderColor};` : ""}
                     ${nodeType.backgroundColor ? `fill:${nodeType.backgroundColor};` : ""}
@@ -219,6 +250,16 @@ const initializeGraphStyles = (style, id) => {
                     ${nodeType.backgroundHoverColor ? `fill:${nodeType.backgroundHoverColor};` : ""}
                     ${nodeType.hoverFilter ? `filter:${nodeType.hoverFilter};` : ""}                    
                 }
+                .node-${nodeType.id}:active {
+                    cursor: ${
+						style.common && style.common.nodeCursorActive
+							? style.common.nodeCursorActive
+							: style.common && style.common.nodeCursor
+							? style.common.nodeCursor
+							: Env.DEFAULT_NODE_CURSOR
+					};
+                }
+
                 .node-text-${nodeType.id} {
                     font-family: ${Env.DEFAULT_FONT_FAMILY};
                     font-size: ${Env.DEFAULT_FONT_SIZE};
@@ -235,8 +276,16 @@ const initializeGraphStyles = (style, id) => {
                     ${nodeType.backgroundFocusedColor ? `fill:${nodeType.backgroundFocusedColor};` : ""}
                     ${nodeType.focusedFilter ? `filter:${nodeType.focusedFilter} !important;` : ""}
                 }
+                .virrvarr .node-${nodeType.id}.focused:hover {
+                    ${nodeType.borderFocusedHoverColor ? `stroke:${nodeType.borderFocusedHoverColor} !important` : ""}
+                    ${nodeType.backgroundFocusedHoverColor ? `fill:${nodeType.backgroundFocusedHoverColor};` : ""}
+                    ${nodeType.focusedHoverFilter ? `filter:${nodeType.focusedHoverFilter} !important;` : ""}
+                }
                 .virrvarr .node-${nodeType.id}.focused .node-text-${nodeType.id} {
                     ${nodeType.textFocusedColor ? `fill:${nodeType.textFocusedColor};` : ""}
+                }
+                .virrvarr .node-${nodeType.id}.focused:hover .node-text-${nodeType.id} {
+                    ${nodeType.textFocusedHoverColor ? `fill:${nodeType.textFocusedHoverColor};` : ""}
                 }
                 `
 		})
@@ -258,8 +307,11 @@ const initializeGraphStyles = (style, id) => {
                 .edge-path-${edgeType.id}.focused{
                     ${edgeType.focusedColor ? `stroke:${edgeType.focusedColor} !important;` : ""}
                 } 
+                .edge-path-${edgeType.id}.focused.hovered{
+                    ${edgeType.focusedHoverColor ? `stroke:${edgeType.focusedHoverColor} !important;` : ""}
+                } 
                 .label-rect-${edgeType.id}{
-                    cursor: pointer;
+                    cursor: ${style.common && style.common.edgeCursor ? style.common.edgeCursor : Env.DEFAULT_EDGE_CURSOR};
                     ${edgeType.labelBackgroundColor ? `fill:${edgeType.labelBackgroundColor};` : ""}
                     ${edgeType.borderRadiusX ? `rx:${edgeType.borderRadiusX};` : ""}
                     ${edgeType.borderRadiusY ? `ry:${edgeType.borderRadiusY};` : ""}
@@ -273,11 +325,26 @@ const initializeGraphStyles = (style, id) => {
                     ${edgeType.labelHoverBorderWidth ? `stroke-width:${edgeType.labelHoverBorderWidth} !important;` : ""}
                     ${edgeType.hoverFilter ? `filter:${edgeType.hoverFilter};` : ""}
                 }
+                .label-rect-${edgeType.id}:active{
+                    cursor: ${
+						style.common && style.common.edgeCursorActive
+							? style.common.edgeCursorActive
+							: style.common && style.common.edgeCursor
+							? style.common.edgeCursor
+							: Env.DEFAULT_EDGE_CURSOR
+					};
+                }
+
                 .label g .label-rect-${edgeType.id}.focused {
                     ${edgeType.labelFocusedBorderWidth ? `stroke-width:${edgeType.labelFocusedBorderWidth} !important;` : ""}
                     ${edgeType.focusedColor ? `stroke:${edgeType.focusedColor};` : ""}
                     ${edgeType.focusedFilter ? `filter:${edgeType.focusedFilter} !important;` : ""}
                     ${edgeType.labelFocusedBorderColor ? `stroke:${edgeType.labelFocusedBorderColor} !important;` : ""}
+                }
+                .label g .label-rect-${edgeType.id}.focused:hover {
+                    ${edgeType.focusedHoverColor ? `stroke:${edgeType.focusedHoverColor};` : ""}
+                    ${edgeType.focusedHoverFilter ? `filter:${edgeType.focusedHoverFilter} !important;` : ""}
+                    ${edgeType.labelFocusedHoverBorderColor ? `stroke:${edgeType.labelFocusedHoverBorderColor} !important;` : ""}
                 }
                 .label-text-${edgeType.id}{
                     ${edgeType.labelTextColor ? `fill:${edgeType.labelTextColor};` : ""};
@@ -290,17 +357,20 @@ const initializeGraphStyles = (style, id) => {
                 .from:hover .label-text-${edgeType.id}{
                     ${edgeType.labelTextHoverColor ? `fill:${edgeType.labelTextHoverColor};` : ""}
                 }
+                .marker-${edgeType.id} path{
+                    ${edgeType.arrowColor ? `fill:${edgeType.arrowColor};` : ""}
+                }
                 .marker-${edgeType.id} path.hovered{
                     ${edgeType.hoverColor ? `stroke:${edgeType.hoverColor};` : ""}
                     ${edgeType.hoverColor ? `fill:${edgeType.hoverColor};` : ""}
-                    cursor: pointer;
-                }
-                .marker-${edgeType.id} path{
-                    ${edgeType.arrowColor ? `fill:${edgeType.arrowColor};` : ""}
                 }
                 .marker-${edgeType.id} path.focused{
                     ${edgeType.focusedColor ? `fill:${edgeType.focusedColor};` : ""}
                     ${edgeType.focusedColor ? `stroke:${edgeType.focusedColor};` : ""}
+                }
+                .marker-${edgeType.id} path.focused.hovered{
+                    ${edgeType.focusedHoverColor ? `fill:${edgeType.focusedHoverColor};` : ""}
+                    ${edgeType.focusedHoverColor ? `stroke:${edgeType.focusedHoverColor};` : ""}
                 }
                 `
 		})

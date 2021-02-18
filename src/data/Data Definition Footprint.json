@@ -1,5 +1,13 @@
 {
     "style": {
+        "common": {
+            "nodeCursor": "String",
+            "nodeCursorActive": "String",
+            "edgeCursor": "String",
+            "edgeCursorActive": "String",
+            "canvasCursor": "String",
+            "canvasCursorActive": "String"
+        },
         "nodes": [
             {
                 "id*": "String",
@@ -10,12 +18,15 @@
                 "borderColor": "String",
                 "borderHoverColor": "String",
                 "borderFocusedColor": "String",
+                "borderFocusedHoverColor": "String",
                 "backgroundColor": "String",
                 "backgroundHoverColor": "String",
                 "backgroundFocusedColor": "String",
+                "backgroundFocusedHoverColor": "String",
                 "textColor": "String",
                 "textHoverColor": "String",
                 "textFocusedColor": "String",
+                "textFocusedHoverColor": "String",
                 "dotted": "Boolean",
                 "borderRadiusX": "Integer",
                 "borderRadiusY": "Integer",
@@ -25,7 +36,8 @@
                 "icon": "String",
                 "filter": "String",
                 "hoverFilter": "String",
-                "focusedFilter": "String"
+                "focusedFilter": "String",
+                "focusedHoverFilter": "String"
             }
         ],
         "edges": [
@@ -35,12 +47,16 @@
                 "color": "String",
                 "hoverColor": "String",
                 "focusedColor": "String",
+                "focusedHoverColor": "String",
                 "labelBackgroundColor": "String",
                 "labelTextColor": "String",
+                "labelTextFocusedColor": "String",
                 "labelTextHoverColor": "String",
+                "labelTextFocusedHoverColor": "String",
                 "labelBorderColor": "String",
                 "labelHoveredBorderColor": "String",
                 "labelFocusedBorderColor": "String",
+                "labelFocusedHoverBorderColor": "String",
                 "arrowColor": "String",
                 "edgeDistance": "Integer",
                 "borderRadiusX": "Integer",
