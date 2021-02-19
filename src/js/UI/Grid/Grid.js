@@ -64,7 +64,6 @@ export default class Grid {
 			.attr("fill", "url(#grid)")
 			.attr("class", "grid")
 		if (this.enableScaleGridOnZoom) {
-			console.log(grid.node())
 			grid
 				.attr("width", "2000%")
 				.attr("height", "2000%")

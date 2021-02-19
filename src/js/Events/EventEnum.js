@@ -26,6 +26,8 @@ const EVENTS = Object.freeze({
 
 	// Params: isEnabled
 	NODE_PIN_MODE_TOGGLED: "NODE_PIN_MODE_TOGGLED",
+	// Params: isEnabled
+	NODE_MULTI_SELECT_MODE_TOGGLED: "NODE_MULTI_SELECT_MODE_TOGGLED",
 
 	// Params: [...nodes], [...edges]
 	DATA_UPDATE_REQUESTED: "DATA_UPDATE_REQUESTED",

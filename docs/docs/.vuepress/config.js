@@ -64,6 +64,7 @@ module.exports = {
           '/documentation/imploding-exploding',
           '/documentation/layout',
           '/documentation/pinning-nodes',
+          '/documentation/multi-selection',
           '/documentation/highlight-search',
           '/documentation/multiplicity',
           '/documentation/zoom',

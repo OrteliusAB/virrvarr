@@ -9,7 +9,8 @@ To clear a pin you simply drag and drop a node without pin mode activated and it
 
 Consider the following example:
 ```javascript
-graph.togglePinMode()
+graph.setPinMode(true)
+graph.setPinMode(false)
 graph.pinGraph()
 graph.resetPins()
 ``` 

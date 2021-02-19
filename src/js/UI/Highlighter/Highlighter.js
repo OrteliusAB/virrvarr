@@ -11,11 +11,12 @@ export default class Highlighter {
 	constructor(graphContainerElement, eventEmitter, userDefinedOptions) {
 		this.graphContainerElement = graphContainerElement
 		this.ee = eventEmitter
+		this.ee.on(EventEnum.NODE_MULTI_SELECT_MODE_TOGGLED, isEnabled => (this.multiSelectMode = isEnabled))
 		this.ee.on(EventEnum.CLICK_ENTITY, data => {
 			data && this.setElementFocus(data.id, data.direction)
 		})
 		this.ee.on(EventEnum.CLICK_ENTITY, data => {
-			data || this.removeAllEntityFocus()
+			!data && !this.multiSelectMode && this.removeAllEntityFocus()
 		})
 		this.ee.on(EventEnum.HIGHLIGHT_NODE_REQUESTED, nodes => {
 			this.highlightNode(nodes.map(node => node.id))
@@ -43,6 +44,7 @@ export default class Highlighter {
 				}
 			}
 		})
+		this.multiSelectMode = false
 		this.enableOnionOnFocus = typeof userDefinedOptions.enableOnionOnFocus === "boolean" ? userDefinedOptions.enableOnionOnFocus : Env.ENABLE_ONION_ON_FOCUS
 		this.enableOnionOnHover = typeof userDefinedOptions.enableOnionOnHover === "boolean" ? userDefinedOptions.enableOnionOnHover : Env.ENABLE_ONION_ON_HOVER
 		this.onionNumberOfLayers = userDefinedOptions.onionNumberOfLayers ? userDefinedOptions.onionNumberOfLayers : Env.DEFAULT_ONION_LAYERS
@@ -71,7 +73,7 @@ export default class Highlighter {
 	}
 
 	/**
-	 * This function sets the exclusive focus on a given entity
+	 * This function sets the focus on a given entity
 	 * @param {string} entityID - ID of the entity to be focused
 	 * @param {boolean?} isFromDirection - Is the edge in the from direction? If applicable
 	 */
@@ -83,7 +85,7 @@ export default class Highlighter {
 			} else if (isFromDirection === "to") {
 				isFrom = false
 			}
-			this.removeAllEntityFocus()
+			this.multiSelectMode || this.removeAllEntityFocus()
 			this.toggleEntityFocusByID(entityID, isFrom)
 		}
 	}

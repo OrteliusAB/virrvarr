@@ -436,10 +436,16 @@
             if (e.shiftKey) {
                 window.graph.setPinMode(true)
             }
+            if (e.ctrlKey) {
+                window.graph.setMultiSelectMode(true)
+            }
         })
         window.addEventListener("keyup", e => {
             if (!e.shiftKey) {
                 window.graph.setPinMode(false)
+            }
+            if (!e.ctrlKey) {
+                window.graph.setMultiSelectMode(false)
             }
         })
     </script>

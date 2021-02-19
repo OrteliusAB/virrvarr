@@ -225,6 +225,16 @@ export class Virrvarr {
 	}
 
 	/**
+	 * Sets the multi selection mode for nodes on and off
+	 * multi selection mode is when selecting a node does not cause a deselection of any prior selected nodes
+	 * @param {boolean} isEnabled
+	 * @return {void}
+	 */
+	setMultiSelectMode(isEnabled) {
+		this._ee.trigger(EventEnum.NODE_MULTI_SELECT_MODE_TOGGLED, isEnabled)
+	}
+
+	/**
 	 * Pins the entire graph
 	 * @return {void}
 	 */
