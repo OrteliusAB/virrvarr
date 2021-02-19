@@ -9,6 +9,7 @@ export default class ZoomHandler {
 	constructor(graphContainerElement, eventEmitter, options) {
 		this.graphContainerElement = graphContainerElement
 		this.enableZoomButtons = options.enableZoomButtons !== undefined ? options.enableZoomButtons : Env.ENABLE_ZOOM_BUTTONS
+		this.enableScaleGridOnZoom = options.enableScaleGridOnZoom !== undefined ? options.enableScaleGridOnZoom : Env.ENABLE_SCALE_GRID_ON_ZOOM
 		this.ee = eventEmitter
 		this.ee.on(EventEnum.ZOOM_REQUESTED, (x, y, scale) => {
 			this.handleZoomRequest(x, y, scale)
@@ -18,8 +19,14 @@ export default class ZoomHandler {
 			.zoom()
 			.scaleExtent(Env.SCALE_EXTENT)
 			.on("zoom", () => {
-				const rootG = d3.select(this.graphContainerElement).select("g")
-				rootG.attr("transform", d3.event.transform)
+				d3.select(this.graphContainerElement)
+					.select("g")
+					.attr("transform", d3.event.transform)
+				if (this.enableScaleGridOnZoom) {
+					d3.select(this.graphContainerElement)
+						.select(".grid")
+						.attr("transform", d3.event.transform)
+				}
 			})
 		if (this.enableZoomButtons) {
 			this.initializeZoomButtons()

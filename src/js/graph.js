@@ -1,5 +1,4 @@
 import "./Utils/Protoypes"
-import Env from "./Config/Env"
 import Datastore from "./Datastore/Datastore"
 import EventEmitter from "./Events/EventEmitter"
 import UI from "./UI/UI"
@@ -18,6 +17,7 @@ export class Virrvarr {
 	 * @param {boolean} options.enableGrid - Should the grid background pattern be enabled?
 	 * @param {boolean} options.enableFadeOnHover - Should nodes and edges that are not directly connected to a hovered node be faded out when said node is hovered?
 	 * @param {boolean} options.enableZoomButtons - Should zoom buttons be enabled?
+	 * @param {boolean} options.enableScaleGridOnZoom - Should the grid scale with the zoom?
 	 * @param {boolean} options.enableContextMenu - Should the conext menu be enabled?
 	 * @param {Function} options.entityClickedListener - Click listener for entities.
 	 * @param {Function} options.entityDoubleClickedListener - Double click listener for entities.

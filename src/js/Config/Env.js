@@ -5,6 +5,8 @@ export default Object.freeze({
 	//Params
 	ENABLE_ZOOM_BUTTONS: false,
 	ENABLE_GRID: false,
+	ENABLE_SECONDARY_GRID: true,
+	ENABLE_SCALE_GRID_ON_ZOOM: false,
 	DEFAULT_FADE_ON_HOVER: false,
 	DEFAULT_USE_CONTEXT_MENU: true,
 	SHOW_CONTEXT_MENU: true,
