@@ -4,6 +4,9 @@ Virrvarr is event driven, and exposes a few events to developers. You can listen
 Example of typical use:
 ```javascript
 const options = {
+    selectionListener: function (selection) {
+        console.log("Selection updated:", selection)
+    },
     entityClickedListener: function (item) {
         console.log("Clicked:", item)
     },

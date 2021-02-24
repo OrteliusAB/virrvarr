@@ -6,7 +6,11 @@
             "edgeCursor": "String",
             "edgeCursorActive": "String",
             "canvasCursor": "String",
-            "canvasCursorActive": "String"
+            "canvasCursorActive": "String",
+            "selectionLassoColor": "String",
+            "selectionLassoOpacity": "String",
+            "selectionLassoBorderWidth": "String",
+            "selectionLassoBorderColor": "String"
         },
         "nodes": [
             {

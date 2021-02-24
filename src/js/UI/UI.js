@@ -7,6 +7,7 @@ import Tooltip from "./Tooltip/Tooltip"
 import Grid from "./Grid/Grid"
 import DOMProcessor from "./DOMProcessor/DOMProcessor"
 import CSSUtil from "../Utils/CssUtils.js"
+import SelectionLasso from "./SelectionLasso/SelectionLasso"
 
 /**
  * The UI class manages all different UI addons.
@@ -25,6 +26,7 @@ export default class UI {
 		CSSUtil.initializeGraphStyles(this.style, this.stylesID)
 
 		this.rootG = this.initializeDOM()
+		this.selectionLasso = new SelectionLasso(this.graphContainerElement, this.ee)
 		this.highlighter = new Highlighter(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.grid = new Grid(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.DOMProcessor = new DOMProcessor(this.rootG, this.ee, userDefinedOptions)

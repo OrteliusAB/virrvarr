@@ -11,12 +11,15 @@ export default class ZoomHandler {
 		this.enableZoomButtons = options.enableZoomButtons !== undefined ? options.enableZoomButtons : Env.ENABLE_ZOOM_BUTTONS
 		this.enableScaleGridOnZoom = options.enableScaleGridOnZoom !== undefined ? options.enableScaleGridOnZoom : Env.ENABLE_SCALE_GRID_ON_ZOOM
 		this.ee = eventEmitter
+		this.isLassoEnabled = false
 		this.ee.on(EventEnum.ZOOM_REQUESTED, (x, y, scale) => {
 			this.handleZoomRequest(x, y, scale)
 		})
+		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, isEnabled => this.isLassoEnabled = isEnabled)
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
 		this.zoom = d3
 			.zoom()
+			.filter(() => !d3.event.ctrlKey && !d3.event.button && !this.isLassoEnabled) //Necessary to stop d3.zoom from grabbing the event.
 			.scaleExtent(Env.SCALE_EXTENT)
 			.on("zoom", () => {
 				d3.select(this.graphContainerElement)

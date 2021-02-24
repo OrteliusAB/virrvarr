@@ -46,6 +46,7 @@ export class Virrvarr {
 		this._options.entityClickedListener && this._ee.on(EventEnum.CLICK_ENTITY, this._options.entityClickedListener)
 		this._options.entityDoubleClickedListener && this._ee.on(EventEnum.DBL_CLICK_ENTITY, this._options.entityDoubleClickedListener)
 		this._options.entityHoveredListener && this._ee.on(EventEnum.HOVER_ENTITY, this._options.entityHoveredListener)
+		this._options.selectionListener && this._ee.on(EventEnum.SELECTION_UPDATED, this._options.selectionListener)
 
 		/* Init UI */
 		this._UI = new UI(graphContainerElement, this._ee, this._style, options)
@@ -232,6 +233,15 @@ export class Virrvarr {
 	 */
 	setMultiSelectMode(isEnabled) {
 		this._ee.trigger(EventEnum.NODE_MULTI_SELECT_MODE_TOGGLED, isEnabled)
+	}
+
+	/**
+	 * Sets the lasso selection mode for nodes on and off
+	 * @param {boolean} isEnabled
+	 * @return {void}
+	 */
+	setLassoMode(isEnabled) {
+		this._ee.trigger(EventEnum.LASSO_MODE_TOGGLED, isEnabled)
 	}
 
 	/**

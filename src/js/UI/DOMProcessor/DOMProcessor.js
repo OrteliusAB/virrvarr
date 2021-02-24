@@ -803,6 +803,12 @@ export default class DOMProcessor {
 		this.nodeElements.attr("transform", node => {
 			return "translate(" + node.x + "," + node.y + ")"
 		})
+			.each(function (d) {
+				d.relativeX = this.getBoundingClientRect().x
+				d.relativeY = this.getBoundingClientRect().y
+				d.relativeWidth = this.getBoundingClientRect().width
+				d.relativeHeight = this.getBoundingClientRect().height
+			})
 		//Edges
 		this.edgePath.attr("d", l => {
 			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
@@ -862,5 +868,13 @@ export default class DOMProcessor {
 				return "translate(" + midX + "," + midY + ")"
 			}
 		})
+			.each(function (d) {
+				const group = d3.select(this)
+				const direction = group.classed("to") ? "To" : "From"
+				d[`label${direction}RelativeX`] = d.relativeX = this.getBoundingClientRect().x
+				d[`label${direction}RelativeY`] = d.relativeY = this.getBoundingClientRect().y
+				d[`label${direction}RelativeWidth`] = d.relativeWidth = this.getBoundingClientRect().width
+				d[`label${direction}RelativeHeight`] = d.relativeHeight = this.getBoundingClientRect().height
+			})
 	}
 }

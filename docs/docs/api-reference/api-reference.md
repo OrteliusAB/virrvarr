@@ -45,6 +45,10 @@ edgeCursor   |   String
 edgeCursorActive   |   String
 canvasCursor   |   String
 canvasCursorActive   |   String
+selectionLassoColor   |   String
+selectionLassoOpacity   |   String
+selectionLassoBorderWidth   |   String
+selectionLassoBorderColor   |   String
 
 ###	Data.style.nodes{Array}
 Attribute | Datatype
@@ -112,6 +116,7 @@ Function | Function Blueprint
 entityClickedListener   |   Function{(data => { data.id; data.data; })}
 entityHoveredListener   |   Function{(data => { data.id; data.data; data.eventType; } )}
 entityDoubleClickedListener   |   Function{(data => { data.id; data.data; })}
+selectionListener   |   Function{(data => { data.id; data.type; data.direction; data.data; })}
 fixededgeLabelWidth   |   Boolean
 maxedgeLabelWidth   |   String {Measurement}
 edgeLabelWidth   |   String {Measurement}
@@ -145,6 +150,7 @@ zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the gra
 setMatrixLayout   |   Function<(attribute, filterFunction, sortFunction)>   |   Sets the layout to a fixed matrix. This enables the developer to group things together. The function can either take an attribute (with values set for it on each node, such as “type”) and use that as the criteria for grouping, or use a custom filter function which takes the bound data as input and returns a group name as a string.  A sortFunction can also be supplied in order to determine the order of things in the matrix. The order will read from left to right, top to bottom. Like a book.
 resetLayout   |   Function<()>   |   Resets the layout to the default layout
 setPinMode   |   Function<(isEnabled)>   |   Sets the pin mode of the graph
+setlassoMode   |   Function<(isEnabled)>   |   Sets the lasso selection mode of the graph
 setMultiSelectMode   |   Function<(isEnabled)>   |   Sets the multi select mode of the graph
 implodeOrExplodeNode   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction) isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeLeafs   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), but only if the nodes do not branch out any further (i.e. have any TO connections). isImplode indicates if it is a implode or explode operation

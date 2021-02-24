@@ -5,8 +5,8 @@
             "nodeCursorActive": "auto",
             "edgeCursor": "auto",
             "edgeCursorActive": "auto",
-            "canvasCursor": "grab",
-            "canvasCursorActive": "grabbing"
+            "canvasCursor": "move",
+            "canvasCursorActive": "move"
         },
         "nodes": [
             {

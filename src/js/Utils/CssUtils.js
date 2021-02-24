@@ -11,6 +11,7 @@ const initializeGraphStyles = (style, id) => {
                 /* Global */
                 .virrvarr * {
                     transition: fill 0.1s, opacity 0.1s;
+                    user-select: none;
                 }
                 
                 .virrvarr {
@@ -30,6 +31,29 @@ const initializeGraphStyles = (style, id) => {
                 .virrvarr .multiplicity {
                     font-size: ${Env.DEFAULT_MULTIPLICITY_FONT_SIZE};
                 }     
+
+                /* Lasso */
+                #selection-lasso {
+                    background: ${style.common && style.common.selectionLassoColor 
+                        ? style.common.selectionLassoColor
+                        : Env.SELECTION_LASSO_COLOR
+                    };
+                    opacity: ${style.common && style.common.selectionLassoOpacity 
+                        ? style.common.selectionLassoOpacity
+                        : Env.SELECTION_LASSO_OPACITY
+                    };
+                    border-width: ${style.common && style.common.selectionLassoBorderWidth 
+                        ? style.common.selectionLassoBorderWidth
+                        : Env.SELECTION_LASSO_BORDER_WIDTH
+                    };
+                    border-color: ${style.common && style.common.selectionLassoBorderColor 
+                        ? style.common.selectionLassoBorderColor
+                        : Env.SELECTION_LASSO_COLOR
+                    };
+                    border-style: solid;
+                    position: absolute;
+                    display: none;
+                }
 
                 /* Tooltip */
                 #virrvarr-tooltip {

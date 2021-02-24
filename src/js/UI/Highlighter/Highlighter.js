@@ -2,22 +2,23 @@ import * as d3 from "d3"
 import EventEnum from "../../Events/EventEnum"
 import Env from "../../Config/Env"
 import CssUtils from "../../Utils/CssUtils"
+import EventEmitter from "../../Events/EventEmitter"
 
 /**
  * The Highlighter class handles highlighting of nodes in the graph.
  * This includes both highlighting on selections as well as highlighting on search.
  */
 export default class Highlighter {
+	/**
+	 * @param {HTMLElement} graphContainerElement 
+	 * @param {EventEmitter} eventEmitter 
+	 * @param {object} userDefinedOptions 
+	 */
 	constructor(graphContainerElement, eventEmitter, userDefinedOptions) {
 		this.graphContainerElement = graphContainerElement
 		this.ee = eventEmitter
-		this.ee.on(EventEnum.NODE_MULTI_SELECT_MODE_TOGGLED, isEnabled => (this.multiSelectMode = isEnabled))
-		this.ee.on(EventEnum.CLICK_ENTITY, data => {
-			data && this.setElementFocus(data.id, data.direction)
-		})
-		this.ee.on(EventEnum.CLICK_ENTITY, data => {
-			!data && !this.multiSelectMode && this.removeAllEntityFocus()
-		})
+		this.currentSelection = [] //This speeds things up, since we don't need to reevaluate on every selection
+		this.isLassoActive = false
 		this.ee.on(EventEnum.HIGHLIGHT_NODE_REQUESTED, nodes => {
 			this.highlightNode(nodes.map(node => node.id))
 		})
@@ -27,6 +28,8 @@ export default class Highlighter {
 		this.ee.on(EventEnum.CLEAR_DISABLE_NODES_REQUESTED, () => {
 			this.clearDisabled()
 		})
+		this.ee.on(EventEnum.SELECTION_UPDATED, newSelection => this.handleEntitySelection(newSelection))
+		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, isEnabled => this.isLassoActive = isEnabled)
 		this.ee.on(EventEnum.HOVER_ENTITY, data => {
 			if (this.enableOnionOnHover) {
 				const nodeElementNode = d3.select(this.graphContainerElement).select(`[id='${data.id}']`)
@@ -44,7 +47,7 @@ export default class Highlighter {
 				}
 			}
 		})
-		this.multiSelectMode = false
+
 		this.enableOnionOnFocus = typeof userDefinedOptions.enableOnionOnFocus === "boolean" ? userDefinedOptions.enableOnionOnFocus : Env.ENABLE_ONION_ON_FOCUS
 		this.enableOnionOnHover = typeof userDefinedOptions.enableOnionOnHover === "boolean" ? userDefinedOptions.enableOnionOnHover : Env.ENABLE_ONION_ON_HOVER
 		this.onionNumberOfLayers = userDefinedOptions.onionNumberOfLayers ? userDefinedOptions.onionNumberOfLayers : Env.DEFAULT_ONION_LAYERS
@@ -73,6 +76,33 @@ export default class Highlighter {
 	}
 
 	/**
+	 * Handles reflecting selection changes in the DOM
+	 * @param {Selection[]} selection - A list of selected nodes and edges. 
+	 */
+	handleEntitySelection(selection) {
+		if (selection.length === 0) {
+			this.removeAllEntityFocus()
+			this.currentSelection = []
+			return
+		}
+		const entitiesToToggle = selection
+			.filter(outer => !this.currentSelection.find(inner => `${outer.id}${outer.direction ? outer.direction : ""}` === `${inner.id}${inner.direction ? inner.direction : ""}`)
+			)
+			.concat(
+				this.currentSelection.filter(outer =>
+					!selection.find(inner => `${outer.id}${outer.direction ? outer.direction : ""}` === `${inner.id}${inner.direction ? inner.direction : ""}`)
+				)
+			)
+		if (entitiesToToggle.length > 0) {
+			entitiesToToggle.forEach(entity => {
+				entity.type === "node" && this.setElementFocus(entity.id)
+				entity.type === "edge" && this.setElementFocus(entity.id, entity.direction)
+			})
+			this.currentSelection = selection
+		}
+	}
+
+	/**
 	 * This function sets the focus on a given entity
 	 * @param {string} entityID - ID of the entity to be focused
 	 * @param {boolean?} isFromDirection - Is the edge in the from direction? If applicable
@@ -85,7 +115,6 @@ export default class Highlighter {
 			} else if (isFromDirection === "to") {
 				isFrom = false
 			}
-			this.multiSelectMode || this.removeAllEntityFocus()
 			this.toggleEntityFocusByID(entityID, isFrom)
 		}
 	}
@@ -137,6 +166,34 @@ export default class Highlighter {
 	}
 
 	/**
+	 * Toggles focus on edges
+	 * @param {string} entityID - ID of the entity to toggle
+	 * @param {boolean} isFrom - Is the edge in the from direction?
+	 */
+	toggleEdgeEntityFocus(entityID, isFrom) {
+		const labelGroup = d3.select(this.graphContainerElement).select(`#label${entityID}${isFrom ? "from" : "to"}`)
+		if (labelGroup) {
+			const label = labelGroup.select("rect:not(.removing)[class*='label-rect']")
+			const focusedState = label.classed("focused")
+			label.classed("focused", !focusedState)
+			if (this.enableOnionOnFocus) {
+				this.toggleOnionBorder(label.node(), this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
+			}
+			d3.select(this.graphContainerElement)
+				.selectAll(`marker[id$="${entityID}${isFrom ? "inverse" : ""}"]`)
+				.select("path")
+				.classed("focused", !focusedState)
+
+			d3.select(this.graphContainerElement)
+				.selectAll(`[class*="${entityID}${isFrom ? "inverse " : " "}"]`)
+				.selectAll("path, text")
+				.classed("focused", !focusedState)
+			return true
+		}
+		return false
+	}
+
+	/**
 	 * Creates an onion border around a given svg node by cloning it a given amount of times
 	 * @param {HTMLElement} DOMElement - Element to add the border to
 	 * @param {number} size - Size of the onion layers
@@ -150,7 +207,12 @@ export default class Highlighter {
 		Array.from(DOMNeighborhood).forEach(node => {
 			if (node.classList.contains("onion-clone")) {
 				found = true
-				d3.select(node).attr("class", null).transition().duration(Env.DEFAULT_ONION_ANIMATION_TIME).style("transform", "scale(0.8)").remove()
+				if (!this.isLassoActive) { //Becomes really heavy for Chrome
+					d3.select(node).attr("class", null).transition().duration(Env.DEFAULT_ONION_ANIMATION_TIME).style("transform", "scale(0.8)").remove()
+				}
+				else {
+					d3.select(node).attr("class", null).remove()
+				}
 			}
 		})
 		if (!found) {
@@ -184,45 +246,19 @@ export default class Highlighter {
 				clone.setAttribute("opacity", 0.5 / i)
 				clone.classList.add("onion-clone")
 				DOMElement.parentElement.insertBefore(clone, previousNode)
-				CssUtils.tween(
-					clone,
-					"transform",
-					DOMElement.getBoundingClientRect().width / clone.getBoundingClientRect().width,
-					1,
-					Date.now(),
-					Env.DEFAULT_ONION_ANIMATION_TIME * i,
-					newValue => `scale(${newValue})`
-				)
+				if (!this.isLassoActive) { //Becomes really heavy for Chrome
+					CssUtils.tween(
+						clone,
+						"transform",
+						DOMElement.getBoundingClientRect().width / clone.getBoundingClientRect().width,
+						1,
+						Date.now(),
+						Env.DEFAULT_ONION_ANIMATION_TIME * i,
+						newValue => `scale(${newValue})`
+					)
+				}
 				previousNode = clone
 			}
-			return true
-		}
-		return false
-	}
-
-	/**
-	 * Toggles focus on edges
-	 * @param {string} entityID - ID of the entity to toggle
-	 * @param {boolean} isFrom - Is the edge in the from direction?
-	 */
-	toggleEdgeEntityFocus(entityID, isFrom) {
-		const labelGroup = d3.select(this.graphContainerElement).select(`#label${entityID}${isFrom ? "from" : "to"}`)
-		if (labelGroup) {
-			const label = labelGroup.select("rect:not(.removing)[class*='label-rect']")
-			const focusedState = label.classed("focused")
-			label.classed("focused", !focusedState)
-			if (this.enableOnionOnFocus) {
-				this.toggleOnionBorder(label.node(), this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
-			}
-			d3.select(this.graphContainerElement)
-				.selectAll(`marker[id$="${entityID}${isFrom ? "inverse" : ""}"]`)
-				.select("path")
-				.classed("focused", !focusedState)
-
-			d3.select(this.graphContainerElement)
-				.selectAll(`[class*="${entityID}${isFrom ? "inverse " : " "}"]`)
-				.selectAll("path, text")
-				.classed("focused", !focusedState)
 			return true
 		}
 		return false
