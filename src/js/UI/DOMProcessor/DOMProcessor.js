@@ -750,7 +750,7 @@ export default class DOMProcessor {
 			eventType,
 			id: hoveredData.id,
 			data: hoveredData.data,
-			direction: direction
+			direction
 		})
 		if (this.enableFadeOnHover) {
 			if (!hoveredData.sourceNode) {
@@ -800,9 +800,10 @@ export default class DOMProcessor {
 	 */
 	tick() {
 		//Nodes
-		this.nodeElements.attr("transform", node => {
-			return "translate(" + node.x + "," + node.y + ")"
-		})
+		this.nodeElements
+			.attr("transform", node => {
+				return "translate(" + node.x + "," + node.y + ")"
+			})
 			.each(function (d) {
 				d.relativeX = this.getBoundingClientRect().x
 				d.relativeY = this.getBoundingClientRect().y
@@ -848,26 +849,27 @@ export default class DOMProcessor {
 			return "translate(" + (pos.x + n.x) + "," + (pos.y + n.y) + ")"
 		})
 		//Labels
-		this.labels.attr("transform", function (l) {
-			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
-				return ""
-			}
-			const group = d3.select(this)
-			const midX = l.curvePoint.x
-			let midY = l.curvePoint.y
-			if (l.nameFrom) {
-				if (group.classed("to")) {
-					midY += Env.LABEL_HEIGHT / 2 + 1
-				} else if (group.classed("from")) {
-					midY -= Env.LABEL_HEIGHT / 2 + 1
+		this.labels
+			.attr("transform", function (l) {
+				if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
+					return ""
 				}
-			}
-			if (l.angle) {
-				return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
-			} else {
-				return "translate(" + midX + "," + midY + ")"
-			}
-		})
+				const group = d3.select(this)
+				const midX = l.curvePoint.x
+				let midY = l.curvePoint.y
+				if (l.nameFrom) {
+					if (group.classed("to")) {
+						midY += Env.LABEL_HEIGHT / 2 + 1
+					} else if (group.classed("from")) {
+						midY -= Env.LABEL_HEIGHT / 2 + 1
+					}
+				}
+				if (l.angle) {
+					return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
+				} else {
+					return "translate(" + midX + "," + midY + ")"
+				}
+			})
 			.each(function (d) {
 				const group = d3.select(this)
 				const direction = group.classed("to") ? "To" : "From"

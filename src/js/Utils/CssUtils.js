@@ -19,12 +19,12 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .virrvarr:active {
                     cursor: ${
-						style.common && style.common.canvasCursorActive
-							? style.common.canvasCursorActive
-							: style.common && style.common.canvasCursor
-							? style.common.canvasCursor
-							: Env.DEFAULT_CANVAS_CURSOR
-					};
+	style.common && style.common.canvasCursorActive
+		? style.common.canvasCursorActive
+		: style.common && style.common.canvasCursor
+			? style.common.canvasCursor
+			: Env.DEFAULT_CANVAS_CURSOR
+};
                 }
 
                 /* Text */
@@ -34,22 +34,14 @@ const initializeGraphStyles = (style, id) => {
 
                 /* Lasso */
                 #selection-lasso {
-                    background: ${style.common && style.common.selectionLassoColor 
-                        ? style.common.selectionLassoColor
-                        : Env.SELECTION_LASSO_COLOR
-                    };
-                    opacity: ${style.common && style.common.selectionLassoOpacity 
-                        ? style.common.selectionLassoOpacity
-                        : Env.SELECTION_LASSO_OPACITY
-                    };
-                    border-width: ${style.common && style.common.selectionLassoBorderWidth 
-                        ? style.common.selectionLassoBorderWidth
-                        : Env.SELECTION_LASSO_BORDER_WIDTH
-                    };
-                    border-color: ${style.common && style.common.selectionLassoBorderColor 
-                        ? style.common.selectionLassoBorderColor
-                        : Env.SELECTION_LASSO_COLOR
-                    };
+                    background: ${style.common && style.common.selectionLassoColor ? style.common.selectionLassoColor : Env.SELECTION_LASSO_COLOR};
+                    opacity: ${style.common && style.common.selectionLassoOpacity ? style.common.selectionLassoOpacity : Env.SELECTION_LASSO_OPACITY};
+                    border-width: ${
+	style.common && style.common.selectionLassoBorderWidth ? style.common.selectionLassoBorderWidth : Env.SELECTION_LASSO_BORDER_WIDTH
+};
+                    border-color: ${
+	style.common && style.common.selectionLassoBorderColor ? style.common.selectionLassoBorderColor : Env.SELECTION_LASSO_COLOR
+};
                     border-style: solid;
                     position: absolute;
                     display: none;
@@ -162,12 +154,12 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .label-rect-default:active {
                     cursor: ${
-						style.common && style.common.edgeCursorActive
-							? style.common.edgeCursorActive
-							: style.common && style.common.edgeCursor
-							? style.common.edgeCursor
-							: Env.DEFAULT_EDGE_CURSOR
-					};
+	style.common && style.common.edgeCursorActive
+		? style.common.edgeCursorActive
+		: style.common && style.common.edgeCursor
+			? style.common.edgeCursor
+			: Env.DEFAULT_EDGE_CURSOR
+};
                 }
                 .label-rect-default:hover{
                     fill: ${Env.DEFAULT_LABEL_HOVER_BACKGROUND_COLOR};
@@ -230,12 +222,12 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .node-default:active {
                     cursor: ${
-						style.common && style.common.nodeCursorActive
-							? style.common.nodeCursorActive
-							: style.common && style.common.nodeCursor
-							? style.common.nodeCursor
-							: Env.DEFAULT_NODE_CURSOR
-					};
+	style.common && style.common.nodeCursorActive
+		? style.common.nodeCursorActive
+		: style.common && style.common.nodeCursor
+			? style.common.nodeCursor
+			: Env.DEFAULT_NODE_CURSOR
+};
                 }
 
                 .node-text-default {
@@ -276,12 +268,12 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .node-${nodeType.id}:active {
                     cursor: ${
-						style.common && style.common.nodeCursorActive
-							? style.common.nodeCursorActive
-							: style.common && style.common.nodeCursor
-							? style.common.nodeCursor
-							: Env.DEFAULT_NODE_CURSOR
-					};
+	style.common && style.common.nodeCursorActive
+		? style.common.nodeCursorActive
+		: style.common && style.common.nodeCursor
+			? style.common.nodeCursor
+			: Env.DEFAULT_NODE_CURSOR
+};
                 }
 
                 .node-text-${nodeType.id} {
@@ -351,12 +343,12 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .label-rect-${edgeType.id}:active{
                     cursor: ${
-						style.common && style.common.edgeCursorActive
-							? style.common.edgeCursorActive
-							: style.common && style.common.edgeCursor
-							? style.common.edgeCursor
-							: Env.DEFAULT_EDGE_CURSOR
-					};
+	style.common && style.common.edgeCursorActive
+		? style.common.edgeCursorActive
+		: style.common && style.common.edgeCursor
+			? style.common.edgeCursor
+			: Env.DEFAULT_EDGE_CURSOR
+};
                 }
 
                 .label g .label-rect-${edgeType.id}.focused {

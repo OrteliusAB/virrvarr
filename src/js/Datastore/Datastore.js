@@ -129,7 +129,7 @@ export default class Datastore {
 				node.id = nodeIndex
 			}
 		})
-	}	
+	}
 
 	/**
 	 * Updates the data in the data store.

@@ -2,7 +2,6 @@ import * as d3 from "d3"
 import EventEnum from "../../Events/EventEnum"
 import Env from "../../Config/Env"
 import CssUtils from "../../Utils/CssUtils"
-import EventEmitter from "../../Events/EventEmitter"
 
 /**
  * The Highlighter class handles highlighting of nodes in the graph.
@@ -10,9 +9,9 @@ import EventEmitter from "../../Events/EventEmitter"
  */
 export default class Highlighter {
 	/**
-	 * @param {HTMLElement} graphContainerElement 
-	 * @param {EventEmitter} eventEmitter 
-	 * @param {object} userDefinedOptions 
+	 * @param {HTMLElement} graphContainerElement
+	 * @param {EventEmitter} eventEmitter
+	 * @param {object} userDefinedOptions
 	 */
 	constructor(graphContainerElement, eventEmitter, userDefinedOptions) {
 		this.graphContainerElement = graphContainerElement
@@ -29,7 +28,7 @@ export default class Highlighter {
 			this.clearDisabled()
 		})
 		this.ee.on(EventEnum.SELECTION_UPDATED, newSelection => this.handleEntitySelection(newSelection))
-		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, isEnabled => this.isLassoActive = isEnabled)
+		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, isEnabled => (this.isLassoActive = isEnabled))
 		this.ee.on(EventEnum.HOVER_ENTITY, data => {
 			if (this.enableOnionOnHover) {
 				const nodeElementNode = d3.select(this.graphContainerElement).select(`[id='${data.id}']`)
@@ -77,7 +76,7 @@ export default class Highlighter {
 
 	/**
 	 * Handles reflecting selection changes in the DOM
-	 * @param {Selection[]} selection - A list of selected nodes and edges. 
+	 * @param {Selection[]} selection - A list of selected nodes and edges.
 	 */
 	handleEntitySelection(selection) {
 		if (selection.length === 0) {
@@ -86,11 +85,18 @@ export default class Highlighter {
 			return
 		}
 		const entitiesToToggle = selection
-			.filter(outer => !this.currentSelection.find(inner => `${outer.id}${outer.direction ? outer.direction : ""}` === `${inner.id}${inner.direction ? inner.direction : ""}`)
+			.filter(
+				outer =>
+					!this.currentSelection.find(
+						inner => `${outer.id}${outer.direction ? outer.direction : ""}` === `${inner.id}${inner.direction ? inner.direction : ""}`
+					)
 			)
 			.concat(
-				this.currentSelection.filter(outer =>
-					!selection.find(inner => `${outer.id}${outer.direction ? outer.direction : ""}` === `${inner.id}${inner.direction ? inner.direction : ""}`)
+				this.currentSelection.filter(
+					outer =>
+						!selection.find(
+							inner => `${outer.id}${outer.direction ? outer.direction : ""}` === `${inner.id}${inner.direction ? inner.direction : ""}`
+						)
 				)
 			)
 		if (entitiesToToggle.length > 0) {
@@ -207,10 +213,10 @@ export default class Highlighter {
 		Array.from(DOMNeighborhood).forEach(node => {
 			if (node.classList.contains("onion-clone")) {
 				found = true
-				if (!this.isLassoActive) { //Becomes really heavy for Chrome
+				if (!this.isLassoActive) {
+					//Becomes really heavy for Chrome
 					d3.select(node).attr("class", null).transition().duration(Env.DEFAULT_ONION_ANIMATION_TIME).style("transform", "scale(0.8)").remove()
-				}
-				else {
+				} else {
 					d3.select(node).attr("class", null).remove()
 				}
 			}
@@ -246,7 +252,8 @@ export default class Highlighter {
 				clone.setAttribute("opacity", 0.5 / i)
 				clone.classList.add("onion-clone")
 				DOMElement.parentElement.insertBefore(clone, previousNode)
-				if (!this.isLassoActive) { //Becomes really heavy for Chrome
+				if (!this.isLassoActive) {
+					//Becomes really heavy for Chrome
 					CssUtils.tween(
 						clone,
 						"transform",
