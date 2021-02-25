@@ -12,6 +12,8 @@ export default class VVNode {
 		//Coordinates
 		this.x = undefined
 		this.y = undefined
+		this.relativeX = undefined
+		this.relativeY = undefined
 
 		//Fixed coordinates
 		this.fx = undefined
@@ -25,12 +27,17 @@ export default class VVNode {
 		this.isFiltered = false
 		this.isHidden = false //E.g. imploded
 
+		//Status
+		this.isFocused = false
+
 		//Other Meta data
 		this.hiddenEdgeCount = 0
 		this.shape = null
 		this.radius = null
 		this.width = null
 		this.height = null
+		this.relativeWidth = null
+		this.relativeheight = null
 
 		//Animation utility properties
 		this.sourceX = 0

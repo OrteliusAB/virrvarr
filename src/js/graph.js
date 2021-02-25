@@ -1,5 +1,4 @@
 import "./Utils/Protoypes"
-import Env from "./Config/Env"
 import Datastore from "./Datastore/Datastore"
 import EventEmitter from "./Events/EventEmitter"
 import UI from "./UI/UI"
@@ -18,6 +17,7 @@ export class Virrvarr {
 	 * @param {boolean} options.enableGrid - Should the grid background pattern be enabled?
 	 * @param {boolean} options.enableFadeOnHover - Should nodes and edges that are not directly connected to a hovered node be faded out when said node is hovered?
 	 * @param {boolean} options.enableZoomButtons - Should zoom buttons be enabled?
+	 * @param {boolean} options.enableScaleGridOnZoom - Should the grid scale with the zoom?
 	 * @param {boolean} options.enableContextMenu - Should the conext menu be enabled?
 	 * @param {Function} options.entityClickedListener - Click listener for entities.
 	 * @param {Function} options.entityDoubleClickedListener - Double click listener for entities.
@@ -29,9 +29,10 @@ export class Virrvarr {
 	 * @param {boolean} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
 	 * @param {rotateLabels} options.customContextMenu - Make edge labels perpendicular to the edge.
 	 * @param {boolean} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
-	 * @param {number} options.focusedOnionNumberOfLayers - How many layers should onion borders have by default?
-	 * @param {string} options.focusedOnionBaseColor - What should the base color be of the onion borders?
-	 * @param {number} options.focusedOnionLayerSize - How big should each layer in the onion border be by default?
+	 * @param {boolean} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
+	 * @param {number} options.onionNumberOfLayers - How many layers should onion borders have by default?
+	 * @param {string} options.onionBaseColor - What should the base color be of the onion borders?
+	 * @param {number} options.onionLayerSize - How big should each layer in the onion border be by default?
 	 *
 	 */
 	constructor(graphContainerElement, inputData, options) {
@@ -45,6 +46,7 @@ export class Virrvarr {
 		this._options.entityClickedListener && this._ee.on(EventEnum.CLICK_ENTITY, this._options.entityClickedListener)
 		this._options.entityDoubleClickedListener && this._ee.on(EventEnum.DBL_CLICK_ENTITY, this._options.entityDoubleClickedListener)
 		this._options.entityHoveredListener && this._ee.on(EventEnum.HOVER_ENTITY, this._options.entityHoveredListener)
+		this._options.selectionListener && this._ee.on(EventEnum.SELECTION_UPDATED, this._options.selectionListener)
 
 		/* Init UI */
 		this._UI = new UI(graphContainerElement, this._ee, this._style, options)
@@ -57,7 +59,7 @@ export class Virrvarr {
 
 		/* Graph has mounted! */
 		this._ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
-			this._UI.zoomHandler.scaleTo(Env.INITIAL_SCALE)
+			setTimeout(() => this._UI.zoomHandler.resetZoom(), 200)
 		})
 		this._ee.trigger(EventEnum.GRAPH_HAS_MOUNTED)
 	}
@@ -221,6 +223,25 @@ export class Virrvarr {
 	 */
 	setPinMode(isEnabled) {
 		this._ee.trigger(EventEnum.NODE_PIN_MODE_TOGGLED, isEnabled)
+	}
+
+	/**
+	 * Sets the multi selection mode for nodes on and off
+	 * multi selection mode is when selecting a node does not cause a deselection of any prior selected nodes
+	 * @param {boolean} isEnabled
+	 * @return {void}
+	 */
+	setMultiSelectMode(isEnabled) {
+		this._ee.trigger(EventEnum.NODE_MULTI_SELECT_MODE_TOGGLED, isEnabled)
+	}
+
+	/**
+	 * Sets the lasso selection mode for nodes on and off
+	 * @param {boolean} isEnabled
+	 * @return {void}
+	 */
+	setLassoMode(isEnabled) {
+		this._ee.trigger(EventEnum.LASSO_MODE_TOGGLED, isEnabled)
 	}
 
 	/**

@@ -11,9 +11,23 @@ export default class VVEdge {
 		this.multiplicityTo = multiplicityTo
 		this.data = data
 
+		//Status
+		this.isToFocused = false
+		this.isFromFocused = false
+
 		//Visual information
 		this.isFiltered = false
 		this.isHidden = false
+
+		//Relative coordinates
+		this.labelToRelativeX = undefined
+		this.labelToRelativeY = undefined
+		this.labelToRelativeWidth = undefined
+		this.labelToRelativeHeight = undefined
+		this.labelFromRelativeX = undefined
+		this.labelFromRelativeY = undefined
+		this.labelFromRelativeWidth = undefined
+		this.labelFromRelativeHeight = undefined
 
 		//Meta Data calculated at runtime
 		this.edgeDistance = undefined

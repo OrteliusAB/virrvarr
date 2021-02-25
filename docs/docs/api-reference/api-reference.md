@@ -32,8 +32,23 @@ data   |   Any (data bound to object)
 ###	Data.style{Object}
 Attribute | Datatype
 --- | ---
+common   |   Object
 nodes   |   Array {Object}
 edges   |   Array {Object}
+
+###	Data.style.common{Object}
+Attribute | Datatype
+--- | ---
+nodeCursor   |   String
+nodeCursorActive   |   String
+edgeCursor   |   String
+edgeCursorActive   |   String
+canvasCursor   |   String
+canvasCursorActive   |   String
+selectionLassoColor   |   String
+selectionLassoOpacity   |   String
+selectionLassoBorderWidth   |   String
+selectionLassoBorderColor   |   String
 
 ###	Data.style.nodes{Array}
 Attribute | Datatype
@@ -43,24 +58,28 @@ shape   |   String{“circle”, “layeredCircle”, “rectangle”}
 radius   |   String {Measurement} (if circle!)
 borderColor   |   String{CSS compatible color description}
 borderHoverColor   |   String{CSS compatible color description}
+borderFocusedColor   |   String{CSS compatible color description}
+borderFocusedHoverColor   |   String{CSS compatible color description}
 backgroundColor   |   String{CSS compatible color description}
 backgroundHoverColor   |   String{CSS compatible color description}
 backgroundFocusedColor   |   String{CSS compatible color description}
+backgroundFocusedHoverColor   |   String{CSS compatible color description}
 textColor   |   String{CSS compatible color description}
+textHoverColor   |   String{CSS compatible color description}
 textFocusedColor   |   String{CSS compatible color description}
+textFocusedHoverColor   |   String{CSS compatible color description}
 dotted   |   Boolean
 maxHeight   |   String {Measurement} (if rectangle!)
 maxWidth   |   String {Measurement} (if rectangle!)
 borderRadiusX   |   String {Measurement}
 borderRadiusY   |   String {Measurement}
-textHoverColor   |   String
-borderFocusedColor   |   String
 borderWidth    |    String {Measurement}
 borderHoverWidth    |    String {Measurement}
 borderFocusedWidth   |   String {Measurement}
 filter   |   string {CSS filter}
 hoverFilter   |   string {CSS filter}
 focusedFilter   |   string {CSS filter}
+focusedHoverFilter   |   string {CSS filter}
 icon    |    string
 
 ###	Data.style.edges{Array}
@@ -68,22 +87,25 @@ Attribute | Datatype
 --- | ---
 `id*`   |   String
 labelBackgroundColor   |   String{CSS compatible color description}
-hoverColor   |   String{CSS compatible color description}
 labelTextColor   |   String{CSS compatible color description}
+labelTextFocusedColor   |   String{CSS compatible color description}
+labelTextFocusedHoverColor   |   String{CSS compatible color description}
 dotted   |   Boolean
 arrowColor   |   String{CSS compatible color description}
 color   |   String{CSS compatible color description}
+hoverColor   |   String{CSS compatible color description}
+focusedColor   |   String{CSS compatible color description}
+focusedHoverColor   |   String{CSS compatible color description}
 edgeDistance   |   String {Measurement}
 borderRadiusX   |   String {Measurement}
 borderRadiusY   |   String {Measurement}
-labelTextHoverColor   |   String
 labelBorderColor   |   String
 labelHoveredBorderColor    |    String
 labelFocusedBorderColor    |    String
+labelFocusedHoverBorderColor    |    String
 labelBorderWidth   |   String {Measurement}
 labelHoveredBorderWidth    |    String {Measurement}
 labelFocusedBorderWidth    |    String {Measurement}
-focusedColor   |   String
 
 
 
@@ -94,10 +116,12 @@ Function | Function Blueprint
 entityClickedListener   |   Function{(data => { data.id; data.data; })}
 entityHoveredListener   |   Function{(data => { data.id; data.data; data.eventType; } )}
 entityDoubleClickedListener   |   Function{(data => { data.id; data.data; })}
+selectionListener   |   Function{(data => { data.id; data.type; data.direction; data.data; })}
 fixededgeLabelWidth   |   Boolean
 maxedgeLabelWidth   |   String {Measurement}
 edgeLabelWidth   |   String {Measurement}
 enableZoomButtons   |   Boolean
+enableScaleGridOnZoom   |   Boolean
 enableContextMenu   |   Boolean
 enableFadeOnHover   |   boolean
 enableGrid   |   Boolean
@@ -105,9 +129,10 @@ customContextMenu   |   Object
 enableMultiLineNodeLabels   |   Boolean
 rotateLabels   |   Boolean
 enableOnionOnFocus   |   Boolean
-focusedOnionNumberOfLayers   |   Number
-focusedOnionBaseColor   |   String {Measurement}
-focusedOnionLayerSize   |   Number
+enableOnionOnHover   |   Boolean
+onionNumberOfLayers   |   Number
+onionBaseColor   |   String {Measurement}
+onionLayerSize   |   Number
 
 ## Graph API
 Function | Function Blueprint | Description
@@ -124,6 +149,9 @@ resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph
 setMatrixLayout   |   Function<(attribute, filterFunction, sortFunction)>   |   Sets the layout to a fixed matrix. This enables the developer to group things together. The function can either take an attribute (with values set for it on each node, such as “type”) and use that as the criteria for grouping, or use a custom filter function which takes the bound data as input and returns a group name as a string.  A sortFunction can also be supplied in order to determine the order of things in the matrix. The order will read from left to right, top to bottom. Like a book.
 resetLayout   |   Function<()>   |   Resets the layout to the default layout
+setPinMode   |   Function<(isEnabled)>   |   Sets the pin mode of the graph
+setlassoMode   |   Function<(isEnabled)>   |   Sets the lasso selection mode of the graph
+setMultiSelectMode   |   Function<(isEnabled)>   |   Sets the multi select mode of the graph
 implodeOrExplodeNode   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction) isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeLeafs   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), but only if the nodes do not branch out any further (i.e. have any TO connections). isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeRecursive   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), and then recursively continues until it hits the end of the tree. isImplode indicates if it is a implode or explode operation

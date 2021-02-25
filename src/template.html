@@ -266,6 +266,8 @@
                         <h3 class="menu-title">Other</h3>
                     </summary>
                     <hr />
+                    <button class="menu-button menu-button-confirm" onclick="toggleLassoMode()">Toggle Lasso
+                        Mode</button>
                     <button class="menu-button menu-button-warning" onclick="destroyGraph()">Destroy
                         Graph</button>
                 </details>
@@ -289,6 +291,9 @@
                         },
                         entityDoubleClickedListener: function (item) {
                             console.log("Double clicked:", item)
+                        },
+                        selectionListener: function (selection) {
+                            console.log("Selection Updated:", selection)
                         },
                         showContextMenu: true,
                         customContextMenu: {
@@ -393,6 +398,11 @@
             window.graph.setPinMode(window.pinMode)
         }
 
+        function toggleLassoMode() {
+            window.lassoMode = !!!window.lassoMode
+            window.graph.setLassoMode(window.lassoMode)
+        }
+
         function pinGraph() {
             window.graph.pinGraph()
         }
@@ -435,10 +445,18 @@
             if (e.shiftKey) {
                 window.graph.setPinMode(true)
             }
+            if (e.ctrlKey) {
+                window.graph.setMultiSelectMode(true)
+                window.graph.setLassoMode(true)
+            }
         })
         window.addEventListener("keyup", e => {
             if (!e.shiftKey) {
                 window.graph.setPinMode(false)
+            }
+            if (!e.ctrlKey) {
+                window.graph.setMultiSelectMode(false)
+                window.graph.setLassoMode(false)
             }
         })
     </script>

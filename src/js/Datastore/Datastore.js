@@ -1,5 +1,6 @@
 import EventEnum from "../Events/EventEnum"
 import EntityProcessor from "./EntityProcessor"
+import SelectionProcessor from "./SelectionProcessor"
 import VVNode from "../Model/Node"
 import VVEdge from "../Model/Edge"
 
@@ -69,13 +70,16 @@ export default class Datastore {
 			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
 		this.entityProcessor = new EntityProcessor(this.ee, styles, userDefinedOptions)
+		this.selectionProcessor = new SelectionProcessor(this.ee, this)
 		this.updateEdgeIDs()
+		this.updateNodeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 	}
 
 	/**
 	 * Will always return only what data is currently live
+	 * @returns {VVEdge[]} edge
 	 */
 	get edges() {
 		return this.liveEdges
@@ -83,6 +87,7 @@ export default class Datastore {
 
 	/**
 	 * Will always return only what data is currently live
+	 * @returns {VVNode[]} node
 	 */
 	get nodes() {
 		return this.liveNodes
@@ -116,6 +121,17 @@ export default class Datastore {
 	}
 
 	/**
+	 * If there are nodes that lack IDs this function will set these to a number that represents the index in the node array.
+	 */
+	updateNodeIDs() {
+		this.allNodes.forEach((node, nodeIndex) => {
+			if (node.id === undefined) {
+				node.id = nodeIndex
+			}
+		})
+	}
+
+	/**
 	 * Updates the data in the data store.
 	 * @param {object[]} newNodes - All nodes to be included in the new data set
 	 * @param {object[]} newEdges - All edges to be included in the new data set
@@ -126,6 +142,7 @@ export default class Datastore {
 		this.allNodes = nodes
 		this.allEdges = edges
 		this.updateEdgeIDs()
+		this.updateNodeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 		this.updateLiveData()
@@ -134,7 +151,7 @@ export default class Datastore {
 	/**
 	 * Retrieves a node object by its ID
 	 * @param {string} ID - ID of the node
-	 * @return {object|null} - Node object or null
+	 * @return {VVNode|null} - Node object or null
 	 */
 	getNodeByID(ID) {
 		return this.allNodes.find(node => node.id === ID)
@@ -143,7 +160,7 @@ export default class Datastore {
 	/**
 	 * Retrieves an edge object by its ID
 	 * @param {string} ID - ID of the edge
-	 * @return {object|null} - Edge object or null
+	 * @return {VVEdge|null} - Edge object or null
 	 */
 	getEdgeByID(ID) {
 		return this.allEdges.find(edge => edge.id === ID)

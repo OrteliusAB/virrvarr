@@ -9,17 +9,23 @@ export default class ZoomHandler {
 	constructor(graphContainerElement, eventEmitter, options) {
 		this.graphContainerElement = graphContainerElement
 		this.enableZoomButtons = options.enableZoomButtons !== undefined ? options.enableZoomButtons : Env.ENABLE_ZOOM_BUTTONS
+		this.enableScaleGridOnZoom = options.enableScaleGridOnZoom !== undefined ? options.enableScaleGridOnZoom : Env.ENABLE_SCALE_GRID_ON_ZOOM
 		this.ee = eventEmitter
+		this.isLassoEnabled = false
 		this.ee.on(EventEnum.ZOOM_REQUESTED, (x, y, scale) => {
 			this.handleZoomRequest(x, y, scale)
 		})
+		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, isEnabled => (this.isLassoEnabled = isEnabled))
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
 		this.zoom = d3
 			.zoom()
+			.filter(() => !d3.event.ctrlKey && !d3.event.button && !this.isLassoEnabled) //Necessary to stop d3.zoom from grabbing the event.
 			.scaleExtent(Env.SCALE_EXTENT)
 			.on("zoom", () => {
-				const rootG = d3.select(this.graphContainerElement).select("g")
-				rootG.attr("transform", d3.event.transform)
+				d3.select(this.graphContainerElement).select("g").attr("transform", d3.event.transform)
+				if (this.enableScaleGridOnZoom) {
+					d3.select(this.graphContainerElement).select(".grid").attr("transform", d3.event.transform)
+				}
 			})
 		if (this.enableZoomButtons) {
 			this.initializeZoomButtons()
@@ -233,8 +239,9 @@ export default class ZoomHandler {
 	resetZoom() {
 		const rootG = d3.select(this.graphContainerElement).select("g")
 		const currentTransformStr = rootG.attr("transform")
-		let currentScale = currentTransformStr.substring(currentTransformStr.indexOf("scale(") + 6, currentTransformStr.lastIndexOf(")"))
-		currentScale = parseFloat(currentScale)
+		const currentScale = currentTransformStr
+			? parseFloat(currentTransformStr.substring(currentTransformStr.indexOf("scale(") + 6, currentTransformStr.lastIndexOf(")")))
+			: 1
 		const parentWidth = this.graphContainerElement.clientWidth
 		const parentHeight = this.graphContainerElement.clientHeight
 		const width = (rootG.node().getBBox().width + Env.ZOOM_PADDING * 2) * currentScale

@@ -357,10 +357,10 @@ export default class DOMProcessor {
 			.selectAll("path, text")
 			.classed("hovered", true)
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
+		this.handleHoverEvent(edgeData, "enter", direction)
 		setTimeout(() => {
 			const marker = this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
 			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
-				this.handleHoverEvent(edgeData, "enter")
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
 					if (a.id === edgeData.id && b.id !== edgeData.id) {
@@ -382,7 +382,7 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction - Direction of the edge
 	 */
 	labelMouseLeave(edgeData, direction) {
-		this.handleHoverEvent(edgeData, "leave")
+		this.handleHoverEvent(edgeData, "leave", direction)
 		const inverse = direction === "from"
 		this.rootG
 			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
@@ -430,6 +430,7 @@ export default class DOMProcessor {
 					.attr("r", d => d.radius)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
 					.attr("id", data.id)
+					.classed("main-shape", true)
 				if (data.icon) {
 					this.drawIcon(contentGroupElement, data.icon)
 					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
@@ -441,10 +442,12 @@ export default class DOMProcessor {
 					.attr("r", d => d.radius)
 					.attr("style", "stroke-width:2;fill:#fff;stroke:#000;stroke-dasharray:0;pointer-events:none;")
 					.attr("id", data.id)
+					.attr("class", "layered-circle")
 				element
 					.insert("circle", "g")
 					.attr("r", d => d.radius - 4)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
+					.classed("main-shape", true)
 				if (data.icon) {
 					this.drawIcon(contentGroupElement, data.icon)
 					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
@@ -458,6 +461,7 @@ export default class DOMProcessor {
 					.attr("width", d => d.width)
 					.attr("height", d => d.height)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
+					.classed("main-shape", true)
 					.attr("id", data.id)
 				if (data.icon) {
 					const icon = this.drawIcon(element, data.icon)
@@ -743,12 +747,14 @@ export default class DOMProcessor {
 	 * Handles what happens when an item is hovered
 	 * @param {object} hoveredData - Object that has been hovered
 	 * @param {"enter"|"exit"} eventType - What type of event it is.
+	 * @param {"to"|"from"} direction? - If an edge is hovered then this will show the potential direction.
 	 */
-	handleHoverEvent(hoveredData, eventType) {
+	handleHoverEvent(hoveredData, eventType, direction = undefined) {
 		this.ee.trigger(EventEnum.HOVER_ENTITY, {
 			eventType,
 			id: hoveredData.id,
-			data: hoveredData.data
+			data: hoveredData.data,
+			direction
 		})
 		if (this.enableFadeOnHover) {
 			if (!hoveredData.sourceNode) {
@@ -798,9 +804,17 @@ export default class DOMProcessor {
 	 */
 	tick() {
 		//Nodes
-		this.nodeElements.attr("transform", node => {
-			return "translate(" + node.x + "," + node.y + ")"
-		})
+		this.nodeElements
+			.attr("transform", node => {
+				return "translate(" + node.x + "," + node.y + ")"
+			})
+			.each(function (d) {
+				const node = d3.select(this).select("*:not(.onion-clone)").node()
+				d.relativeX = node.getBoundingClientRect().x
+				d.relativeY = node.getBoundingClientRect().y
+				d.relativeWidth = node.getBoundingClientRect().width
+				d.relativeHeight = node.getBoundingClientRect().height
+			})
 		//Edges
 		this.edgePath.attr("d", l => {
 			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
@@ -840,25 +854,35 @@ export default class DOMProcessor {
 			return "translate(" + (pos.x + n.x) + "," + (pos.y + n.y) + ")"
 		})
 		//Labels
-		this.labels.attr("transform", function (l) {
-			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
-				return ""
-			}
-			const group = d3.select(this)
-			const midX = l.curvePoint.x
-			let midY = l.curvePoint.y
-			if (l.nameFrom) {
-				if (group.classed("to")) {
-					midY += Env.LABEL_HEIGHT / 2 + 1
-				} else if (group.classed("from")) {
-					midY -= Env.LABEL_HEIGHT / 2 + 1
+		this.labels
+			.attr("transform", function (l) {
+				if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
+					return ""
 				}
-			}
-			if (l.angle) {
-				return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
-			} else {
-				return "translate(" + midX + "," + midY + ")"
-			}
-		})
+				const group = d3.select(this)
+				const midX = l.curvePoint.x
+				let midY = l.curvePoint.y
+				if (l.nameFrom) {
+					if (group.classed("to")) {
+						midY += Env.LABEL_HEIGHT / 2 + 1
+					} else if (group.classed("from")) {
+						midY -= Env.LABEL_HEIGHT / 2 + 1
+					}
+				}
+				if (l.angle) {
+					return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
+				} else {
+					return "translate(" + midX + "," + midY + ")"
+				}
+			})
+			.each(function (d) {
+				const group = d3.select(this)
+				const direction = group.classed("to") ? "To" : "From"
+				const rect = group.select("rect:not(.onion-clone)").node()
+				d[`label${direction}RelativeX`] = d.relativeX = rect.getBoundingClientRect().x
+				d[`label${direction}RelativeY`] = d.relativeY = rect.getBoundingClientRect().y
+				d[`label${direction}RelativeWidth`] = d.relativeWidth = rect.getBoundingClientRect().width
+				d[`label${direction}RelativeHeight`] = d.relativeHeight = rect.getBoundingClientRect().height
+			})
 	}
 }

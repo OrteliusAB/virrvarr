@@ -50,7 +50,11 @@ export default class Engine {
 			this.restart()
 		})
 		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
-			this.alpha(0.01)
+			this.alpha(0.001)
+			this.restart()
+		})
+		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, () => {
+			this.alpha(0.001)
 			this.restart()
 		})
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.stop())
