@@ -100,7 +100,7 @@ export default Object.freeze({
 
 	//Onion Border
 	ENABLE_ONION_ON_FOCUS: true,
-	ENABLE_ONION_ON_HOVER: false,
+	ENABLE_ONION_ON_HOVER: true,
 	DEFAULT_ONION_LAYERS: 2,
 	DEFAULT_ONION_COLOR: "#B6D5DB",
 	DEFAULT_ONION_SIZE: 10,

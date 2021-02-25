@@ -805,10 +805,11 @@ export default class DOMProcessor {
 				return "translate(" + node.x + "," + node.y + ")"
 			})
 			.each(function (d) {
-				d.relativeX = this.getBoundingClientRect().x
-				d.relativeY = this.getBoundingClientRect().y
-				d.relativeWidth = this.getBoundingClientRect().width
-				d.relativeHeight = this.getBoundingClientRect().height
+				const node = d3.select(this).select("*:not(.onion-clone)").node()
+				d.relativeX = node.getBoundingClientRect().x
+				d.relativeY = node.getBoundingClientRect().y
+				d.relativeWidth = node.getBoundingClientRect().width
+				d.relativeHeight = node.getBoundingClientRect().height
 			})
 		//Edges
 		this.edgePath.attr("d", l => {
@@ -873,10 +874,11 @@ export default class DOMProcessor {
 			.each(function (d) {
 				const group = d3.select(this)
 				const direction = group.classed("to") ? "To" : "From"
-				d[`label${direction}RelativeX`] = d.relativeX = this.getBoundingClientRect().x
-				d[`label${direction}RelativeY`] = d.relativeY = this.getBoundingClientRect().y
-				d[`label${direction}RelativeWidth`] = d.relativeWidth = this.getBoundingClientRect().width
-				d[`label${direction}RelativeHeight`] = d.relativeHeight = this.getBoundingClientRect().height
+				const rect = group.select("rect:not(.onion-clone)").node()
+				d[`label${direction}RelativeX`] = d.relativeX = rect.getBoundingClientRect().x
+				d[`label${direction}RelativeY`] = d.relativeY = rect.getBoundingClientRect().y
+				d[`label${direction}RelativeWidth`] = d.relativeWidth = rect.getBoundingClientRect().width
+				d[`label${direction}RelativeHeight`] = d.relativeHeight = rect.getBoundingClientRect().height
 			})
 	}
 }
