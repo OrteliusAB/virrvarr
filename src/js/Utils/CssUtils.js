@@ -45,6 +45,7 @@ const initializeGraphStyles = (style, id) => {
                     border-style: solid;
                     position: absolute;
                     display: none;
+                    pointer-events: none;
                 }
 
                 /* Tooltip */

@@ -430,6 +430,7 @@ export default class DOMProcessor {
 					.attr("r", d => d.radius)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
 					.attr("id", data.id)
+					.classed("main-shape", true)
 				if (data.icon) {
 					this.drawIcon(contentGroupElement, data.icon)
 					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
@@ -441,10 +442,12 @@ export default class DOMProcessor {
 					.attr("r", d => d.radius)
 					.attr("style", "stroke-width:2;fill:#fff;stroke:#000;stroke-dasharray:0;pointer-events:none;")
 					.attr("id", data.id)
+					.attr("class", "layered-circle")
 				element
 					.insert("circle", "g")
 					.attr("r", d => d.radius - 4)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
+					.classed("main-shape", true)
 				if (data.icon) {
 					this.drawIcon(contentGroupElement, data.icon)
 					textOffsetY = Env.DEFAULT_NODE_ICON_PADDING
@@ -458,6 +461,7 @@ export default class DOMProcessor {
 					.attr("width", d => d.width)
 					.attr("height", d => d.height)
 					.attr("class", `node-${data.type ? data.type : "default"}`)
+					.classed("main-shape", true)
 					.attr("id", data.id)
 				if (data.icon) {
 					const icon = this.drawIcon(element, data.icon)

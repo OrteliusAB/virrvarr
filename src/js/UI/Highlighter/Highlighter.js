@@ -160,10 +160,13 @@ export default class Highlighter {
 	toggleNodeEntityFocus(entityID) {
 		const nodeElement = d3.select(this.graphContainerElement).select(`[id='${entityID}']`) //html4 support
 		if (nodeElement.node()) {
-			const DOMElement = nodeElement.node()
+			let DOMElement = nodeElement.node()
 			const DOMNeighborhood = DOMElement.parentElement.children
 			d3.selectAll([...DOMNeighborhood]).classed("focused", !nodeElement.classed("focused"))
-			if (this.enableOnionOnFocus) {
+			if(!DOMElement.matches(".main-shape")) {
+				DOMElement = [...DOMNeighborhood].find(element => element.matches(".main-shape"))
+			}
+			if (this.enableOnionOnFocus && !(this.enableOnionOnHover && DOMElement.matches(":hover"))) {
 				this.toggleOnionBorder(DOMElement, this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
 			}
 			return true
@@ -182,7 +185,7 @@ export default class Highlighter {
 			const label = labelGroup.select("rect:not(.removing)[class*='label-rect']")
 			const focusedState = label.classed("focused")
 			label.classed("focused", !focusedState)
-			if (this.enableOnionOnFocus) {
+			if (this.enableOnionOnFocus && !(this.enableOnionOnHover && label.node().matches(":hover"))) {
 				this.toggleOnionBorder(label.node(), this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
 			}
 			d3.select(this.graphContainerElement)
