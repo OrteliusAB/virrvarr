@@ -1,5 +1,13 @@
 {
     "style": {
+        "common": {
+            "nodeCursor": "auto",
+            "nodeCursorActive": "auto",
+            "edgeCursor": "auto",
+            "edgeCursorActive": "auto",
+            "canvasCursor": "move",
+            "canvasCursorActive": "move"
+        },
         "nodes": [
             {
                 "id": "external",

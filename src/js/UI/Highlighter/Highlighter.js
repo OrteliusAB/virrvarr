@@ -163,7 +163,7 @@ export default class Highlighter {
 			let DOMElement = nodeElement.node()
 			const DOMNeighborhood = DOMElement.parentElement.children
 			d3.selectAll([...DOMNeighborhood]).classed("focused", !nodeElement.classed("focused"))
-			if(!DOMElement.matches(".main-shape")) {
+			if (!DOMElement.matches(".main-shape")) {
 				DOMElement = [...DOMNeighborhood].find(element => element.matches(".main-shape"))
 			}
 			if (this.enableOnionOnFocus && !(this.enableOnionOnHover && DOMElement.matches(":hover"))) {
