@@ -43,7 +43,7 @@ const initializeGraphStyles = (style, id) => {
 	style.common && style.common.selectionLassoBorderColor ? style.common.selectionLassoBorderColor : Env.SELECTION_LASSO_COLOR
 };
                     border-style: solid;
-                    position: absolute;
+                    position: fixed;
                     display: none;
                     pointer-events: none;
                 }
