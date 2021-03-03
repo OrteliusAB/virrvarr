@@ -72,7 +72,6 @@ export default class Datastore {
 		this.entityProcessor = new EntityProcessor(this.ee, styles, userDefinedOptions)
 		this.selectionProcessor = new SelectionProcessor(this.ee, this)
 		this.updateEdgeIDs()
-		this.updateNodeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 	}
@@ -116,17 +115,6 @@ export default class Datastore {
 		this.allEdges.forEach((edge, edgeIndex) => {
 			if (edge.id === undefined) {
 				edge.id = edgeIndex
-			}
-		})
-	}
-
-	/**
-	 * If there are nodes that lack IDs this function will set these to a number that represents the index in the node array.
-	 */
-	updateNodeIDs() {
-		this.allNodes.forEach((node, nodeIndex) => {
-			if (node.id === undefined) {
-				node.id = nodeIndex
 			}
 		})
 	}
