@@ -64,14 +64,18 @@ export default class Highlighter {
 				.select("defs")
 				.append("filter")
 				.attr("id", id)
+				.attr("width", "400%")
+				.attr("height", "400%")
+				.attr("y", "50%")
+				.attr("x", "50%")
 				.append("feDropShadow")
 				.attr("dx", "0")
 				.attr("dy", "0")
 				.attr("stdDeviation", deviation)
 				.attr("flood-opacity", opacity)
 		}
-		shadowFilter("shadow-filter", 3, 0.5)
-		shadowFilter("shadow-dark-filter", 5, 0.5)
+		shadowFilter("shadow-filter", 4, 0.6)
+		shadowFilter("shadow-dark-filter", 6, 0.8)
 	}
 
 	/**
