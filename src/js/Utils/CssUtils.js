@@ -180,7 +180,7 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .to:hover .label-text-default,
                 .from:hover .label-text-default{
-                    fill: ${Env.DEFAULT_LABEL_TEXT_HOVER_COLOR}
+                    fill: ${Env.DEFAULT_LABEL_TEXT_HOVER_COLOR};
                 }
                 
                 .marker-default path{
@@ -289,12 +289,12 @@ const initializeGraphStyles = (style, id) => {
                 }
                 .virrvarr .node-${nodeType.id}.focused {
                     ${nodeType.borderFocusedWidth ? `stroke-width:${nodeType.borderFocusedWidth};` : ""}
-                    ${nodeType.borderFocusedColor ? `stroke:${nodeType.borderFocusedColor} !important` : ""}
+                    ${nodeType.borderFocusedColor ? `stroke:${nodeType.borderFocusedColor} !important;` : ""}
                     ${nodeType.backgroundFocusedColor ? `fill:${nodeType.backgroundFocusedColor};` : ""}
                     ${nodeType.focusedFilter ? `filter:${nodeType.focusedFilter} !important;` : ""}
                 }
                 .virrvarr .node-${nodeType.id}.focused:hover {
-                    ${nodeType.borderFocusedHoverColor ? `stroke:${nodeType.borderFocusedHoverColor} !important` : ""}
+                    ${nodeType.borderFocusedHoverColor ? `stroke:${nodeType.borderFocusedHoverColor} !important;` : ""}
                     ${nodeType.backgroundFocusedHoverColor ? `fill:${nodeType.backgroundFocusedHoverColor};` : ""}
                     ${nodeType.focusedHoverFilter ? `filter:${nodeType.focusedHoverFilter} !important;` : ""}
                 }
