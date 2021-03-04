@@ -236,6 +236,16 @@ export class Virrvarr {
 	}
 
 	/**
+	 * Sets the multi selection drag mode for nodes on and off
+	 * Turning this mode on means that when you drag a selected node all other selected nodes move an equivalent amount of pixels.
+	 * @param {boolean} isEnabled
+	 * @return {void}
+	 */
+	setMultiSelectDragMode(isEnabled) {
+		this._ee.trigger(EventEnum.NODE_MULTI_SELECT_DRAG_MODE_TOGGLED, isEnabled)
+	}
+
+	/**
 	 * Sets the lasso selection mode for nodes on and off
 	 * @param {boolean} isEnabled
 	 * @return {void}
