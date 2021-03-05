@@ -1,6 +1,6 @@
 /** @preserve @license @cc_on
  * ----------------------------------------------------------
- * virrvarr version 0.1.20
+ * virrvarr version 0.1.21
  * An awesome network graph 
  * https://github.com/OrteliusAB/virrvarr
  * Copyright (c) 2021 Ortelius AB
