@@ -17,10 +17,22 @@ export default class DOMProcessor {
 		this.rootG = rootG
 		this.nodes = []
 		this.edges = []
+		this.selection = null
+		this.dragSelection = []
 		this.listeningForTick = false
 		this.pinMode = false
 
+		this.lastDragX = 0
+		this.lastDragY = 0
+		this.isMultiSelecDragtModeEnabled = false
+
 		this.ee = eventEmitter
+		this.ee.on(EventEnum.NODE_MULTI_SELECT_DRAG_MODE_TOGGLED, isEnabled => {
+			this.isMultiSelecDragtModeEnabled = isEnabled
+		})
+		this.ee.on(EventEnum.SELECTION_UPDATED, selection => {
+			this.selection = selection
+		})
 		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
 			this.showMultiplicity = !this.showMultiplicity
 			this.updateMultiplicityCounters(this.edges)
@@ -152,22 +164,47 @@ export default class DOMProcessor {
 			.call(
 				d3
 					.drag()
+					.filter(() => !d3.event.button) //By default the filter will block the event if ctrl is down.
 					.on("start", d => {
-						//Stop force on start in case it was just a simple click
-						this.ee.trigger(EventEnum.NODE_DRAG_START, d)
-						d.pin(d.x, d.y)
-					})
-					.on("drag", d => {
-						//Restart force on drag
-						this.ee.trigger(EventEnum.NODE_DRAG_DRAGGED, d)
-						d.pin(d3.event.x, d3.event.y)
-					})
-					.on("end", d => {
-						if (!this.pinMode) {
-							d.unPin()
+						if (
+							this.isMultiSelecDragtModeEnabled &&
+							this.selection &&
+							this.selection.find(selection => selection.type === "node" && selection.id === d.id)
+						) {
+							this.dragSelection = this.nodes.filter(node => {
+								return this.selection.find(selection => selection.type === "node" && selection.id === node.id)
+							})
+						} else {
+							this.dragSelection = [d]
 						}
-						this.updateNodes(this.nodes)
-						this.ee.trigger(EventEnum.NODE_DRAG_ENDED, d)
+						for (let i = 0; i < this.dragSelection.length; i++) {
+							this.ee.trigger(EventEnum.NODE_DRAG_START, this.dragSelection[i])
+							this.dragSelection[i].pin(this.dragSelection[i].x, this.dragSelection[i].y)
+						}
+						this.lastDragX = d3.event.x
+						this.lastDragY = d3.event.y
+					})
+					.on("drag", () => {
+						for (let i = 0; i < this.dragSelection.length; i++) {
+							this.ee.trigger(EventEnum.NODE_DRAG_DRAGGED, this.dragSelection[i])
+							const newX = this.dragSelection[i].fx + d3.event.x - this.lastDragX
+							const newY = this.dragSelection[i].fy + d3.event.y - this.lastDragY
+							this.dragSelection[i].pin(newX, newY)
+						}
+						this.lastDragX = d3.event.x
+						this.lastDragY = d3.event.y
+					})
+					.on("end", () => {
+						for (let i = 0; i < this.dragSelection.length; i++) {
+							if (!this.pinMode) {
+								this.dragSelection[i].unPin()
+							}
+							this.updateNodes(this.nodes)
+							this.ee.trigger(EventEnum.NODE_DRAG_ENDED, this.dragSelection[i])
+						}
+						this.dragSelection = []
+						this.lastDragX = 0
+						this.lastDragY = 0
 					})
 			)
 			.each((d, i, c) => {

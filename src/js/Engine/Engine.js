@@ -53,7 +53,7 @@ export default class Engine {
 			this.alpha(0.001)
 			this.restart()
 		})
-		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, () => {
+		this.ee.on(EventEnum.LASSO_ENTER, () => {
 			this.alpha(0.001)
 			this.restart()
 		})
