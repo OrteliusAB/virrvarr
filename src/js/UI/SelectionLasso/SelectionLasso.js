@@ -62,8 +62,8 @@ export default class SelectionLasso {
 	 */
 	moveLasso() {
 		const coordinates = d3.mouse(this.graphContainerElement)
-		const newX = coordinates[0] + this.graphContainerElement.getBoundingClientRect().x - window.pageXOffset
-		const newY = coordinates[1] + this.graphContainerElement.getBoundingClientRect().y - window.pageYOffset
+		const newX = coordinates[0] + this.graphContainerElement.getBoundingClientRect().x - window.pageXOffset + window.scrollX
+		const newY = coordinates[1] + this.graphContainerElement.getBoundingClientRect().y - window.pageYOffset + window.scrollY
 		const relativeX = newX - this.originX
 		const relativeY = newY - this.originY
 		const width = Math.abs(relativeX)
@@ -81,8 +81,8 @@ export default class SelectionLasso {
 	 */
 	showLasso() {
 		const coordinates = d3.mouse(this.graphContainerElement)
-		this.originX = coordinates[0] + this.graphContainerElement.getBoundingClientRect().x - window.pageXOffset
-		this.originY = coordinates[1] + this.graphContainerElement.getBoundingClientRect().y - window.pageYOffset
+		this.originX = coordinates[0] + this.graphContainerElement.getBoundingClientRect().x - window.pageXOffset + window.scrollX
+		this.originY = coordinates[1] + this.graphContainerElement.getBoundingClientRect().y - window.pageYOffset + window.scrollY
 		this.lasso.style.display = "block"
 		this.lasso.style.width = "0px"
 		this.lasso.style.height = "0px"
