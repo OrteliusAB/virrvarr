@@ -14,25 +14,25 @@ export class Virrvarr {
 	 * @param {HTMLElement} graphContainerElement - Element that the graph should mount in
 	 * @param {object} inputData - Data that the graph should display
 	 * @param {object} options - Optional configuration for the graph
-	 * @param {boolean} options.enableGrid - Should the grid background pattern be enabled?
-	 * @param {boolean} options.enableFadeOnHover - Should nodes and edges that are not directly connected to a hovered node be faded out when said node is hovered?
-	 * @param {boolean} options.enableZoomButtons - Should zoom buttons be enabled?
-	 * @param {boolean} options.enableScaleGridOnZoom - Should the grid scale with the zoom?
-	 * @param {boolean} options.enableContextMenu - Should the conext menu be enabled?
-	 * @param {Function} options.entityClickedListener - Click listener for entities.
-	 * @param {Function} options.entityDoubleClickedListener - Double click listener for entities.
-	 * @param {Function} options.entityHoveredListener - Hover listener for entities.
-	 * @param {boolean} options.enableFixedEdgeLabelWidth - Should edge label width be fixed? Note that you need to provide the edgeLabelWidth option together with this option.
-	 * @param {number} options.edgeLabelWidth - Default edge label width.
-	 * @param {number} options.maxEdgeLabelWidth - Maximum edge label width.
-	 * @param {object} options.customContextMenu - Custom context menu.
-	 * @param {boolean} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
-	 * @param {rotateLabels} options.customContextMenu - Make edge labels perpendicular to the edge.
-	 * @param {boolean} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
-	 * @param {boolean} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
-	 * @param {number} options.onionNumberOfLayers - How many layers should onion borders have by default?
-	 * @param {string} options.onionBaseColor - What should the base color be of the onion borders?
-	 * @param {number} options.onionLayerSize - How big should each layer in the onion border be by default?
+	 * @param {boolean=} options.enableGrid - Should the grid background pattern be enabled?
+	 * @param {boolean=} options.enableFadeOnHover - Should nodes and edges that are not directly connected to a hovered node be faded out when said node is hovered?
+	 * @param {boolean=} options.enableZoomButtons - Should zoom buttons be enabled?
+	 * @param {boolean=} options.enableScaleGridOnZoom - Should the grid scale with the zoom?
+	 * @param {boolean=} options.enableContextMenu - Should the conext menu be enabled?
+	 * @param {Function=} options.entityClickedListener - Click listener for entities.
+	 * @param {Function=} options.entityDoubleClickedListener - Double click listener for entities.
+	 * @param {Function=} options.entityHoveredListener - Hover listener for entities.
+	 * @param {boolean=} options.enableFixedEdgeLabelWidth - Should edge label width be fixed? Note that you need to provide the edgeLabelWidth option together with this option.
+	 * @param {number=} options.edgeLabelWidth - Default edge label width.
+	 * @param {number=} options.maxEdgeLabelWidth - Maximum edge label width.
+	 * @param {object=} options.customContextMenu - Custom context menu.
+	 * @param {boolean=} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
+	 * @param {boolean=} options.rotateLabels - Make edge labels perpendicular to the edge.
+	 * @param {boolean=} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
+	 * @param {boolean=} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
+	 * @param {number=} options.onionNumberOfLayers - How many layers should onion borders have by default?
+	 * @param {string=} options.onionBaseColor - What should the base color be of the onion borders?
+	 * @param {number=} options.onionLayerSize - How big should each layer in the onion border be by default?
 	 *
 	 */
 	constructor(graphContainerElement, inputData, options) {
