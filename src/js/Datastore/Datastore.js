@@ -130,7 +130,6 @@ export default class Datastore {
 		this.allNodes = nodes
 		this.allEdges = edges
 		this.updateEdgeIDs()
-		this.updateNodeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 		this.updateLiveData()
