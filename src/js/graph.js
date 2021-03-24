@@ -59,7 +59,9 @@ export class Virrvarr {
 
 		/* Graph has mounted! */
 		this._ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
-			setTimeout(() => this._UI.zoomHandler.resetZoom(), 300)
+			if (inputData.nodes) {
+				setTimeout(() => this._UI.zoomHandler.resetZoom(), 300)
+			}
 		})
 		this._ee.trigger(EventEnum.GRAPH_HAS_MOUNTED)
 	}
