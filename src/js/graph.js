@@ -59,7 +59,7 @@ export class Virrvarr {
 
 		/* Graph has mounted! */
 		this._ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
-			if (inputData.nodes) {
+			if (inputData.nodes.length > 0) {
 				setTimeout(() => this._UI.zoomHandler.resetZoom(), 300)
 			}
 		})
