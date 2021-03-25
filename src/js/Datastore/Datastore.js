@@ -125,12 +125,31 @@ export default class Datastore {
 	 * @param {object[]} newEdges - All edges to be included in the new data set
 	 */
 	updateDataset(newNodes, newEdges) {
-		const nodes = JSON.parse(JSON.stringify(newNodes))
-		const edges = JSON.parse(JSON.stringify(newEdges))
-		this.allNodes = nodes
-		this.allEdges = edges
+		this.allNodes = newNodes.map(node => {
+			const existingNode = this.allNodes.find(oldNode => oldNode.id === node.id)
+			if (existingNode) {
+				return existingNode
+			}
+			return new VVNode(node.id, node.type, node.name, node.icon, node.data)
+		})
+		this.allEdges = newEdges.map(edge => {
+			const existingEdge = this.allEdges.find(oldEdge => oldEdge.id === edge.id)
+			if (existingEdge) {
+				return existingEdge
+			}
+			return new VVEdge(
+				edge.id,
+				edge.type,
+				edge.sourceNode,
+				edge.targetNode,
+				edge.nameFrom,
+				edge.nameTo,
+				edge.multiplicityFrom,
+				edge.multiplicityTo,
+				edge.data
+			)
+		})
 		this.updateEdgeIDs()
-		this.updateNodeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 		this.updateLiveData()
