@@ -41,4 +41,22 @@ export default class VVEdge {
 		this.index = this.source = undefined //index reference
 		this.target = undefined //index reference
 	}
+
+	/**
+	 * Updates the main data points of the edge after it has been created
+	 * @param {string} type - Type of edge
+	 * @param {string} nameFrom - Name in the from direction
+	 * @param {string} nameTo - Name in the to direction
+	 * @param {string} multiplicityFrom - Multiplicity in the from direction
+	 * @param {string} multiplicityTo - Multiplicity in the to direction
+	 * @param {any} data - Bound data
+	 */
+	updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, data) {
+		this.type = type
+		this.nameFrom = nameFrom
+		this.nameTo = nameTo
+		this.multiplicityFrom = multiplicityFrom
+		this.multiplicityTo = multiplicityTo
+		this.data = data
+	}
 }

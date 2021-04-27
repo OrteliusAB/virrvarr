@@ -53,6 +53,20 @@ export default class VVNode {
 	}
 
 	/**
+	 * Updates the basic data points of the node after it has been created
+	 * @param {string} type - Node type
+	 * @param {string} name - Node name
+	 * @param {string} icon - Icon URL
+	 * @param {any} data - New bound data
+	 */
+	updateData(type, name, icon, data) {
+		this.type = type
+		this.name = name
+		this.icon = icon
+		this.data = data
+	}
+
+	/**
 	 * Fixates node to a given position in the graph.
 	 * @param {number} x - X coordinate
 	 * @param {number} y - Y coordinate

@@ -281,12 +281,13 @@
     </main>
 
     <script>
+        var data = {}
         window.onload = function () {
             const xhttp = new XMLHttpRequest()
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     const graphContainer = document.getElementById("my-virrvarr-graph")
-                    const data = JSON.parse(this.responseText)
+                    data = JSON.parse(this.responseText)
                     const options = {
                         entityClickListener: function (item) {
                             console.log("Clicked:", item)
@@ -454,6 +455,22 @@
             else {
                 panel.style.transform = "translateX(-100%)"
             }
+        }
+
+        function toggleType() {
+            if (data.edges[data.edges.length - 1].type === "attribute") {
+                data.edges[data.edges.length - 1].type = undefined
+            }
+            else {
+                data.edges[data.edges.length - 1].type = "attribute"
+            }
+            if (data.nodes[data.nodes.length - 1].type === "largeliteral") {
+                data.nodes[data.nodes.length - 1].type = undefined
+            }
+            else {
+                data.nodes[data.nodes.length - 1].type = "largeliteral"
+            }
+            window.graph.updateDataset(data)
         }
 
         window.addEventListener("keydown", e => {

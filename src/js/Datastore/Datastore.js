@@ -128,6 +128,7 @@ export default class Datastore {
 		this.allNodes = newNodes.map(node => {
 			const existingNode = this.allNodes.find(oldNode => oldNode.id === node.id)
 			if (existingNode) {
+				existingNode.updateData(node.type, node.name, node.icon, node.data)
 				return existingNode
 			}
 			return new VVNode(node.id, node.type, node.name, node.icon, node.data)
@@ -135,6 +136,7 @@ export default class Datastore {
 		this.allEdges = newEdges.map(edge => {
 			const existingEdge = this.allEdges.find(oldEdge => oldEdge.id === edge.id)
 			if (existingEdge) {
+				existingEdge.updateData(edge.type, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.data)
 				return existingEdge
 			}
 			return new VVEdge(
@@ -328,29 +330,8 @@ export default class Datastore {
 	 * Updates the live data by filtering non-relevant nodes and edges
 	 */
 	updateLiveData() {
-		const nodes = this.allNodes.filter(node => this.isNodeLive(node))
-		const edges = this.allEdges.filter(edge => this.isEdgeLive(edge))
-
-		//Apply the result to the live data
-		//Sidenote: the reason we don't just overwrite the live data is because that messes with D3s object references
-		nodes.forEach(newNode => {
-			if (!this.liveNodes.find(oldNode => oldNode.id === newNode.id)) {
-				this.liveNodes.push(newNode)
-			}
-		})
-		this.liveNodes = this.liveNodes.filter(oldNode => {
-			return nodes.find(newNode => oldNode.id === newNode.id)
-		})
-
-		edges.forEach(newEdge => {
-			if (!this.liveEdges.find(oldEdge => oldEdge.id === newEdge.id)) {
-				this.liveEdges.push(newEdge)
-			}
-		})
-		this.liveEdges = this.liveEdges.filter(oldEdge => {
-			return edges.find(newEdge => oldEdge.id === newEdge.id)
-		})
-
+		this.liveNodes = this.allNodes.filter(node => this.isNodeLive(node))
+		this.liveEdges = this.allEdges.filter(edge => this.isEdgeLive(edge))
 		this.entityProcessor.executePreProcessor(this.nodes, this.edges)
 		this.ee.trigger(EventEnum.DATASTORE_UPDATED, this.nodes, this.edges)
 	}
