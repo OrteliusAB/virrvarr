@@ -470,6 +470,12 @@
             else {
                 data.nodes[data.nodes.length - 1].type = "largeliteral"
             }
+            if (data.nodes[data.nodes.length - 1].name === "DEFAULT NODE") {
+                data.nodes[data.nodes.length - 1].name = "SOME OTHER NAME"
+            }
+            else {
+                data.nodes[data.nodes.length - 1].name = "DEFAULT NODE"
+            }
             window.graph.updateDataset(data)
         }
 
