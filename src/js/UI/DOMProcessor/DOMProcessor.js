@@ -22,6 +22,11 @@ export default class DOMProcessor {
 		this.listeningForTick = false
 		this.pinMode = false
 
+		//Every time we redraw we want to store custom IDs of the last selection, including type and meta data.
+		//This is beacuse we may receive the same node/edge, but with new parameters, and in that case it has to be redrawn
+		this.lastEdgeIDs = new Set()
+		this.lastNodeIDs = new Set()
+
 		this.lastDragX = 0
 		this.lastDragY = 0
 		this.isMultiSelecDragtModeEnabled = false
@@ -42,6 +47,7 @@ export default class DOMProcessor {
 			this.nodes = nodes
 			this.edges = edges
 			//The order of these matters, don't rearrange
+			this.cleanOldDOMNodesAndEdges()
 			this.updateMarkers(edges)
 			this.updateEdges(edges)
 			this.updateLabels(edges)
@@ -58,6 +64,61 @@ export default class DOMProcessor {
 		this.ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
 			this.listeningForTick = true
 		})
+	}
+
+	/**
+	 * Finds any nodes or edges that have changed in a way that must be reflected in the DOM, and removes them from the dataset bound to the DOM elements
+	 * This makes it so that the next enter() selection will receive the nodes/edges as new data points, and will redraw them from scratch
+	 */
+	cleanOldDOMNodesAndEdges() {
+		const fixList = (idSet, idGenerator, entityList, selectorArray) => {
+			if (idSet.size > 0 && entityList.length > 0) {
+				const update = entityList.filter(entity => idSet.has(idGenerator(entity)))
+				selectorArray.forEach(selector => {
+					this.rootG
+						.select(selector[0])
+						.selectAll(selector[1])
+						.data(update, d => {
+							return d.id
+						})
+						.exit()
+						.remove()
+				})
+			}
+			idSet.clear()
+			entityList.forEach(entity => idSet.add(idGenerator(entity)))
+		}
+		fixList(this.lastEdgeIDs, this.getEdgeGraphicalID, this.edges, [
+			["#edge-container", ".edge"],
+			["#multiplicity-container", ".multiplicity"],
+			["#label-container", ".label"]
+		])
+		fixList(this.lastNodeIDs, this.getNodeGraphicalID, this.nodes, [["#node-container", ".node"]])
+	}
+
+	/**
+	 * Generates a graphical identifier for an edge. The graphical identifier is used to determine not just the unique edge, but also its DOM representation
+	 * @param {VVEdge} edge
+	 * @returns {string} - Graphical Identifier
+	 */
+	getEdgeGraphicalID(edge) {
+		return (
+			edge.id +
+			(edge.type ? edge.type : "") +
+			(edge.nameFrom ? edge.nameFrom : "") +
+			(edge.nameTo ? edge.nameTo : "") +
+			(edge.multiplicityFrom ? edge.multiplicityFrom : "") +
+			(edge.multiplicityTo ? edge.multiplicityTo : "")
+		)
+	}
+
+	/**
+	 * Generates a graphical identifier for a node. The graphical identifier is used to determine not just the unique node, but also its DOM representation
+	 * @param {VVNode} node
+	 * @returns {string} - Graphical Identifier
+	 */
+	getNodeGraphicalID(node) {
+		return node.id + (node.type ? node.type : "") + node.name
 	}
 
 	/**
