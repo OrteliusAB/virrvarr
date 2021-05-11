@@ -831,7 +831,7 @@ export default class DOMProcessor {
 				this.ee.trigger(EventEnum.DBL_CLICK_ENTITY, {
 					id: d.id,
 					data: d.data,
-					direction: "from"
+					direction: "to"
 				})
 			})
 			.on("contextmenu", d => {
@@ -940,9 +940,9 @@ export default class DOMProcessor {
 			const group = d3.select(this)
 			let pos
 			if (group.classed("to")) {
-				pos = MathUtil.calculateIntersection(l.curvePoint, l.source, Env.MULTIPLICITY_HDISTANCE)
-			} else {
 				pos = MathUtil.calculateIntersection(l.curvePoint, l.target, Env.MULTIPLICITY_HDISTANCE)
+			} else {
+				pos = MathUtil.calculateIntersection(l.curvePoint, l.source, Env.MULTIPLICITY_HDISTANCE)
 			}
 			const n = MathUtil.calculateNormalVector(l.curvePoint, l.source, Env.MULTIPLICITY_VDISTANCE)
 			if (l.source.index < l.target.index) {
