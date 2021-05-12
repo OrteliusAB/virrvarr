@@ -124,6 +124,10 @@ export default class ContextMenu {
 		let customSections = []
 		if (this.customContextMenu.node) {
 			customSections = [...this.customContextMenu.node]
+				.map(section => {
+					return section.filter(menuItem => (menuItem.type ? menuItem.type === clickedItem.type : true))
+				})
+				.filter(section => section.length > 0)
 		}
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY)
 	}
@@ -140,6 +144,10 @@ export default class ContextMenu {
 		let customSections = []
 		if (this.customContextMenu.edge) {
 			customSections = [...this.customContextMenu.edge]
+				.map(section => {
+					return section.filter(menuItem => (menuItem.type ? menuItem.type === clickedItem.type : true))
+				})
+				.filter(section => section.length > 0)
 		}
 
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY, direction)

@@ -8656,7 +8656,13 @@
         var customSections = [];
 
         if (this.customContextMenu.node) {
-          customSections = _toConsumableArray(this.customContextMenu.node);
+          customSections = _toConsumableArray(this.customContextMenu.node).map(function (section) {
+            return section.filter(function (menuItem) {
+              return menuItem.type ? menuItem.type === clickedItem.type : true;
+            });
+          }).filter(function (section) {
+            return section.length > 0;
+          });
         }
 
         this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY);
@@ -8676,7 +8682,13 @@
         var customSections = [];
 
         if (this.customContextMenu.edge) {
-          customSections = _toConsumableArray(this.customContextMenu.edge);
+          customSections = _toConsumableArray(this.customContextMenu.edge).map(function (section) {
+            return section.filter(function (menuItem) {
+              return menuItem.type ? menuItem.type === clickedItem.type : true;
+            });
+          }).filter(function (section) {
+            return section.length > 0;
+          });
         }
 
         this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY, direction);

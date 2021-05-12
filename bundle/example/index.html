@@ -267,9 +267,11 @@
                     </summary>
                     <hr />
                     <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('line')">Line</button>
-                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('cubicbezier')">Cubic Bezier</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('cubicbezier')">Cubic
+                        Bezier</button>
                     <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('taxi')">Taxi</button>
-                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('fulltaxi')">Full Taxi</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('fulltaxi')">Full
+                        Taxi</button>
                 </details>
 
                 <details>
@@ -312,46 +314,63 @@
                         selectionListener: function (selection) {
                             console.log("Selection Updated:", selection)
                         },
-                        enableContextMenu: true,
+                        enableBuiltinContextMenu: true,
                         customContextMenu: {
-                            node: [[
-                                {
-                                    label: "Implode Node",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNode(id, true)
+                            node: [
+                                [
+                                    {
+                                        label: "Type specific options",
+                                        type: "equivalent",
+                                        action: (data, id) => {
+                                            console.log("This will only appear for nodes of type 'equivalent'")
+                                        }
                                     }
-                                },
-                                {
-                                    label: "Implode Node Leafs",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeLeafs(id, true)
-                                    }
-                                },
-                                {
-                                    label: "Implode Node Recursive",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeRecursive(id, true)
-                                    }
-                                },
-                                {
-                                    label: "Implode Node non-circular",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeNonCircular(id, true)
-                                    }
-                                },
-                                {
-                                    label: "Explode Node",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNode(id, false)
-                                    }
-                                },
-                                {
-                                    label: "Explode Node Recursive",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeRecursive(id, false)
-                                    }
-                                },
-                            ]]
+                                ],
+                                [
+                                    {
+                                        label: "Type specific options",
+                                        type: "equivalent",
+                                        action: (data, id) => {
+                                            console.log("This will only appear for nodes of type 'equivalent'")
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNode(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node Leafs",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeLeafs(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node Recursive",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeRecursive(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node non-circular",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeNonCircular(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Explode Node",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNode(id, false)
+                                        }
+                                    },
+                                    {
+                                        label: "Explode Node Recursive",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeRecursive(id, false)
+                                        }
+                                    },
+                                ]]
                         },
                         fixedEdgeLabelWidth: true,
                         maxEdgeLabelWidth: 130,
