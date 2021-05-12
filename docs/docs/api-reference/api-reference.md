@@ -27,6 +27,8 @@ nameFrom   |   String
 multiplicityTo   |   String
 multiplicityFrom   |   String
 lineType   |   String
+markerFrom   |   "arrow" | "diamond" | "square" | "none"
+markerTo   |   "arrow" | "diamond" | "square" | "none"
 type   |   String (id of node style object)
 data   |   Any (data bound to object)
 
@@ -130,6 +132,7 @@ enableGrid   |   Boolean
 customContextMenu   |   Object
 enableMultiLineNodeLabels   |   Boolean
 rotateLabels   |   Boolean
+markerSize   |   Number
 lineType   |   String
 enableOnionOnFocus   |   Boolean
 enableOnionOnHover   |   Boolean

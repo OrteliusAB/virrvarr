@@ -14,6 +14,7 @@ export default class DOMProcessor {
 			userDefinedOptions.enableMultiLineNodeLabels !== undefined ? userDefinedOptions.enableMultiLineNodeLabels : Env.DEFAULT_NODE_TEXT_MULTILINE
 		this.rotateLabels = userDefinedOptions.rotateLabels !== undefined ? userDefinedOptions.rotateLabels : Env.ROTATE_LABELS
 		this.lineType = userDefinedOptions.lineType !== undefined ? userDefinedOptions.lineType : Env.DEFAULT_LINE_TYPE
+		this.markerSize = userDefinedOptions.markerSize !== undefined ? userDefinedOptions.markerSize : Env.DEFAULT_MARKER_SIZE
 
 		this.rootG = rootG
 		this.nodes = []
@@ -360,15 +361,25 @@ export default class DOMProcessor {
 			.attr("viewBox", "0 -8 14 16")
 			.attr("refX", inverse ? 0 : 12)
 			.attr("refY", 0)
-			.attr("markerWidth", 12)
-			.attr("markerHeight", 12)
+			.attr("markerWidth", this.markerSize)
+			.attr("markerHeight", this.markerSize)
 			.attr("markerUnits", "userSpaceOnUse")
 			.attr("orient", "auto")
 			.attr("class", (edge.type ? edge.type : "normal") + "Marker")
 			.attr("class", "marker-" + (edge.type ? edge.type : "default"))
 			.append("path")
 			.attr("d", () => {
-				return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z"
+				const markerType = inverse ? edge.markerFrom : edge.markerTo
+				if (markerType === "diamond") {
+					return "M0,0L6,6L12,0L6,-6Z"
+				} else if (markerType === "square") {
+					return "M12,-12L12,12L0,12L0,-12Z"
+				} else if (markerType === "none") {
+					return ""
+				} else {
+					//Arrow
+					return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z"
+				}
 			})
 	}
 

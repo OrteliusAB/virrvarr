@@ -6667,6 +6667,7 @@
     DEFAULT_MULTIPLICITY_FONT_SIZE: "10px",
     DEFAULT_EDGE_WIDTH: "2px",
     DEFAULT_LINE_TYPE: "line",
+    DEFAULT_MARKER_SIZE: 12,
     //Labels
     DEFAULT_LABEL_TEXT_COLOR: "#000000",
     DEFAULT_LABEL_TEXT_HOVER_COLOR: "#ffffff",
@@ -7555,7 +7556,7 @@
   var VVEdge =
   /*#__PURE__*/
   function () {
-    function VVEdge(id, type, sourceNode, targetNode, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, data) {
+    function VVEdge(id, type, sourceNode, targetNode, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, markerFrom, markerTo, data) {
       _classCallCheck(this, VVEdge);
 
       //User provided information
@@ -7568,6 +7569,8 @@
       this.multiplicityFrom = multiplicityFrom;
       this.multiplicityTo = multiplicityTo;
       this.lineType = lineType;
+      this.markerFrom = markerFrom;
+      this.markerTo = markerTo;
       this.data = data; //Status
 
       this.isToFocused = false;
@@ -7603,19 +7606,24 @@
      * @param {string} nameTo - Name in the to direction
      * @param {string} multiplicityFrom - Multiplicity in the from direction
      * @param {string} multiplicityTo - Multiplicity in the to direction
+     * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} lineType - Line type for the edge
+     * @param {"arrow"|"diamond"|"square"|"none"} markerFrom - Marker type in the from direction
+     * @param {"arrow"|"diamond"|"square"|"none"} markerTo - Marker type in the to direction
      * @param {any} data - Bound data
      */
 
 
     _createClass(VVEdge, [{
       key: "updateData",
-      value: function updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, data) {
+      value: function updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, markerFrom, markerTo, data) {
         this.type = type;
         this.nameFrom = nameFrom;
         this.nameTo = nameTo;
         this.multiplicityFrom = multiplicityFrom;
         this.multiplicityTo = multiplicityTo;
         this.lineType = lineType;
+        this.markerFrom = markerFrom;
+        this.markerTo = markerTo;
         this.data = data;
       }
     }]);
@@ -7640,7 +7648,7 @@
         return new VVNode(node.id, node.type, node.name, node.icon, node.data);
       });
       this.allEdges = edges.map(function (edge) {
-        return new VVEdge(edge.id, edge.type, edge.sourceNode, edge.targetNode, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.data);
+        return new VVEdge(edge.id, edge.type, edge.sourceNode, edge.targetNode, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.markerFrom, edge.markerTo, edge.data);
       });
       this.liveNodes = this.allNodes;
       this.liveEdges = this.allEdges;
@@ -7778,7 +7786,7 @@
           });
 
           if (existingEdge) {
-            existingEdge.updateData(edge.type, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.data);
+            existingEdge.updateData(edge.type, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.markerFrom, edge.markerTo, edge.data);
             return existingEdge;
           }
 
@@ -9562,6 +9570,7 @@
       this.enableMultiLineNodeLabels = userDefinedOptions.enableMultiLineNodeLabels !== undefined ? userDefinedOptions.enableMultiLineNodeLabels : Env.DEFAULT_NODE_TEXT_MULTILINE;
       this.rotateLabels = userDefinedOptions.rotateLabels !== undefined ? userDefinedOptions.rotateLabels : Env.ROTATE_LABELS;
       this.lineType = userDefinedOptions.lineType !== undefined ? userDefinedOptions.lineType : Env.DEFAULT_LINE_TYPE;
+      this.markerSize = userDefinedOptions.markerSize !== undefined ? userDefinedOptions.markerSize : Env.DEFAULT_MARKER_SIZE;
       this.rootG = rootG;
       this.nodes = [];
       this.edges = [];
@@ -9914,8 +9923,19 @@
     }, {
       key: "drawMarker",
       value: function drawMarker(defs, edge, inverse) {
-        defs.append("marker").attr("id", this.getMarkerId(edge, inverse)).attr("viewBox", "0 -8 14 16").attr("refX", inverse ? 0 : 12).attr("refY", 0).attr("markerWidth", 12).attr("markerHeight", 12).attr("markerUnits", "userSpaceOnUse").attr("orient", "auto").attr("class", (edge.type ? edge.type : "normal") + "Marker").attr("class", "marker-" + (edge.type ? edge.type : "default")).append("path").attr("d", function () {
-          return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z";
+        defs.append("marker").attr("id", this.getMarkerId(edge, inverse)).attr("viewBox", "0 -8 14 16").attr("refX", inverse ? 0 : 12).attr("refY", 0).attr("markerWidth", this.markerSize).attr("markerHeight", this.markerSize).attr("markerUnits", "userSpaceOnUse").attr("orient", "auto").attr("class", (edge.type ? edge.type : "normal") + "Marker").attr("class", "marker-" + (edge.type ? edge.type : "default")).append("path").attr("d", function () {
+          var markerType = inverse ? edge.markerFrom : edge.markerTo;
+
+          if (markerType === "diamond") {
+            return "M0,0L6,6L12,0L6,-6Z";
+          } else if (markerType === "square") {
+            return "M12,-12L12,12L0,12L0,-12Z";
+          } else if (markerType === "none") {
+            return "";
+          } else {
+            //Arrow
+            return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z";
+          }
         });
       }
       /**
@@ -11021,6 +11041,7 @@
      * @param {object=} options.customContextMenu - Custom context menu to display.
      * @param {boolean=} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
      * @param {boolean=} options.rotateLabels - Make edge labels perpendicular to the edge.
+     * @param {number} options.markerSize - Size in px of the markers at the ends of edges.
      * @param {boolean=} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
      * @param {boolean=} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
      * @param {number=} options.onionNumberOfLayers - How many layers should onion borders have by default?

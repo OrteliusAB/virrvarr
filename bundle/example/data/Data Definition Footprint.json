@@ -90,7 +90,9 @@
             "nameTo": "String",
             "nameFrom": "String",
             "multiplicityFrom": "String",
-            "multiplicityTo": "String"
+            "multiplicityTo": "String",
+            "markerFrom": "String",
+            "markerTo": "String"
         }
     ]
 }

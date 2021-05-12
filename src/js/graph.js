@@ -28,6 +28,7 @@ export class Virrvarr {
 	 * @param {object=} options.customContextMenu - Custom context menu to display.
 	 * @param {boolean=} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
 	 * @param {boolean=} options.rotateLabels - Make edge labels perpendicular to the edge.
+	 * @param {number} options.markerSize - Size in px of the markers at the ends of edges.
 	 * @param {boolean=} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
 	 * @param {boolean=} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
 	 * @param {number=} options.onionNumberOfLayers - How many layers should onion borders have by default?

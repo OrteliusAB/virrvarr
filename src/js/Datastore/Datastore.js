@@ -23,6 +23,8 @@ export default class Datastore {
 					edge.multiplicityFrom,
 					edge.multiplicityTo,
 					edge.lineType,
+					edge.markerFrom,
+					edge.markerTo,
 					edge.data
 				)
 		)
@@ -137,7 +139,17 @@ export default class Datastore {
 		this.allEdges = newEdges.map(edge => {
 			const existingEdge = this.allEdges.find(oldEdge => oldEdge.id === edge.id)
 			if (existingEdge) {
-				existingEdge.updateData(edge.type, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.data)
+				existingEdge.updateData(
+					edge.type,
+					edge.nameFrom,
+					edge.nameTo,
+					edge.multiplicityFrom,
+					edge.multiplicityTo,
+					edge.lineType,
+					edge.markerFrom,
+					edge.markerTo,
+					edge.data
+				)
 				return existingEdge
 			}
 			return new VVEdge(
