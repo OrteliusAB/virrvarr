@@ -76,6 +76,7 @@ const initializeGraphStyles = (style, id) => {
                   position: relative;
                   display: block;
                   background: #FFFFFF;
+                  border-radius: 4px;
                 }
                 
                 .virrvarr-context-menu-options {
@@ -88,8 +89,23 @@ const initializeGraphStyles = (style, id) => {
                 
                 .virrvarr-context-menu-option {
                   font-size: 12px;
-                  padding: 7px 20px 7px 20px;
+                  padding: 7px 16px 7px 16px;
                   cursor: pointer;
+                  display: flex;
+                  gap: 12px;
+                  align-items: center;
+                }
+
+                .virrvarr-context-menu-option-icon {
+                    height: 12px;
+                    width: 12px;
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    background-image: none;                
+                }
+
+                .virrvarr-context-menu-option-title {
+                    flex: auto;
                 }
                 
                 .virrvarr-context-menu-divider {
