@@ -8658,7 +8658,7 @@
         if (this.customContextMenu.node) {
           customSections = _toConsumableArray(this.customContextMenu.node).map(function (section) {
             return section.filter(function (menuItem) {
-              return menuItem.type ? menuItem.type === clickedItem.type : true;
+              return menuItem.type ? menuItem.type.includes(clickedItem.type) : true;
             });
           }).filter(function (section) {
             return section.length > 0;
@@ -8684,7 +8684,7 @@
         if (this.customContextMenu.edge) {
           customSections = _toConsumableArray(this.customContextMenu.edge).map(function (section) {
             return section.filter(function (menuItem) {
-              return menuItem.type ? menuItem.type === clickedItem.type : true;
+              return menuItem.type ? menuItem.type.includes(clickedItem.type) : true;
             });
           }).filter(function (section) {
             return section.length > 0;

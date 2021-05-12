@@ -16,6 +16,7 @@ Each menu type takes an array of arrays of objects as a value. Each inner array 
 Each object has the following properties:
 - `label` The text for the option item
 - `icon` URL to an icon (optional). This can be set to an empty string if you want to indent options without icons.
+- `type` An array of specific types of node/edge where the context menu should be visible (optional). If not provided it will be visible for all nodes/edges.
 - `action` A function that should execute when the option is clicked.
 
 
@@ -28,6 +29,7 @@ const options = {
                     {
                         label: "Custom Node Item 1",
                         icon: "URL", //Optional
+                        type: ["specialnodetype1", "specialnodetype2"], //Optional
                         action: (data, id) => { console.log("Custom Action 1: ", id) }
                     }
                ],

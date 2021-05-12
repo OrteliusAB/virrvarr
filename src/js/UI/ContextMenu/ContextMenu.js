@@ -125,7 +125,7 @@ export default class ContextMenu {
 		if (this.customContextMenu.node) {
 			customSections = [...this.customContextMenu.node]
 				.map(section => {
-					return section.filter(menuItem => (menuItem.type ? menuItem.type === clickedItem.type : true))
+					return section.filter(menuItem => (menuItem.type ? menuItem.type.includes(clickedItem.type) : true))
 				})
 				.filter(section => section.length > 0)
 		}
@@ -145,7 +145,7 @@ export default class ContextMenu {
 		if (this.customContextMenu.edge) {
 			customSections = [...this.customContextMenu.edge]
 				.map(section => {
-					return section.filter(menuItem => (menuItem.type ? menuItem.type === clickedItem.type : true))
+					return section.filter(menuItem => (menuItem.type ? menuItem.type.includes(clickedItem.type) : true))
 				})
 				.filter(section => section.length > 0)
 		}
