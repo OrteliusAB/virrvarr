@@ -72,7 +72,7 @@ const initializeGraphStyles = (style, id) => {
                 }
                 
                 .virrvarr-context-menu {
-                  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+                  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2);
                   position: relative;
                   display: block;
                   background: #FFFFFF;
@@ -82,28 +82,25 @@ const initializeGraphStyles = (style, id) => {
                   min-width: 150px;
                   list-style: none;
                   padding: 0px;
-                  margin-top: 10px;
-                  margin-bottom: 10px;
+                  margin-top: 6px;
+                  margin-bottom: 6px;
                 }
                 
                 .virrvarr-context-menu-option {
-                  font-size: 14px;
+                  font-size: 12px;
                   padding: 7px 20px 7px 20px;
                   cursor: pointer;
                 }
                 
                 .virrvarr-context-menu-divider {
-                  width: 90%;
-                  height: 1px;
-                  margin-right: 5%;
-                  margin-left: 5%;
-                  margin-top: 8px;
-                  margin-bottom: 8px;
-                  background: #d5d5d5;
+                  width: 100%;
+                  margin-top: 6px;
+                  margin-bottom: 6px;
+                  border-top: 1px solid #d5d5d5;
                 }
                 
                 .virrvarr-context-menu-option:hover {
-                  background: rgba(0, 0, 0, 0.2);
+                  background: #f7f7f7;
                 }
                 
                 .virrvarr-node-badge {
