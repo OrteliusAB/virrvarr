@@ -33,6 +33,7 @@ export class Virrvarr {
 	 * @param {number=} options.onionNumberOfLayers - How many layers should onion borders have by default?
 	 * @param {string=} options.onionBaseColor - What should the base color be of the onion borders?
 	 * @param {number=} options.onionLayerSize - How big should each layer in the onion border be by default?
+	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} options.lineType - How should edges be drawn?
 	 *
 	 */
 	constructor(graphContainerElement, inputData, options) {
@@ -316,6 +317,15 @@ export class Virrvarr {
 	 */
 	implodeOrExplodeNodeNonCircular(nodeID, isImplode) {
 		this._ee.trigger(EventEnum.IMPLODE_EXPLODE_NON_CIRCULAR_REQUESTED, nodeID, isImplode)
+	}
+
+	/**
+	 * Sets the default line type for edges
+	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} newLineType
+	 */
+	setDefaultLineType(newLineType) {
+		this._UI.DOMProcessor.lineType = newLineType
+		this._engine.softRestart()
 	}
 
 	/**

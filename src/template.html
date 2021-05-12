@@ -263,6 +263,17 @@
 
                 <details>
                     <summary>
+                        <h3 class="menu-title">Line Types</h3>
+                    </summary>
+                    <hr />
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('line')">Line</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('cubicbezier')">Cubic Bezier</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('taxi')">Taxi</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('fulltaxi')">Full Taxi</button>
+                </details>
+
+                <details>
+                    <summary>
                         <h3 class="menu-title">Other</h3>
                     </summary>
                     <hr />
@@ -397,6 +408,10 @@
             if (value) {
                 window.graph.centerNode(value)
             }
+        }
+
+        function setDefaultLineType(type) {
+            graph.setDefaultLineType(type)
         }
 
         function togglePinMode() {

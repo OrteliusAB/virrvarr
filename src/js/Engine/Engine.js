@@ -50,17 +50,23 @@ export default class Engine {
 			this.restart()
 		})
 		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
-			this.alpha(0.001)
-			this.restart()
+			this.softRestart()
 		})
 		this.ee.on(EventEnum.LASSO_ENTER, () => {
-			this.alpha(0.001)
-			this.restart()
+			this.softRestart()
 		})
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.stop())
 		this.forceCenterX = forceCenterX
 		this.forceCenterY = forceCenterY
 		this.simulation = this.initializeSimulation()
+	}
+
+	/**
+	 * Lightly pokes the graph. This can be used if you want to trigger a tick.
+	 */
+	softRestart() {
+		this.alpha(0.001)
+		this.restart()
 	}
 
 	/**
@@ -71,8 +77,8 @@ export default class Engine {
 			.forceSimulation()
 			.force("charge", d3.forceManyBody().strength(Env.CHARGE))
 			.force("center", d3.forceCenter(this.forceCenterX, this.forceCenterY))
-			.force("y", d3.forceY(0).strength(Env.GRAVITY))
-			.force("x", d3.forceX(0).strength(Env.GRAVITY))
+			.force("y", d3.forceY(this.forceCenterX).strength(Env.GRAVITY))
+			.force("x", d3.forceX(this.forceCenterY).strength(Env.GRAVITY))
 			.nodes([])
 			.force(
 				"link",

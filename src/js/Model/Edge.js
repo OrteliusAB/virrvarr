@@ -1,5 +1,5 @@
 export default class VVEdge {
-	constructor(id, type, sourceNode, targetNode, nameFrom, nameTo, multiplicityFrom, multiplicityTo, data) {
+	constructor(id, type, sourceNode, targetNode, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, data) {
 		//User provided information
 		this.id = id
 		this.type = type
@@ -9,6 +9,7 @@ export default class VVEdge {
 		this.nameTo = nameTo
 		this.multiplicityFrom = multiplicityFrom
 		this.multiplicityTo = multiplicityTo
+		this.lineType = lineType
 		this.data = data
 
 		//Status

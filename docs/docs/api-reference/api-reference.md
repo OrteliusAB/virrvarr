@@ -26,6 +26,7 @@ nameTo   |   String
 nameFrom   |   String
 multiplicityTo   |   String
 multiplicityFrom   |   String
+lineType   |   String
 type   |   String (id of node style object)
 data   |   Any (data bound to object)
 
@@ -128,6 +129,7 @@ enableGrid   |   Boolean
 customContextMenu   |   Object
 enableMultiLineNodeLabels   |   Boolean
 rotateLabels   |   Boolean
+lineType   |   String
 enableOnionOnFocus   |   Boolean
 enableOnionOnHover   |   Boolean
 onionNumberOfLayers   |   Number
@@ -149,6 +151,7 @@ resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph
 setMatrixLayout   |   Function<(attribute, filterFunction, sortFunction)>   |   Sets the layout to a fixed matrix. This enables the developer to group things together. The function can either take an attribute (with values set for it on each node, such as “type”) and use that as the criteria for grouping, or use a custom filter function which takes the bound data as input and returns a group name as a string.  A sortFunction can also be supplied in order to determine the order of things in the matrix. The order will read from left to right, top to bottom. Like a book.
 resetLayout   |   Function<()>   |   Resets the layout to the default layout
+setDefaultLineType   |   Function<(newType)>   |   Updates the default line type to use.
 setPinMode   |   Function<(isEnabled)>   |   Sets the pin mode of the graph
 setlassoMode   |   Function<(isEnabled)>   |   Sets the lasso selection mode of the graph
 setMultiSelectMode   |   Function<(isEnabled)>   |   Sets the multi select mode of the graph

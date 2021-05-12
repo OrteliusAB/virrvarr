@@ -55,10 +55,10 @@ const calculateIntersection = (source, target, additionalDistance) => {
 
 	//Rectangles require some more work...
 	if (target.shape === "rectangle") {
-		const m_edge = Math.abs(dy / dx)
-		const m_rect = target.height / target.width
+		const mEdge = Math.abs(dy / dx)
+		const mRect = target.height / target.width
 
-		if (m_edge <= m_rect) {
+		if (mEdge <= mRect) {
 			const timesX = dx / (target.width / 2)
 			const rectY = dy / timesX
 			innerDistance = Math.sqrt(Math.pow(target.width / 2, 2) + rectY * rectY)
@@ -112,7 +112,7 @@ const calculateCurvePoint = (source, target, l) => {
 	const cx = source.x + dx / 2
 	const cy = source.y + dy / 2
 
-	const n = calculateNormalVector(source, target, distance)
+	const n = calculateNormalizedVector(source, target, distance)
 
 	if (l.source.index < l.target.index) {
 		n.x = -n.x
@@ -154,7 +154,7 @@ const calculateMultiEdgeDistance = l => {
  * @param {object} target - Target point
  * @param {number} length - Distance
  */
-const calculateNormalVector = (source, target, length) => {
+const calculateNormalizedVector = (source, target, length) => {
 	const dx = target.x - source.x
 	const dy = target.y - source.y
 
@@ -202,7 +202,7 @@ export default {
 	calculateCurvePoint,
 	calculateIntersection,
 	calculateMultiEdgeDistance,
-	calculateNormalVector,
+	calculateNormalizedVector,
 	calculateRadian,
 	curveFunction,
 	loopFunction,

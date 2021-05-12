@@ -22,6 +22,7 @@ export default class Datastore {
 					edge.nameTo,
 					edge.multiplicityFrom,
 					edge.multiplicityTo,
+					edge.lineType,
 					edge.data
 				)
 		)

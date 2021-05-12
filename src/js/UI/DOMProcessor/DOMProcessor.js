@@ -13,6 +13,7 @@ export default class DOMProcessor {
 		this.enableMultiLineNodeLabels =
 			userDefinedOptions.enableMultiLineNodeLabels !== undefined ? userDefinedOptions.enableMultiLineNodeLabels : Env.DEFAULT_NODE_TEXT_MULTILINE
 		this.rotateLabels = userDefinedOptions.rotateLabels !== undefined ? userDefinedOptions.rotateLabels : Env.ROTATE_LABELS
+		this.lineType = userDefinedOptions.lineType !== undefined ? userDefinedOptions.lineType : Env.DEFAULT_LINE_TYPE
 
 		this.rootG = rootG
 		this.nodes = []
@@ -925,15 +926,46 @@ export default class DOMProcessor {
 			if (this.rotateLabels) {
 				l.angle = MathUtil.calculateLabelAngle(l.source, l.target)
 			}
+			//Calculate curve point (this will also be used later for multiplicity and label positioning)
 			const pathStart = MathUtil.calculateIntersection(l.target, l.source, 1)
 			const pathEnd = MathUtil.calculateIntersection(l.source, l.target, 1)
-			const curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
-			l.curvePoint = curvePoint
-			return MathUtil.curveFunction([
-				MathUtil.calculateIntersection(l.curvePoint, l.source, 1),
-				curvePoint,
-				MathUtil.calculateIntersection(l.curvePoint, l.target, 1)
-			])
+			const lineTypeToUse = l.lineType ? l.lineType : this.lineType
+			//Taxi lines
+			if ((lineTypeToUse === "taxi" && l.multiEdgeCount === 1) || lineTypeToUse === "fulltaxi") {
+				let midPointY = pathStart.y + (pathEnd.y - pathStart.y) / 2
+				//Fulltaxi means we apply the taxi lines to the multi edge edges as well
+				if (lineTypeToUse === "fulltaxi" && l.multiEdgeCount > 1) {
+					const dividedDistance = (pathEnd.y - pathStart.y) / l.multiEdgeCount
+					midPointY = pathStart.y + dividedDistance * l.multiEdgeIndex + dividedDistance / 2
+					l.curvePoint = {
+						x: pathStart.x + (pathEnd.x - pathStart.x) / 2,
+						y: midPointY
+					}
+				} else {
+					l.curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
+				}
+				return `M${pathStart.x},${pathStart.y} 
+					L${pathStart.x},${midPointY} 
+					L${pathEnd.x},${midPointY} 
+					${pathEnd.x},${pathEnd.y}`
+			}
+			//Cubic bezier curve
+			if (lineTypeToUse === "cubicbezier" && l.multiEdgeCount === 1) {
+				l.curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
+				return `M${pathStart.x}, ${pathStart.y} 
+					C${(pathStart.x + pathEnd.x) / 2}, ${pathStart.y} 
+					${(pathStart.x + pathEnd.x) / 2}, ${pathEnd.y} 
+					${pathEnd.x}, ${pathEnd.y}`
+			}
+			//Straight line
+			else {
+				l.curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
+				return MathUtil.curveFunction([
+					MathUtil.calculateIntersection(l.curvePoint, l.source, 1),
+					l.curvePoint,
+					MathUtil.calculateIntersection(l.curvePoint, l.target, 1)
+				])
+			}
 		})
 		//Multiplicities
 		this.activeMultiplicities.attr("transform", function (l) {
@@ -944,7 +976,7 @@ export default class DOMProcessor {
 			} else {
 				pos = MathUtil.calculateIntersection(l.curvePoint, l.source, Env.MULTIPLICITY_HDISTANCE)
 			}
-			const n = MathUtil.calculateNormalVector(l.curvePoint, l.source, Env.MULTIPLICITY_VDISTANCE)
+			const n = MathUtil.calculateNormalizedVector(l.curvePoint, l.source, Env.MULTIPLICITY_VDISTANCE)
 			if (l.source.index < l.target.index) {
 				n.x = -n.x
 				n.y = -n.y
