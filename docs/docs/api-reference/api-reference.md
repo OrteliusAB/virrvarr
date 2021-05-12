@@ -50,6 +50,7 @@ selectionLassoColor   |   String
 selectionLassoOpacity   |   String
 selectionLassoBorderWidth   |   String
 selectionLassoBorderColor   |   String
+hideNodeBadgesOnNoHover   |   Boolean
 
 ###	Data.style.nodes{Array}
 Attribute | Datatype

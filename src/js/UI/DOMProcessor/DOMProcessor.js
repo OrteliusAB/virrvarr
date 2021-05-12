@@ -699,6 +699,7 @@ export default class DOMProcessor {
 		element
 			.append("g")
 			.attr("id", "badge-" + data.id + "-hidden-edge-counter")
+			.attr("class", "virrvarr-floating-node-meta")
 			.attr("style", "pointer-events:none;")
 			.attr("transform", `translate(${translateX} ${translateY})`)
 			.append("path")
@@ -740,6 +741,7 @@ export default class DOMProcessor {
 		element
 			.append("g")
 			.attr("id", "pin-" + data.id)
+			.attr("class", "virrvarr-floating-node-meta")
 			.attr("style", "pointer-events:none;")
 			.attr("transform", `translate(${translateX - rectWidth / 2} ${translateY})`)
 			.append("path")

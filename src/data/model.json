@@ -6,7 +6,8 @@
             "edgeCursor": "auto",
             "edgeCursorActive": "auto",
             "canvasCursor": "move",
-            "canvasCursorActive": "move"
+            "canvasCursorActive": "move",
+            "hideNodeBadgesOnNoHover": false
         },
         "nodes": [
             {

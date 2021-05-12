@@ -55,17 +55,14 @@ export default class ContextMenu {
 		if (!this.enableBuiltinContextMenu && customSectionsArray.length === 0) {
 			return
 		}
-		const ulElement = d3
+		const mainDiv = d3
 			.select(this.graphContainerElement)
 			.append("div")
 			.attr("id", "virrvarr-context-menu-container")
 			.attr("class", "virrvarr-context-menu")
 			.style("position", "fixed")
-			.style("left", mouseX + "px")
-			.style("top", mouseY + "px")
 			.style("display", "block")
-			.append("ul")
-			.attr("class", "virrvarr-context-menu-options")
+		const ulElement = mainDiv.append("ul").attr("class", "virrvarr-context-menu-options")
 		let previousSectionWasSeen = false
 		if (this.enableBuiltinContextMenu) {
 			contextSectionsArray.forEach(section => {
@@ -77,6 +74,12 @@ export default class ContextMenu {
 			this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction)
 			previousSectionWasSeen = true
 		})
+		const divNode = mainDiv.node()
+		const width = divNode.getBoundingClientRect().width
+		const height = divNode.getBoundingClientRect().height
+		const left = window.innerWidth - mouseX < width ? window.innerWidth - width : mouseX
+		const top = window.innerHeight - mouseY < height ? window.innerHeight - height : mouseY
+		mainDiv.style("left", left + "px").style("top", top + "px")
 	}
 
 	/**

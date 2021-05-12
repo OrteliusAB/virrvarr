@@ -75,6 +75,7 @@ export default Object.freeze({
 	DEFAULT_NODE_FILTER: false,
 	DEFAULT_NODE_HOVER_FILTER: false,
 	DEFAULT_NODE_FOCUSED_FILTER: false,
+	NODE_BADGES_DEFAULT_DISPLAY: "block",
 
 	//Cursor
 	DEFAULT_NODE_CURSOR: "pointer",

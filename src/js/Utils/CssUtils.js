@@ -124,6 +124,14 @@ const initializeGraphStyles = (style, id) => {
                   stroke: none !important;
                 }
                 
+			    .virrvarr-floating-node-meta {
+                    display: ${style.common.hideNodeBadgesOnNoHover ? "none" : Env.NODE_BADGES_DEFAULT_DISPLAY};
+                }
+
+                g > .virrvarr-floating-node-meta {
+                    display: block;
+                }
+                
                 .virrvarr-node-edge-counter-badge-text {
                   dominant-baseline: central;
                   text-anchor: middle;
