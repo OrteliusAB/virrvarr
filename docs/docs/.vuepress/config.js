@@ -71,6 +71,7 @@ module.exports = {
           '/documentation/updating-data',
           '/documentation/background-grid',
           '/documentation/fixed-label-width',
+          '/documentation/edge-line-types',
           '/documentation/rotating-labels',
           '/documentation/hover-effects',
           '/documentation/context-menu',
