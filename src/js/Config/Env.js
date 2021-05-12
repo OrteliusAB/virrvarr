@@ -125,6 +125,6 @@ export default Object.freeze({
 	EDGE_STRENGTH: 0.7,
 	GRAVITY: 0.06,
 	CHARGE: -2000,
-	SCALE_EXTENT: [0.1, 4],
+	SCALE_EXTENT: [0.05, 5],
 	INITIAL_SCALE: 0.3
 })
