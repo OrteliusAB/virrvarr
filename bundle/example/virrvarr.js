@@ -7608,12 +7608,13 @@
 
     _createClass(VVEdge, [{
       key: "updateData",
-      value: function updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, data) {
+      value: function updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, data) {
         this.type = type;
         this.nameFrom = nameFrom;
         this.nameTo = nameTo;
         this.multiplicityFrom = multiplicityFrom;
         this.multiplicityTo = multiplicityTo;
+        this.lineType = lineType;
         this.data = data;
       }
     }]);
@@ -7776,7 +7777,7 @@
           });
 
           if (existingEdge) {
-            existingEdge.updateData(edge.type, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.data);
+            existingEdge.updateData(edge.type, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.data);
             return existingEdge;
           }
 
@@ -8988,7 +8989,7 @@
     }, {
       key: "toggleEdgeEntityFocus",
       value: function toggleEdgeEntityFocus(entityID, isFrom) {
-        var labelGroup = select(this.graphContainerElement).select("#label".concat(entityID).concat(isFrom ? "from" : "to"));
+        var labelGroup = select(this.graphContainerElement).select("[id=\"label".concat(entityID).concat(isFrom ? "from" : "to", "\"]"));
 
         if (labelGroup) {
           var label = labelGroup.select("rect:not(.removing)[class*='label-rect']");
@@ -9953,12 +9954,12 @@
         var _this9 = this;
 
         var inverse = direction === "from";
-        this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path").classed("hovered", true);
-        this.rootG.selectAll("." + this.getMarkerId(edgeData, inverse)).selectAll("path, text").classed("hovered", true); //Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
+        this.rootG.selectAll("marker[id=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).select("path").classed("hovered", true);
+        this.rootG.selectAll("[class=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).selectAll("path, text").classed("hovered", true); //Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 
         this.handleHoverEvent(edgeData, "enter", direction);
         setTimeout(function () {
-          var marker = _this9.rootG.selectAll("marker#" + _this9.getMarkerId(edgeData, inverse)).select("path");
+          var marker = _this9.rootG.selectAll("marker[id=\"".concat(_this9.getMarkerId(edgeData, inverse), "\"]")).select("path");
 
           if (marker._groups[0].length > 0 && marker.classed("hovered")) {
             //Sort the labels which brings the hovered one to the foreground
@@ -9986,8 +9987,8 @@
       value: function labelMouseLeave(edgeData, direction) {
         this.handleHoverEvent(edgeData, "leave", direction);
         var inverse = direction === "from";
-        this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path").classed("hovered", false);
-        this.rootG.selectAll("." + this.getMarkerId(edgeData, inverse)).selectAll("path, text").classed("hovered", false);
+        this.rootG.selectAll("marker[id=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).select("path").classed("hovered", false);
+        this.rootG.selectAll("[class=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).selectAll("path, text").classed("hovered", false);
       }
       /**
        * Draws multiplicity notation

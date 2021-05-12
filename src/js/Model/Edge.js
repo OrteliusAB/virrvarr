@@ -52,12 +52,13 @@ export default class VVEdge {
 	 * @param {string} multiplicityTo - Multiplicity in the to direction
 	 * @param {any} data - Bound data
 	 */
-	updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, data) {
+	updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, data) {
 		this.type = type
 		this.nameFrom = nameFrom
 		this.nameTo = nameTo
 		this.multiplicityFrom = multiplicityFrom
 		this.multiplicityTo = multiplicityTo
+		this.lineType = lineType
 		this.data = data
 	}
 }

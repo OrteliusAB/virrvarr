@@ -184,7 +184,7 @@ export default class Highlighter {
 	 * @param {boolean} isFrom - Is the edge in the from direction?
 	 */
 	toggleEdgeEntityFocus(entityID, isFrom) {
-		const labelGroup = d3.select(this.graphContainerElement).select(`#label${entityID}${isFrom ? "from" : "to"}`)
+		const labelGroup = d3.select(this.graphContainerElement).select(`[id="label${entityID}${isFrom ? "from" : "to"}"]`)
 		if (labelGroup) {
 			const label = labelGroup.select("rect:not(.removing)[class*='label-rect']")
 			const focusedState = label.classed("focused")

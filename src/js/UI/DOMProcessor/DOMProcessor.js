@@ -448,17 +448,17 @@ export default class DOMProcessor {
 	labelMouseEnter(edgeData, direction) {
 		const inverse = direction === "from"
 		this.rootG
-			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
+			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
 			.select("path")
 			.classed("hovered", true)
 		this.rootG
-			.selectAll("." + this.getMarkerId(edgeData, inverse))
+			.selectAll(`[class="${this.getMarkerId(edgeData, inverse)}"]`)
 			.selectAll("path, text")
 			.classed("hovered", true)
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 		this.handleHoverEvent(edgeData, "enter", direction)
 		setTimeout(() => {
-			const marker = this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
+			const marker = this.rootG.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`).select("path")
 			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
@@ -484,11 +484,11 @@ export default class DOMProcessor {
 		this.handleHoverEvent(edgeData, "leave", direction)
 		const inverse = direction === "from"
 		this.rootG
-			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
+			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
 			.select("path")
 			.classed("hovered", false)
 		this.rootG
-			.selectAll("." + this.getMarkerId(edgeData, inverse))
+			.selectAll(`[class="${this.getMarkerId(edgeData, inverse)}"]`)
 			.selectAll("path, text")
 			.classed("hovered", false)
 	}
