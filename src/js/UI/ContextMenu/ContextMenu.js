@@ -7,11 +7,11 @@ import Env from "../../Config/Env"
  */
 export default class ContextMenu {
 	constructor(graphContainerElement, eventEmitter, options) {
-		this.showContextMenu = options.enableContextMenu !== undefined ? options.enableContextMenu : Env.SHOW_CONTEXT_MENU
+		this.enableBuiltinContextMenu = options.enableBuiltinContextMenu !== undefined ? options.enableBuiltinContextMenu : Env.SHOW_CONTEXT_MENU
 		this.customContextMenu = options.customContextMenu !== undefined ? options.customContextMenu : Env.DEFAULT_CUSTOM_CONTEXT_MENU
 		this.graphContainerElement = graphContainerElement
 		this.ee = eventEmitter
-		if (this.showContextMenu) {
+		if (this.enableBuiltinContextMenu || this.customContextMenu) {
 			this.ee.on(EventEnum.RIGHT_CLICK_ENTITY, (clickedItem, direction = null) => {
 				this.buildMenu(clickedItem, direction)
 			})
@@ -52,6 +52,9 @@ export default class ContextMenu {
 	 */
 	createContextMenu(clickedItem, contextSectionsArray, customSectionsArray, mouseX, mouseY, direction = undefined) {
 		this.removeContextmenu()
+		if (!this.enableBuiltinContextMenu && customSectionsArray.length === 0) {
+			return
+		}
 		const ulElement = d3
 			.select(this.graphContainerElement)
 			.append("div")
@@ -63,15 +66,16 @@ export default class ContextMenu {
 			.style("display", "block")
 			.append("ul")
 			.attr("class", "virrvarr-context-menu-options")
-		contextSectionsArray.forEach((section, index) => {
-			if (index === 0) {
-				this.processSection(ulElement, section, false, clickedItem, direction)
-			} else {
-				this.processSection(ulElement, section, true, clickedItem, direction)
-			}
-		})
+		let previousSectionWasSeen = false
+		if (this.enableBuiltinContextMenu) {
+			contextSectionsArray.forEach(section => {
+				this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction)
+				previousSectionWasSeen = true
+			})
+		}
 		customSectionsArray.forEach(section => {
-			this.processSection(ulElement, section, true, clickedItem, direction)
+			this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction)
+			previousSectionWasSeen = true
 		})
 	}
 
@@ -200,7 +204,8 @@ export default class ContextMenu {
 		this.UniversalMenu = [
 			{
 				label: "Reset Zoom",
-				icon: "data:image/svg+xml;utf8,<svg width='16px' height='16px' viewBox='0 0 16 16' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><path fill='%23000000' d='M15,10 C15.5522847,10 16,10.4477153 16,11 L16,11 L16,16 L11,16 C10.4477153,16 10,15.5522847 10,15 C10,14.4477153 10.4477153,14 11,14 L11,14 L14,14 L14,11 C14,10.4477153 14.4477153,10 15,10 Z M1,10 C1.55228475,10 2,10.4477153 2,11 L2,11 L2,14 L5,14 C5.55228475,14 6,14.4477153 6,15 C6,15.5522847 5.55228475,16 5,16 L5,16 L0,16 L8.8817842e-16,11 C8.8817842e-16,10.4477153 0.44771525,10 1,10 Z M16,0 L16,5 C16,5.55228475 15.5522847,6 15,6 C14.4477153,6 14,5.55228475 14,5 L14,5 L14,2 L11,2 C10.4477153,2 10,1.55228475 10,1 C10,0.44771525 10.4477153,0 11,0 L11,0 L16,0 Z M5,0 C5.55228475,0 6,0.44771525 6,1 C6,1.55228475 5.55228475,2 5,2 L5,2 L2,2 L2,5 C2,5.55228475 1.55228475,6 1,6 C0.44771525,6 2.74146524e-17,5.55228475 6.123234e-17,5 L6.123234e-17,5 L3.6739404e-16,0 Z' /></svg>",
+				icon:
+					"data:image/svg+xml;utf8,<svg width='16px' height='16px' viewBox='0 0 16 16' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><path fill='%23000000' d='M15,10 C15.5522847,10 16,10.4477153 16,11 L16,11 L16,16 L11,16 C10.4477153,16 10,15.5522847 10,15 C10,14.4477153 10.4477153,14 11,14 L11,14 L14,14 L14,11 C14,10.4477153 14.4477153,10 15,10 Z M1,10 C1.55228475,10 2,10.4477153 2,11 L2,11 L2,14 L5,14 C5.55228475,14 6,14.4477153 6,15 C6,15.5522847 5.55228475,16 5,16 L5,16 L0,16 L8.8817842e-16,11 C8.8817842e-16,10.4477153 0.44771525,10 1,10 Z M16,0 L16,5 C16,5.55228475 15.5522847,6 15,6 C14.4477153,6 14,5.55228475 14,5 L14,5 L14,2 L11,2 C10.4477153,2 10,1.55228475 10,1 C10,0.44771525 10.4477153,0 11,0 L11,0 L16,0 Z M5,0 C5.55228475,0 6,0.44771525 6,1 C6,1.55228475 5.55228475,2 5,2 L5,2 L2,2 L2,5 C2,5.55228475 1.55228475,6 1,6 C0.44771525,6 2.74146524e-17,5.55228475 6.123234e-17,5 L6.123234e-17,5 L3.6739404e-16,0 Z' /></svg>",
 				action: () => {
 					this.ee.trigger(EventEnum.ZOOM_REQUESTED)
 				}

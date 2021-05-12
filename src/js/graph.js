@@ -18,14 +18,14 @@ export class Virrvarr {
 	 * @param {boolean=} options.enableFadeOnHover - Should nodes and edges that are not directly connected to a hovered node be faded out when said node is hovered?
 	 * @param {boolean=} options.enableZoomButtons - Should zoom buttons be enabled?
 	 * @param {boolean=} options.enableScaleGridOnZoom - Should the grid scale with the zoom?
-	 * @param {boolean=} options.enableContextMenu - Should the conext menu be enabled?
+	 * @param {boolean=} options.enableBuiltinContextMenu - Should the built in conext menu be enabled?
 	 * @param {Function=} options.entityClickedListener - Click listener for entities.
 	 * @param {Function=} options.entityDoubleClickedListener - Double click listener for entities.
 	 * @param {Function=} options.entityHoveredListener - Hover listener for entities.
 	 * @param {boolean=} options.enableFixedEdgeLabelWidth - Should edge label width be fixed? Note that you need to provide the edgeLabelWidth option together with this option.
 	 * @param {number=} options.edgeLabelWidth - Default edge label width.
 	 * @param {number=} options.maxEdgeLabelWidth - Maximum edge label width.
-	 * @param {object=} options.customContextMenu - Custom context menu.
+	 * @param {object=} options.customContextMenu - Custom context menu to display.
 	 * @param {boolean=} options.enableMultiLineNodeLabels - Allow node names to take up two lines.
 	 * @param {boolean=} options.rotateLabels - Make edge labels perpendicular to the edge.
 	 * @param {boolean=} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?

@@ -1,5 +1,5 @@
 # Context Menu (Right click menu)
-Virrvarr has a custom context menu that can be enabled/disabled as needed using the boolean option enableContextMenu. You can also add your own custom menu items to the context menu by passing them into the customContextMenuAddons option. 
+Virrvarr has a custom context menu that can be enabled/disabled as needed using the boolean option enableBuiltinContextMenu. You can also add your own custom menu items to the context menu by passing them into the customContextMenuAddons option. 
 
 There are three types of context menus:
 - `node` (on node right click)
@@ -12,20 +12,29 @@ When defining your own menu items you simply pass a label (the caption of the me
 
 No arguments are passed to the canvas actions.
 
+Each menu type takes an array of arrays of objects as a value. Each inner array will be separated by a horizontal divider in the menu.
+Each object has the following properties:
+- `label` The text for the option item
+- `icon` URL to an icon (optional). This can be set to an empty string if you want to indent options without icons.
+- `action` A function that should execute when the option is clicked.
+
+
 ```javascript
 const options = {
-        enableContextMenu: true,
+        enableBuiltinContextMenu: true,
         customContextMenuAddons: {
             node: [
                 [
                     {
                         label: "Custom Node Item 1",
+                        icon: "URL", //Optional
                         action: (data, id) => { console.log("Custom Action 1: ", id) }
                     }
                ],
                [
                     {
                         label: "Custom Node Item 2",
+                        icon: "URL", //Optional
                         action: (data, id) => { console.log("Custom Action 2:", data.someAttribute) }
                     },
                ]
