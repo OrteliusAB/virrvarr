@@ -124,8 +124,9 @@ export default Object.freeze({
 
 	//Force Layout
 	EDGE_STRENGTH: 0.7,
-	GRAVITY: 0.06,
+	GRAVITY: 0.02,
 	CHARGE: -2000,
+	CHARGE_MAX_DISTANCE: 1200,
 	SCALE_EXTENT: [0.05, 5],
 	INITIAL_SCALE: 0.3
 })

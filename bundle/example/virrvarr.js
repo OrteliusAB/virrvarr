@@ -4003,6 +4003,101 @@
   treeProto.x = tree_x;
   treeProto.y = tree_y;
 
+  function x(d) {
+    return d.x + d.vx;
+  }
+
+  function y(d) {
+    return d.y + d.vy;
+  }
+
+  function collide(radius) {
+    var nodes,
+        radii,
+        strength = 1,
+        iterations = 1;
+
+    if (typeof radius !== "function") radius = constant$3(radius == null ? 1 : +radius);
+
+    function force() {
+      var i, n = nodes.length,
+          tree,
+          node,
+          xi,
+          yi,
+          ri,
+          ri2;
+
+      for (var k = 0; k < iterations; ++k) {
+        tree = quadtree(nodes, x, y).visitAfter(prepare);
+        for (i = 0; i < n; ++i) {
+          node = nodes[i];
+          ri = radii[node.index], ri2 = ri * ri;
+          xi = node.x + node.vx;
+          yi = node.y + node.vy;
+          tree.visit(apply);
+        }
+      }
+
+      function apply(quad, x0, y0, x1, y1) {
+        var data = quad.data, rj = quad.r, r = ri + rj;
+        if (data) {
+          if (data.index > node.index) {
+            var x = xi - data.x - data.vx,
+                y = yi - data.y - data.vy,
+                l = x * x + y * y;
+            if (l < r * r) {
+              if (x === 0) x = jiggle(), l += x * x;
+              if (y === 0) y = jiggle(), l += y * y;
+              l = (r - (l = Math.sqrt(l))) / l * strength;
+              node.vx += (x *= l) * (r = (rj *= rj) / (ri2 + rj));
+              node.vy += (y *= l) * r;
+              data.vx -= x * (r = 1 - r);
+              data.vy -= y * r;
+            }
+          }
+          return;
+        }
+        return x0 > xi + r || x1 < xi - r || y0 > yi + r || y1 < yi - r;
+      }
+    }
+
+    function prepare(quad) {
+      if (quad.data) return quad.r = radii[quad.data.index];
+      for (var i = quad.r = 0; i < 4; ++i) {
+        if (quad[i] && quad[i].r > quad.r) {
+          quad.r = quad[i].r;
+        }
+      }
+    }
+
+    function initialize() {
+      if (!nodes) return;
+      var i, n = nodes.length, node;
+      radii = new Array(n);
+      for (i = 0; i < n; ++i) node = nodes[i], radii[node.index] = +radius(node, i, nodes);
+    }
+
+    force.initialize = function(_) {
+      nodes = _;
+      initialize();
+    };
+
+    force.iterations = function(_) {
+      return arguments.length ? (iterations = +_, force) : iterations;
+    };
+
+    force.strength = function(_) {
+      return arguments.length ? (strength = +_, force) : strength;
+    };
+
+    force.radius = function(_) {
+      return arguments.length ? (radius = typeof _ === "function" ? _ : constant$3(+_), initialize(), force) : radius;
+    };
+
+    return force;
+  }
+
   function index(d) {
     return d.index;
   }
@@ -4116,11 +4211,11 @@
     return force;
   }
 
-  function x(d) {
+  function x$1(d) {
     return d.x;
   }
 
-  function y(d) {
+  function y$1(d) {
     return d.y;
   }
 
@@ -4275,7 +4370,7 @@
         theta2 = 0.81;
 
     function force(_) {
-      var i, n = nodes.length, tree = quadtree(nodes, x, y).visitAfter(accumulate);
+      var i, n = nodes.length, tree = quadtree(nodes, x$1, y$1).visitAfter(accumulate);
       for (alpha = _, i = 0; i < n; ++i) node = nodes[i], tree.visit(apply);
     }
 
@@ -4374,7 +4469,7 @@
     return force;
   }
 
-  function x$1(x) {
+  function x$2(x) {
     var strength = constant$3(0.1),
         nodes,
         strengths,
@@ -4414,7 +4509,7 @@
     return force;
   }
 
-  function y$1(y) {
+  function y$2(y) {
     var strength = constant$3(0.1),
         nodes,
         strengths,
@@ -5935,17 +6030,17 @@
     return new Linear(context);
   }
 
-  function x$2(p) {
+  function x$3(p) {
     return p[0];
   }
 
-  function y$2(p) {
+  function y$3(p) {
     return p[1];
   }
 
   function line() {
-    var x = x$2,
-        y = y$2,
+    var x = x$3,
+        y = y$3,
         defined = constant$4(true),
         context = null,
         curve = curveLinear,
@@ -6745,8 +6840,9 @@
     //ms
     //Force Layout
     EDGE_STRENGTH: 0.7,
-    GRAVITY: 0.06,
+    GRAVITY: 0.02,
     CHARGE: -2000,
+    CHARGE_MAX_DISTANCE: 1200,
     SCALE_EXTENT: [0.05, 5],
     INITIAL_SCALE: 0.3
   });
@@ -10765,7 +10861,7 @@
       this.ee.on(EVENTS.NODE_DRAG_START, function () {
         _this.stop();
 
-        _this.target(0.5);
+        _this.target(0.2);
       });
       this.ee.on(EVENTS.NODE_DRAG_DRAGGED, function () {
         _this.restart();
@@ -10839,11 +10935,22 @@
       value: function initializeSimulation() {
         var _this2 = this;
 
-        return simulation().force("charge", manyBody().strength(Env.CHARGE)).force("center", center(this.forceCenterX, this.forceCenterY)).force("y", y$1(this.forceCenterX).strength(Env.GRAVITY)).force("x", x$1(this.forceCenterY).strength(Env.GRAVITY)).nodes([]).force("link", link().links([]).distance(function (l) {
-          return _this2.getEdgeDistance(l);
-        }).strength(Env.EDGE_STRENGTH)).on("tick", function () {
+        return simulation().force("charge", manyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE)).force("collide", collide().radius(function (d) {
+          return d.width ? Math.max(d.width, d.height) : d.radius;
+        }).strength(1).iterations(1)).force("y", y$2(this.forceCenterX).strength(Env.GRAVITY)).force("x", x$2(this.forceCenterY).strength(Env.GRAVITY)).nodes([]).force("link", //This force will be overwritten when data is received.
+        link().links([])).on("tick", function () {
           _this2.ee.trigger(EVENTS.ENGINE_TICK);
         });
+      }
+    }, {
+      key: "enableCenterForce",
+      value: function enableCenterForce() {
+        this.simulation.force("center", center(this.forceCenterX, this.forceCenterY));
+      }
+    }, {
+      key: "disableCenterForce",
+      value: function disableCenterForce() {
+        this.simulation.force("center", null);
       }
       /**
        * Update the simulation with a new data set
@@ -10958,7 +11065,7 @@
         });
         var columnScale = point$1().domain(_toConsumableArray(Array(numberOfRowsAndColumns).keys())).range([30, 2000]);
         var rowScale = point$1().domain(_toConsumableArray(Array(numberOfRowsAndColumns).keys())).range([30, 2000]);
-        this.simulation.force("x", x$1(function (d) {
+        this.simulation.force("x", x$2(function (d) {
           var value;
 
           if (filterFunction) {
@@ -10968,7 +11075,7 @@
           }
 
           return columnScale(matrix[xGroups.indexOf(value)][1]);
-        })).force("y", y$1(function (d) {
+        })).force("y", y$2(function (d) {
           var value;
 
           if (filterFunction) {
@@ -10993,9 +11100,9 @@
       value: function resetLayout(nodes, edges) {
         var _this5 = this;
 
-        this.simulation.force("y", y$1(0).strength(Env.GRAVITY)).force("x", x$1(0).strength(Env.GRAVITY)).force("link", link().links(edges).distance(function (l) {
+        this.simulation.force("charge", manyBody().strength(Env.CHARGE)).force("y", y$2(this.forceCenterX).strength(Env.GRAVITY)).force("x", x$2(this.forceCenterY).strength(Env.GRAVITY)).force("link", link().links(edges).distance(function (l) {
           return _this5.getEdgeDistance(l);
-        }).strength(Env.EDGE_STRENGTH)).force("charge", manyBody().strength(Env.CHARGE));
+        }).strength(Env.EDGE_STRENGTH));
       }
       /**
        * Returns the distance (length) of the passed edge
@@ -11078,10 +11185,15 @@
       /* Graph has mounted! */
 
       this._ee.on(EVENTS.GRAPH_HAS_MOUNTED, function () {
+        _this._engine.enableCenterForce();
+
         if (inputData.nodes.length > 0) {
           setTimeout(function () {
             return _this._UI.zoomHandler.resetZoom();
           }, 300);
+          setTimeout(function () {
+            return _this._engine.disableCenterForce();
+          }, 4000);
         }
       });
 
@@ -11421,6 +11533,16 @@
         this._UI.DOMProcessor.lineType = newLineType;
 
         this._engine.softRestart();
+      }
+      /**
+       * Toggles the center force on or off in the graph.
+       * @param {boolean} isEnable - Should the center force be toggled on or off?
+       */
+
+    }, {
+      key: "setCenterForce",
+      value: function setCenterForce(isEnable) {
+        isEnable ? this._engine.enableCenterForce() : this._engine.disableCenterForce();
       }
       /**
        * Updates the data in the graph. This is commonly used for reflecting changes in the outer application

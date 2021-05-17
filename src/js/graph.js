@@ -61,8 +61,10 @@ export class Virrvarr {
 
 		/* Graph has mounted! */
 		this._ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
+			this._engine.enableCenterForce()
 			if (inputData.nodes.length > 0) {
 				setTimeout(() => this._UI.zoomHandler.resetZoom(), 300)
+				setTimeout(() => this._engine.disableCenterForce(), 4000)
 			}
 		})
 		this._ee.trigger(EventEnum.GRAPH_HAS_MOUNTED)
@@ -327,6 +329,14 @@ export class Virrvarr {
 	setDefaultLineType(newLineType) {
 		this._UI.DOMProcessor.lineType = newLineType
 		this._engine.softRestart()
+	}
+
+	/**
+	 * Toggles the center force on or off in the graph.
+	 * @param {boolean} isEnable - Should the center force be toggled on or off?
+	 */
+	setCenterForce(isEnable) {
+		isEnable ? this._engine.enableCenterForce() : this._engine.disableCenterForce()
 	}
 
 	/**

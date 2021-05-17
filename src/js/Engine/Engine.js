@@ -14,7 +14,7 @@ export default class Engine {
 		})
 		this.ee.on(EventEnum.NODE_DRAG_START, () => {
 			this.stop()
-			this.target(0.5)
+			this.target(0.2)
 		})
 		this.ee.on(EventEnum.NODE_DRAG_DRAGGED, () => {
 			this.restart()
@@ -75,24 +75,33 @@ export default class Engine {
 	initializeSimulation() {
 		return d3
 			.forceSimulation()
-			.force("charge", d3.forceManyBody().strength(Env.CHARGE))
-			.force("center", d3.forceCenter(this.forceCenterX, this.forceCenterY))
+			.force("charge", d3.forceManyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE))
+			.force(
+				"collide",
+				d3
+					.forceCollide()
+					.radius(d => (d.width ? Math.max(d.width, d.height) : d.radius))
+					.strength(1)
+					.iterations(1)
+			)
 			.force("y", d3.forceY(this.forceCenterX).strength(Env.GRAVITY))
 			.force("x", d3.forceX(this.forceCenterY).strength(Env.GRAVITY))
 			.nodes([])
 			.force(
-				"link",
-				d3
-					.forceLink()
-					.links([])
-					.distance(l => {
-						return this.getEdgeDistance(l)
-					})
-					.strength(Env.EDGE_STRENGTH)
+				"link", //This force will be overwritten when data is received.
+				d3.forceLink().links([])
 			)
 			.on("tick", () => {
 				this.ee.trigger(EventEnum.ENGINE_TICK)
 			})
+	}
+
+	enableCenterForce() {
+		this.simulation.force("center", d3.forceCenter(this.forceCenterX, this.forceCenterY))
+	}
+
+	disableCenterForce() {
+		this.simulation.force("center", null)
 	}
 
 	/**
@@ -244,8 +253,9 @@ export default class Engine {
 	 */
 	resetLayout(nodes, edges) {
 		this.simulation
-			.force("y", d3.forceY(0).strength(Env.GRAVITY))
-			.force("x", d3.forceX(0).strength(Env.GRAVITY))
+			.force("charge", d3.forceManyBody().strength(Env.CHARGE))
+			.force("y", d3.forceY(this.forceCenterX).strength(Env.GRAVITY))
+			.force("x", d3.forceX(this.forceCenterY).strength(Env.GRAVITY))
 			.force(
 				"link",
 				d3
@@ -256,7 +266,6 @@ export default class Engine {
 					})
 					.strength(Env.EDGE_STRENGTH)
 			)
-			.force("charge", d3.forceManyBody().strength(Env.CHARGE))
 	}
 
 	/**
