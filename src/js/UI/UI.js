@@ -75,6 +75,7 @@ export default class UI {
 		rootG.append("g").attr("id", "label-container")
 		rootG.append("g").attr("id", "multiplicity-container")
 		rootG.append("g").attr("id", "node-container")
+		rootG.append("g").attr("id", "layout-extras")
 		return rootG
 	}
 
@@ -83,6 +84,7 @@ export default class UI {
 		this.rootG.select("#multiplicity-container").selectAll(".multiplicity").remove()
 		this.rootG.select("#node-container").selectAll(".node").remove()
 		this.rootG.select("#label-container").selectAll(".label").remove()
+		this.rootG.select("#layout-extras").selectAll("*").remove()
 		d3.select(this.graphContainerElement).select("svg").remove()
 		d3.select(`#${this.stylesID}`).remove()
 	}

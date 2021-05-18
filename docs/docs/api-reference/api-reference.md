@@ -153,8 +153,10 @@ clearDisable   |   Function<(attribute, value, filterFunction)>   |   Clears all
 updateDataset   |   Function<(newDataset)>   |   This function updates the dataset in the graph, applies all existing filters, and then updates the selection, DOM, and simulation.
 resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph
-setMatrixLayout   |   Function<(attribute, filterFunction, sortFunction)>   |   Sets the layout to a fixed matrix. This enables the developer to group things together. The function can either take an attribute (with values set for it on each node, such as “type”) and use that as the criteria for grouping, or use a custom filter function which takes the bound data as input and returns a group name as a string.  A sortFunction can also be supplied in order to determine the order of things in the matrix. The order will read from left to right, top to bottom. Like a book.
-resetLayout   |   Function<()>   |   Resets the layout to the default layout
+setBoundingBox   |   Function<(width, height)>   |   Sets a bounding box for the graph
+clearBoundingBox   |   Function<()>   |   Clears the bounding box for the graph
+setLayout   |   Function<(type, config)>   |   Sets a new graph layout
+resetLayout   |   Function<()>   |   Resets the graph layout to the default layout
 setDefaultLineType   |   Function<(newType)>   |   Updates the default line type to use.
 setCenterForce   |   Function<(isEnabled)>   |   Toggles the center force on or off. Typically this is useful for graphs are not disjointed.
 setPinMode   |   Function<(isEnabled)>   |   Sets the pin mode of the graph

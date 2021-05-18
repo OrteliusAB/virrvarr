@@ -241,12 +241,13 @@
                         <h3 class="menu-title">Layout</h3>
                     </summary>
                     <hr />
-                    <button class="menu-button menu-button-confirm" onclick="setGridLayout()">Group
-                        Layout</button>
-                    <button class="menu-button menu-button-confirm" onclick="setMatrixLayout()">Matrix
-                        Layout</button>
-                    <button class="menu-button menu-button-warning" onclick="resetLayout()">Reset
-                        Layout</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('hierarchy')">Hierarchy</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('matrix')">Matrix</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('grid')">Grid</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('cluster')">Cluster</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('treemap')">Treemap</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('radial')">Radial</button>
+                    <button class="menu-button menu-button-warning" onclick="resetLayout()">Reset Layout</button>
                 </details>
 
                 <details>
@@ -286,6 +287,8 @@
                     <button class="menu-button menu-button-confirm" onclick="toggleMultiSelectDragMode()">Multi-select
                         drag
                         Mode</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleCenterForce()">Center Force</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleBoundingBox()">Bounding Box</button>
                     <button class="menu-button menu-button-warning" onclick="destroyGraph()">Destroy
                         Graph</button>
                 </details>
@@ -465,16 +468,27 @@
             window.graph.resetZoom()
         }
 
-        function setGridLayout() {
-            window.graph.setMatrixLayout("type")
-        }
-
-        function setMatrixLayout() {
-            window.graph.setMatrixLayout("id")
+        function setLayout(type) {
+            window.graph.setLayout(type)
         }
 
         function resetLayout() {
             window.graph.resetLayout()
+        }
+
+        function toggleBoundingBox() {
+            window.boundingBox = !!!window.boundingBox
+            if (boundingBox) {
+                window.graph.setBoundingBox(1400, 1000)
+            }
+            else {
+                window.graph.clearBoundingBox()
+            }
+        }
+
+        function toggleCenterForce() {
+            window.centerForce = !!!window.centerForce
+            window.graph.setCenterForce(window.centerForce)
         }
 
         function destroyGraph() {

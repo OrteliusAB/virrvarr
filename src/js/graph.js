@@ -183,14 +183,13 @@ export class Virrvarr {
 	}
 
 	/**
-	 * Sets a matrix layout for the simulation.
-	 * @param {string} attribute - Property name on the nodes to group by
-	 * @param {Function} filterFunction  - Optional filter function that can be used instead of attribute. Should return a string that represents the group that the node belongs to.
-	 * @param {Function} sortFunction  - Optional sort function that will be applied to nodes before the layout is created. Use this to ensure correct positioning of groups on the screen
+	 * Updates the graph layout
+	 * @param {"hierarchy"|"matrix"|"list"|"cluster"|"treemap"|"radial"} layout - Which layout to set
+	 * @param {any} options  - Layout specific options
 	 * @return {void}
 	 */
-	setMatrixLayout(attribute, filterFunction, sortFunction) {
-		this._ee.trigger(EventEnum.ENGINE_LAYOUT_REQUESTED, this._datastore.nodes, this._datastore.edges, attribute, filterFunction, sortFunction)
+	setLayout(layout, options) {
+		this._ee.trigger(EventEnum.ENGINE_LAYOUT_REQUESTED, layout, options ? options : {})
 	}
 
 	/**
@@ -198,7 +197,23 @@ export class Virrvarr {
 	 * @return {void}
 	 */
 	resetLayout() {
-		this._ee.trigger(EventEnum.ENGINE_LAYOUT_RESET_REQUESTED, this._datastore.nodes, this._datastore.edges)
+		this._ee.trigger(EventEnum.ENGINE_LAYOUT_RESET_REQUESTED)
+	}
+
+	/**
+	 * Sets a bounding box for the graph where nodes cannot move outside the bounds. If no bounds are provided they will be determined based on the amount of nodes and node sizes.
+	 * @param {*} width - Width of the bounding box
+	 * @param {*} height - Height of the bounding box
+	 */
+	setBoundingBox(width, height) {
+		this._engine.setBoundingBox(width, height)
+	}
+
+	/**
+	 * Removes the bounding box from the graph if present
+	 */
+	clearBoundingBox() {
+		this._engine.removeBoundingBox()
 	}
 
 	/**
@@ -337,6 +352,8 @@ export class Virrvarr {
 	 */
 	setCenterForce(isEnable) {
 		isEnable ? this._engine.enableCenterForce() : this._engine.disableCenterForce()
+		this._engine.alpha(0.5)
+		this._engine.restart()
 	}
 
 	/**

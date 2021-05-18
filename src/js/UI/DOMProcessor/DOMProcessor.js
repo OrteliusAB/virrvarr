@@ -463,7 +463,7 @@ export default class DOMProcessor {
 			.select("path")
 			.classed("hovered", true)
 		this.rootG
-			.selectAll(`[class="${this.getMarkerId(edgeData, inverse)}"]`)
+			.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`)
 			.selectAll("path, text")
 			.classed("hovered", true)
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
@@ -499,7 +499,7 @@ export default class DOMProcessor {
 			.select("path")
 			.classed("hovered", false)
 		this.rootG
-			.selectAll(`[class="${this.getMarkerId(edgeData, inverse)}"]`)
+			.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`)
 			.selectAll("path, text")
 			.classed("hovered", false)
 	}

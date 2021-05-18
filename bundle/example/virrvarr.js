@@ -38,6 +38,55 @@
     return Constructor;
   }
 
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(source, true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(source).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
   function _toConsumableArray(arr) {
     return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
   }
@@ -95,20 +144,6 @@
   }
 
   var ascendingBisect = bisector(ascending);
-
-  function sequence(start, stop, step) {
-    start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
-
-    var i = -1,
-        n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
-        range = new Array(n);
-
-    while (++i < n) {
-      range[i] = start + i * step;
-    }
-
-    return range;
-  }
 
   var noop = {value: function() {}};
 
@@ -3274,10 +3309,10 @@
 
   var prefix = "$";
 
-  function Map() {}
+  function Map$1() {}
 
-  Map.prototype = map.prototype = {
-    constructor: Map,
+  Map$1.prototype = map.prototype = {
+    constructor: Map$1,
     has: function(key) {
       return (prefix + key) in this;
     },
@@ -3325,10 +3360,10 @@
   };
 
   function map(object, f) {
-    var map = new Map;
+    var map = new Map$1;
 
     // Copy constructor.
-    if (object instanceof Map) object.each(function(value, key) { map.set(key, value); });
+    if (object instanceof Map$1) object.each(function(value, key) { map.set(key, value); });
 
     // Index array by numeric index or specified key function.
     else if (Array.isArray(object)) {
@@ -4469,6 +4504,62 @@
     return force;
   }
 
+  function radial(radius, x, y) {
+    var nodes,
+        strength = constant$3(0.1),
+        strengths,
+        radiuses;
+
+    if (typeof radius !== "function") radius = constant$3(+radius);
+    if (x == null) x = 0;
+    if (y == null) y = 0;
+
+    function force(alpha) {
+      for (var i = 0, n = nodes.length; i < n; ++i) {
+        var node = nodes[i],
+            dx = node.x - x || 1e-6,
+            dy = node.y - y || 1e-6,
+            r = Math.sqrt(dx * dx + dy * dy),
+            k = (radiuses[i] - r) * strengths[i] * alpha / r;
+        node.vx += dx * k;
+        node.vy += dy * k;
+      }
+    }
+
+    function initialize() {
+      if (!nodes) return;
+      var i, n = nodes.length;
+      strengths = new Array(n);
+      radiuses = new Array(n);
+      for (i = 0; i < n; ++i) {
+        radiuses[i] = +radius(nodes[i], i, nodes);
+        strengths[i] = isNaN(radiuses[i]) ? 0 : +strength(nodes[i], i, nodes);
+      }
+    }
+
+    force.initialize = function(_) {
+      nodes = _, initialize();
+    };
+
+    force.strength = function(_) {
+      return arguments.length ? (strength = typeof _ === "function" ? _ : constant$3(+_), initialize(), force) : strength;
+    };
+
+    force.radius = function(_) {
+      return arguments.length ? (radius = typeof _ === "function" ? _ : constant$3(+_), initialize(), force) : radius;
+    };
+
+    force.x = function(_) {
+      return arguments.length ? (x = +_, force) : x;
+    };
+
+    force.y = function(_) {
+      return arguments.length ? (y = +_, force) : y;
+    };
+
+    return force;
+  }
+
   function x$2(x) {
     var strength = constant$3(0.1),
         nodes,
@@ -4896,157 +4987,6 @@
       areaRingSum$1 = adder();
 
   var lengthSum$1 = adder();
-
-  function initRange(domain, range) {
-    switch (arguments.length) {
-      case 0: break;
-      case 1: this.range(domain); break;
-      default: this.range(range).domain(domain); break;
-    }
-    return this;
-  }
-
-  var array = Array.prototype;
-  var slice = array.slice;
-
-  var implicit = {name: "implicit"};
-
-  function ordinal() {
-    var index = map(),
-        domain = [],
-        range = [],
-        unknown = implicit;
-
-    function scale(d) {
-      var key = d + "", i = index.get(key);
-      if (!i) {
-        if (unknown !== implicit) return unknown;
-        index.set(key, i = domain.push(d));
-      }
-      return range[(i - 1) % range.length];
-    }
-
-    scale.domain = function(_) {
-      if (!arguments.length) return domain.slice();
-      domain = [], index = map();
-      var i = -1, n = _.length, d, key;
-      while (++i < n) if (!index.has(key = (d = _[i]) + "")) index.set(key, domain.push(d));
-      return scale;
-    };
-
-    scale.range = function(_) {
-      return arguments.length ? (range = slice.call(_), scale) : range.slice();
-    };
-
-    scale.unknown = function(_) {
-      return arguments.length ? (unknown = _, scale) : unknown;
-    };
-
-    scale.copy = function() {
-      return ordinal(domain, range).unknown(unknown);
-    };
-
-    initRange.apply(scale, arguments);
-
-    return scale;
-  }
-
-  function band() {
-    var scale = ordinal().unknown(undefined),
-        domain = scale.domain,
-        ordinalRange = scale.range,
-        range = [0, 1],
-        step,
-        bandwidth,
-        round = false,
-        paddingInner = 0,
-        paddingOuter = 0,
-        align = 0.5;
-
-    delete scale.unknown;
-
-    function rescale() {
-      var n = domain().length,
-          reverse = range[1] < range[0],
-          start = range[reverse - 0],
-          stop = range[1 - reverse];
-      step = (stop - start) / Math.max(1, n - paddingInner + paddingOuter * 2);
-      if (round) step = Math.floor(step);
-      start += (stop - start - step * (n - paddingInner)) * align;
-      bandwidth = step * (1 - paddingInner);
-      if (round) start = Math.round(start), bandwidth = Math.round(bandwidth);
-      var values = sequence(n).map(function(i) { return start + step * i; });
-      return ordinalRange(reverse ? values.reverse() : values);
-    }
-
-    scale.domain = function(_) {
-      return arguments.length ? (domain(_), rescale()) : domain();
-    };
-
-    scale.range = function(_) {
-      return arguments.length ? (range = [+_[0], +_[1]], rescale()) : range.slice();
-    };
-
-    scale.rangeRound = function(_) {
-      return range = [+_[0], +_[1]], round = true, rescale();
-    };
-
-    scale.bandwidth = function() {
-      return bandwidth;
-    };
-
-    scale.step = function() {
-      return step;
-    };
-
-    scale.round = function(_) {
-      return arguments.length ? (round = !!_, rescale()) : round;
-    };
-
-    scale.padding = function(_) {
-      return arguments.length ? (paddingInner = Math.min(1, paddingOuter = +_), rescale()) : paddingInner;
-    };
-
-    scale.paddingInner = function(_) {
-      return arguments.length ? (paddingInner = Math.min(1, _), rescale()) : paddingInner;
-    };
-
-    scale.paddingOuter = function(_) {
-      return arguments.length ? (paddingOuter = +_, rescale()) : paddingOuter;
-    };
-
-    scale.align = function(_) {
-      return arguments.length ? (align = Math.max(0, Math.min(1, _)), rescale()) : align;
-    };
-
-    scale.copy = function() {
-      return band(domain(), range)
-          .round(round)
-          .paddingInner(paddingInner)
-          .paddingOuter(paddingOuter)
-          .align(align);
-    };
-
-    return initRange.apply(rescale(), arguments);
-  }
-
-  function pointish(scale) {
-    var copy = scale.copy;
-
-    scale.padding = scale.paddingOuter;
-    delete scale.paddingInner;
-    delete scale.paddingOuter;
-
-    scale.copy = function() {
-      return pointish(copy());
-    };
-
-    return scale;
-  }
-
-  function point$1() {
-    return pointish(band.apply(null, arguments).paddingInner(1));
-  }
 
   var t0$1 = new Date,
       t1$1 = new Date;
@@ -6089,7 +6029,7 @@
     return line;
   }
 
-  function point$2(that, x, y) {
+  function point$1(that, x, y) {
     that._context.bezierCurveTo(
       that._x1 + that._k * (that._x2 - that._x0),
       that._y1 + that._k * (that._y2 - that._y0),
@@ -6120,7 +6060,7 @@
     lineEnd: function() {
       switch (this._point) {
         case 2: this._context.lineTo(this._x2, this._y2); break;
-        case 3: point$2(this, this._x1, this._y1); break;
+        case 3: point$1(this, this._x1, this._y1); break;
       }
       if (this._line || (this._line !== 0 && this._point === 1)) this._context.closePath();
       this._line = 1 - this._line;
@@ -6131,7 +6071,7 @@
         case 0: this._point = 1; this._line ? this._context.lineTo(x, y) : this._context.moveTo(x, y); break;
         case 1: this._point = 2; this._x1 = x, this._y1 = y; break;
         case 2: this._point = 3; // proceed
-        default: point$2(this, x, y); break;
+        default: point$1(this, x, y); break;
       }
       this._x0 = this._x1, this._x1 = this._x2, this._x2 = x;
       this._y0 = this._y1, this._y1 = this._y2, this._y2 = y;
@@ -6177,7 +6117,7 @@
   // According to https://en.wikipedia.org/wiki/Cubic_Hermite_spline#Representations
   // "you can express cubic Hermite interpolation in terms of cubic Bézier curves
   // with respect to the four values p0, p0 + m0 / 3, p1 - m1 / 3, p1".
-  function point$3(that, t0, t1) {
+  function point$2(that, t0, t1) {
     var x0 = that._x0,
         y0 = that._y0,
         x1 = that._x1,
@@ -6206,7 +6146,7 @@
     lineEnd: function() {
       switch (this._point) {
         case 2: this._context.lineTo(this._x1, this._y1); break;
-        case 3: point$3(this, this._t0, slope2(this, this._t0)); break;
+        case 3: point$2(this, this._t0, slope2(this, this._t0)); break;
       }
       if (this._line || (this._line !== 0 && this._point === 1)) this._context.closePath();
       this._line = 1 - this._line;
@@ -6219,8 +6159,8 @@
       switch (this._point) {
         case 0: this._point = 1; this._line ? this._context.lineTo(x, y) : this._context.moveTo(x, y); break;
         case 1: this._point = 2; break;
-        case 2: this._point = 3; point$3(this, slope2(this, t1 = slope3(this, x, y)), t1); break;
-        default: point$3(this, this._t0, t1 = slope3(this, x, y)); break;
+        case 2: this._point = 3; point$2(this, slope2(this, t1 = slope3(this, x, y)), t1); break;
+        default: point$2(this, this._t0, t1 = slope3(this, x, y)); break;
       }
 
       this._x0 = this._x1, this._x1 = x;
@@ -10110,7 +10050,7 @@
 
         var inverse = direction === "from";
         this.rootG.selectAll("marker[id=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).select("path").classed("hovered", true);
-        this.rootG.selectAll("[class=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).selectAll("path, text").classed("hovered", true); //Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
+        this.rootG.selectAll("[class*=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).selectAll("path, text").classed("hovered", true); //Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 
         this.handleHoverEvent(edgeData, "enter", direction);
         setTimeout(function () {
@@ -10143,7 +10083,7 @@
         this.handleHoverEvent(edgeData, "leave", direction);
         var inverse = direction === "from";
         this.rootG.selectAll("marker[id=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).select("path").classed("hovered", false);
-        this.rootG.selectAll("[class=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).selectAll("path, text").classed("hovered", false);
+        this.rootG.selectAll("[class*=\"".concat(this.getMarkerId(edgeData, inverse), "\"]")).selectAll("path, text").classed("hovered", false);
       }
       /**
        * Draws multiplicity notation
@@ -10803,6 +10743,7 @@
         rootG.append("g").attr("id", "label-container");
         rootG.append("g").attr("id", "multiplicity-container");
         rootG.append("g").attr("id", "node-container");
+        rootG.append("g").attr("id", "layout-extras");
         return rootG;
       }
     }, {
@@ -10812,6 +10753,7 @@
         this.rootG.select("#multiplicity-container").selectAll(".multiplicity").remove();
         this.rootG.select("#node-container").selectAll(".node").remove();
         this.rootG.select("#label-container").selectAll(".label").remove();
+        this.rootG.select("#layout-extras").selectAll("*").remove();
         select(this.graphContainerElement).select("svg").remove();
         select("#".concat(this.stylesID)).remove();
       }
@@ -10839,6 +10781,611 @@
 
     return UI;
   }();
+
+  /**
+   * Creates a rectangular bounding box that stops nodes from leaving it
+   * @param {number=} width - Width of the box. If not set will be determined by the sizes and amounts of the nodes
+   * @param {number=} height - Height of the box. If not set will be determined by the sizes and amounts of the nodes
+   */
+  var boundingBoxForce = function boundingBoxForce(width, height) {
+    var nodes = [];
+    var computedWidth = width;
+    var computedHeight = height;
+    var multiplier = 5;
+
+    function force() {
+      for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+
+        if (node.x < -computedWidth) {
+          node.x = -computedWidth;
+        } else if (node.x > computedWidth) {
+          node.x = computedWidth;
+        }
+
+        if (node.y < -computedHeight) {
+          node.y = -computedHeight;
+        } else if (node.y > computedHeight) {
+          node.y = computedHeight;
+        }
+      }
+    }
+
+    var getWidth = function getWidth(node) {
+      return node.radius ? node.radius * 2 : node.width;
+    };
+
+    var getHeight = function getHeight(node) {
+      return node.radius ? node.radius * 2 : node.height;
+    };
+
+    force.initialize = function (newNodes) {
+      nodes = newNodes;
+
+      if (!width || !height) {
+        var size = 0;
+        nodes.forEach(function (node) {
+          size += Math.max(size, getWidth(node) * multiplier, getHeight(node) * multiplier);
+        });
+
+        if (!width && !height) {
+          computedWidth = size / 2;
+          computedHeight = size / 2;
+        } else if (!width) {
+          computedWidth = size - height > 0 ? size - height : 100;
+        } else if (!height) {
+          computedHeight = size - width > 0 ? size - width : 100;
+        }
+      } else {
+        computedWidth = width;
+        computedHeight = height;
+      }
+
+      computedWidth = computedWidth / 2;
+      computedHeight = computedHeight / 2;
+    };
+
+    return force;
+  };
+
+  //Adapted from: https://observablehq.com/@d3/clustered-bubbles
+
+  /**
+   * Creates a cluster force that forces nodes together
+   * @param {(any => "string" | "string")=} groupBy - Either a function that will take the bound data from the node or a name of a property on a node
+   * @param {number=} strength - How strong should the force be that pulls the nodes together? (0-1)
+   */
+  var clusterForce = function clusterForce(groupBy, strength) {
+    var computeGroup = groupBy ? typeof groupBy === "string" ? function (node) {
+      return node[groupBy];
+    } : function (node) {
+      return groupBy(node.data);
+    } : function (node) {
+      return node.type;
+    };
+    var power = strength ? strength : 0.7;
+    var groups = [];
+    var nodes = [];
+
+    var computeCentroid = function computeCentroid(nodes) {
+      var x = 0;
+      var y = 0;
+      var z = 0;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = nodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var node = _step.value;
+          var k = Math.pow(node.radius ? node.radius : Math.max(node.width, node.height), 2);
+          x += node.x * k;
+          y += node.y * k;
+          z += k;
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return {
+        x: x / z,
+        y: y / z
+      };
+    };
+
+    function force(alpha) {
+      var l = alpha * power;
+      groups.forEach(function (group) {
+        var centroid = computeCentroid(group);
+        group.forEach(function (node) {
+          var cx = centroid.x,
+              cy = centroid.y;
+          node.vx -= (node.x - cx) * l;
+          node.vy -= (node.y - cy) * l;
+        });
+      });
+    }
+
+    force.initialize = function (newNodes) {
+      nodes = newNodes;
+      var newGroups = new Map();
+      nodes.forEach(function (node) {
+        var group = computeGroup(node);
+
+        if (!newGroups.has(group)) {
+          newGroups.set(group, [node]);
+        } else {
+          newGroups.get(group).push(node);
+        }
+      });
+      groups = _toConsumableArray(newGroups.values());
+    };
+
+    return force;
+  };
+
+  /**
+   * Creates an hierarhical force that sorts nodes on an axis (either y or x)
+   * @param {(any => "string" | "string")=} groupBy - Either a function that will take the bound data from the node or a name of a property on a node
+   * @param {boolean=} useY - If true the hierachy will be top to bottom, otherwise it will be left to right
+   * @param {number=} distance - How much space should be between nodes. If not set this will be determined by the size of the nodes
+   */
+  var hierarchyForce = function hierarchyForce(groupBy) {
+    var useY = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var distance = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
+    var computeGroup = groupBy ? typeof groupBy === "string" ? function (node) {
+      return node[groupBy];
+    } : function (node) {
+      return groupBy(node.data);
+    } : function (node) {
+      return node.type;
+    };
+    var nodes = [];
+    var groups = [];
+    var offsetDistance = 0;
+    var halfSize = 0;
+    var offsetSizeMultiplier = 4;
+
+    function force() {
+      var parameter = useY ? "y" : "x";
+      groups.forEach(function (group, index) {
+        var coordinate = index * offsetDistance - halfSize;
+        group.forEach(function (node) {
+          node[parameter] = coordinate;
+        });
+      });
+    }
+
+    var getWidth = function getWidth(node) {
+      return node.radius ? node.radius * 2 : node.width;
+    };
+
+    var getHeight = function getHeight(node) {
+      return node.radius ? node.radius * 2 : node.height;
+    };
+
+    force.initialize = function (newNodes) {
+      nodes = newNodes;
+      var newGroups = {};
+      var computeSize = useY ? getHeight : getWidth;
+      var maxSize = distance ? distance : 0;
+      nodes.forEach(function (node) {
+        var group = computeGroup(node);
+
+        if (group === null || group === undefined) {
+          group = 0;
+        }
+
+        if (!newGroups[group]) {
+          newGroups[group] = [node];
+        } else {
+          newGroups[group].push(node);
+        }
+
+        if (!distance) {
+          maxSize = Math.max(maxSize, computeSize(node));
+        }
+      });
+      offsetDistance = maxSize * offsetSizeMultiplier;
+      groups = Object.keys(newGroups).sort(function (a, b) {
+        var valueAInt = parseInt(a);
+        var valueBInt = parseInt(b);
+        var valueA = isNaN(valueAInt) ? a : valueAInt;
+        var valueB = isNaN(valueBInt) ? a : valueBInt;
+
+        if (valueA < valueB) {
+          return -1;
+        }
+
+        if (valueA > valueB) {
+          return 1;
+        }
+
+        return 0;
+      }).map(function (key) {
+        return newGroups[key];
+      });
+      halfSize = (groups.length - 1) * offsetDistance / 2;
+    };
+
+    return force;
+  };
+
+  /**
+   * Creates a matrix force that pulls nodes into given x and y axises
+   * @param {boolean=} useY - If true the Y axis force will be activated
+   * @param {boolean=} useX - If true the X axis force will be activated
+   * @param {number=} strength - How strong should the force that pulls node into the axis be?
+   * @param {number=} size - How large should each axis space be?
+   * @param {number=} multiplier - If no size is provided the size of nodes will be used. This multiplier can be used to multiply the measurements by a given number.
+   */
+  var matrixForce = function matrixForce() {
+    var useY = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+    var useX = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var strength = arguments.length > 2 ? arguments[2] : undefined;
+    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : undefined;
+    var multiplier = arguments.length > 4 ? arguments[4] : undefined;
+    var nodes = [];
+    var maxSizeX = size;
+    var maxSizeY = size;
+    var power = strength ? strength : 0.6;
+    var offsetMultiplier = multiplier ? multiplier : 3;
+
+    function force(alpha) {
+      var l = alpha * power;
+
+      for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+
+        if (useY) {
+          var closestArea = Math.round(node.y / maxSizeY) * maxSizeY;
+          node.vy -= (node.y - closestArea) * l;
+        }
+
+        if (useX) {
+          var _closestArea = Math.round(node.x / maxSizeX) * maxSizeX;
+
+          node.vx -= (node.x - _closestArea) * l;
+        }
+      }
+    }
+
+    var getWidth = function getWidth(node) {
+      return node.radius ? node.radius * 2 : node.width;
+    };
+
+    var getHeight = function getHeight(node) {
+      return node.radius ? node.radius * 2 : node.height;
+    };
+
+    force.initialize = function (newNodes) {
+      nodes = newNodes;
+
+      if (size) {
+        return;
+      }
+
+      maxSizeX = 0;
+      maxSizeY = 0;
+      nodes.forEach(function (node) {
+        maxSizeX = Math.max(maxSizeX, getWidth(node) * offsetMultiplier);
+        maxSizeY = Math.max(maxSizeY, getHeight(node) * offsetMultiplier);
+      });
+
+      if (useY && useX) {
+        maxSizeX = Math.max(maxSizeX, maxSizeY);
+        maxSizeY = Math.max(maxSizeX, maxSizeY);
+      }
+    };
+
+    return force;
+  };
+
+  /**
+   * Creates a table (or, list) of all nodes. By default nodes will be shown in alphabetical name order
+   * @param {(any => "string" | "string")=} groupBy - Either a function that will take the bound data from the node or a name of a property on a node
+   * @param {number=} strength - How strong should the force be that pulls the nodes into the matrix? (0-1)
+   */
+  var listForce = function listForce(groupBy) {
+    var strength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+    var computeGroup = groupBy ? typeof groupBy === "string" ? function (node) {
+      return node[groupBy];
+    } : function (node) {
+      return groupBy(node.data);
+    } : function (node) {
+      return node.name;
+    };
+    var power = strength ? strength : 0.9;
+    var nodes = [];
+    var size = 0;
+    var numberOfRowsAndColumns = 0;
+    var halfSize = 0;
+    var multiplier = 2;
+
+    function force(alpha) {
+      var l = alpha * power;
+      var currentRow = 0;
+      var currentColumn = 0;
+
+      for (var i = 0; i < nodes.length; i++) {
+        if (currentColumn === numberOfRowsAndColumns) {
+          currentColumn = 0;
+          currentRow += 1;
+        }
+
+        currentColumn += 1;
+        var node = nodes[i];
+        node.vx -= (node.x - (currentColumn - 1) * size + halfSize) * l;
+        node.vy -= (node.y - currentRow * size + halfSize) * l;
+      }
+    }
+
+    var getWidth = function getWidth(node) {
+      return node.radius ? node.radius * 2 : node.width;
+    };
+
+    var getHeight = function getHeight(node) {
+      return node.radius ? node.radius * 2 : node.height;
+    };
+
+    force.initialize = function (newNodes) {
+      nodes = newNodes;
+      nodes.sort(function (a, b) {
+        var valueA = computeGroup(a);
+        var valueB = computeGroup(b);
+
+        if (valueA < valueB) {
+          return -1;
+        }
+
+        if (valueA > valueB) {
+          return 1;
+        }
+
+        return 0;
+      });
+      size = 0;
+      nodes.forEach(function (node) {
+        size = Math.max(size, getWidth(node) * multiplier, getHeight(node) * multiplier);
+      });
+      numberOfRowsAndColumns = Math.ceil(Math.sqrt(nodes.length));
+      halfSize = (numberOfRowsAndColumns - 1) * size / 2;
+    };
+
+    return force;
+  };
+
+  /**
+   * Force that generates a treemap
+   * @param {any => "string" | "string"} groupBy - Either a function that will take the bound data from the node or a name of a property on a node
+   * @param {number} width - Maximum width for the treemap
+   * @param {number} height - Maximum height for the treemap
+   * @param {number} strength - Strength of the treemap force
+   */
+
+  var treemapForce = function treemapForce(groupBy, width, height, strength) {
+    var computeGroup = groupBy ? typeof groupBy === "string" ? function (node) {
+      return node[groupBy];
+    } : function (node) {
+      return groupBy(node.data);
+    } : function (node) {
+      return node.type;
+    };
+    var nodes = [];
+    var treemapWidth = width;
+    var treemapHeight = height;
+    var halfTreemapWidth;
+    var halfTreemapHeight;
+    var power = strength ? strength : 0.7;
+    var groups = [];
+    var treemap = [];
+    var multiplier = 0.6;
+
+    function force(alpha) {
+      if (!treemap.length) {
+        return;
+      }
+
+      var l = alpha * power;
+      treemap.forEach(function (group) {
+        var centerX = group.x + group.width / 2;
+        var centerY = group.y + group.height / 2;
+        group.data.forEach(function (node) {
+          node.vx -= (node.x - centerX) * l;
+          node.vy -= (node.y - centerY) * l;
+        });
+      });
+    }
+
+    var getWidth = function getWidth(node) {
+      return node.radius ? node.radius * 2 : node.width;
+    };
+
+    var getHeight = function getHeight(node) {
+      return node.radius ? node.radius * 2 : node.height;
+    };
+
+    force.initialize = function (newNodes) {
+      nodes = newNodes;
+      var newGroups = new Map();
+      var maxSizeX = 0;
+      var maxSizeY = 0;
+      nodes.forEach(function (node) {
+        var group = computeGroup(node);
+
+        if (!newGroups.has(group)) {
+          newGroups.set(group, [node]);
+        } else {
+          newGroups.get(group).push(node);
+        }
+
+        maxSizeX = Math.max(maxSizeX, getWidth(node) * multiplier);
+        maxSizeY = Math.max(maxSizeY, getHeight(node) * multiplier);
+      });
+      var fullSize = maxSizeY * nodes.length + maxSizeX * nodes.length;
+
+      if (!width && !height) {
+        treemapWidth = maxSizeX * nodes.length;
+        treemapHeight = maxSizeY * nodes.length;
+      } else if (!width) {
+        treemapWidth = fullSize - treemapHeight > 0 ? fullSize - treemapHeight : 400;
+      } else if (!height) {
+        treemapHeight = fullSize - treemapWidth > 0 ? fullSize - treemapWidth : 400;
+      }
+
+      halfTreemapWidth = treemapWidth / 2;
+      halfTreemapHeight = treemapHeight / 2;
+      groups = _toConsumableArray(newGroups.values());
+
+      if (groups.length === 0) {
+        return;
+      } //Compute Treemap
+
+
+      var canvas = {
+        data: [],
+        xStart: 0,
+        yStart: 0,
+        width: treemapWidth,
+        height: treemapHeight
+      };
+      var totalValue = groups.reduce(function (acc, current) {
+        return acc + current.length;
+      }, 0);
+      var dataScaled = groups.map(function (group) {
+        return group.length * treemapHeight * treemapWidth / totalValue;
+      });
+
+      var getMinWidth = function getMinWidth() {
+        if (Math.pow(canvas.height, 2) > Math.pow(canvas.width, 2)) {
+          return {
+            value: canvas.width,
+            vertical: false
+          };
+        }
+
+        return {
+          value: canvas.height,
+          vertical: true
+        };
+      };
+
+      function worstRatio(row, width) {
+        var sum = row.reduce(function (acc, current) {
+          return acc + current;
+        }, 0);
+        var rowMax = Math.max.apply(Math, _toConsumableArray(row));
+        var rowMin = Math.min.apply(Math, _toConsumableArray(row));
+        return Math.max(Math.pow(width, 2) * rowMax / Math.pow(sum, 2), Math.pow(sum, 2) / (Math.pow(width, 2) * rowMin));
+      }
+
+      var layoutRow = function layoutRow(row, width, vertical) {
+        var rowHeight = row.reduce(function (acc, current) {
+          return acc + current;
+        }, 0) / width;
+        row.forEach(function (rowItem) {
+          var rowWidth = rowItem / rowHeight;
+          var data;
+
+          if (vertical) {
+            data = {
+              x: canvas.xStart,
+              y: canvas.yStart,
+              width: rowHeight,
+              height: rowWidth,
+              data: groups[canvas.data.length]
+            };
+            canvas.yStart += rowWidth;
+          } else {
+            data = {
+              x: canvas.xStart,
+              y: canvas.yStart,
+              width: rowWidth,
+              height: rowHeight,
+              data: groups[canvas.data.length]
+            };
+            canvas.xStart += rowWidth;
+          }
+
+          canvas.data.push(data);
+        });
+
+        if (vertical) {
+          canvas.xStart += rowHeight;
+          canvas.yStart -= width;
+          canvas.width -= rowHeight;
+        } else {
+          canvas.xStart -= width;
+          canvas.yStart += rowHeight;
+          canvas.height -= rowHeight;
+        }
+      };
+
+      var layoutLastRow = function layoutLastRow(rows, children, width) {
+        var minWidth = getMinWidth();
+        layoutRow(rows, width, minWidth.vertical);
+        layoutRow(children, width, minWidth.vertical);
+      };
+
+      var squarify = function squarify(children, row, width) {
+        if (children.length === 1) {
+          layoutLastRow(row, children, width);
+          return;
+        }
+
+        var rowWithChild = [].concat(_toConsumableArray(row), [children[0]]);
+
+        if (row.length === 0 || worstRatio(row, width) >= worstRatio(rowWithChild, width)) {
+          children.shift();
+          squarify(children, rowWithChild, width);
+          return;
+        }
+
+        layoutRow(row, width, getMinWidth().vertical);
+        squarify(children, [], getMinWidth().value);
+        return;
+      };
+
+      squarify(dataScaled, [], getMinWidth().value);
+
+      var roundValue = function roundValue(number) {
+        return Math.max(Math.round(number * 100) / 100, 0);
+      };
+
+      treemap = canvas.data.map(function (group) {
+        return _objectSpread2(_objectSpread2({}, group), {}, {
+          x: roundValue(group.x) - halfTreemapWidth,
+          y: roundValue(group.y) - halfTreemapHeight,
+          width: roundValue(group.width),
+          height: roundValue(group.height)
+        });
+      }); //Not sure if this code should be located here in the long run, but for now
+
+      select("#layout-extras").selectAll("*").remove();
+      select("#layout-extras").selectAll(".treemap-zone").data(treemap).enter().append("rect").classed("treemap-zone", true).attr("x", function (d) {
+        return d.x;
+      }).attr("y", function (d) {
+        return d.y;
+      }).attr("width", function (d) {
+        return d.width;
+      }).attr("height", function (d) {
+        return d.height;
+      }).attr("style", "fill:transparent;stroke:black;pointer-events:none;");
+    };
+
+    return force;
+  };
 
   /**
    * The Engine class is responsible for running the physics simulation of the graph.
@@ -10872,11 +11419,11 @@
       this.ee.on(EVENTS.CLICK_ENTITY, function () {
         _this.alpha(0);
       });
-      this.ee.on(EVENTS.ENGINE_LAYOUT_REQUESTED, function (nodes, edges, attribute, filterFunction, sortFunction) {
-        _this.createLayout(nodes, edges, attribute, filterFunction, sortFunction);
+      this.ee.on(EVENTS.ENGINE_LAYOUT_REQUESTED, function (layout, options) {
+        _this.setLayout(layout, options ? options : {});
       });
       this.ee.on(EVENTS.ENGINE_LAYOUT_RESET_REQUESTED, function (nodes, edges) {
-        _this.resetLayout(nodes, edges);
+        _this.clearLayout();
 
         _this.alpha(2);
 
@@ -10913,6 +11460,9 @@
       });
       this.forceCenterX = forceCenterX;
       this.forceCenterY = forceCenterY;
+      this.linkForce = link().distance(function (edge) {
+        return _this.getEdgeDistance(edge);
+      }).strength(Env.EDGE_STRENGTH);
       this.simulation = this.initializeSimulation();
     }
     /**
@@ -10936,9 +11486,8 @@
         var _this2 = this;
 
         return simulation().force("charge", manyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE)).force("collide", collide().radius(function (d) {
-          return d.width ? Math.max(d.width, d.height) : d.radius;
-        }).strength(1).iterations(1)).force("y", y$2(this.forceCenterX).strength(Env.GRAVITY)).force("x", x$2(this.forceCenterY).strength(Env.GRAVITY)).nodes([]).force("link", //This force will be overwritten when data is received.
-        link().links([])).on("tick", function () {
+          return d.width ? Math.max(d.width, d.height) / 2 + 5 : d.radius + 5;
+        }).strength(1).iterations(1)).force("y", y$2(this.forceCenterX).strength(Env.GRAVITY)).force("x", x$2(this.forceCenterY).strength(Env.GRAVITY)).nodes([]).force("link", this.linkForce).on("tick", function () {
           _this2.ee.trigger(EVENTS.ENGINE_TICK);
         });
       }
@@ -10952,6 +11501,81 @@
       value: function disableCenterForce() {
         this.simulation.force("center", null);
       }
+    }, {
+      key: "setBoundingBox",
+      value: function setBoundingBox(width, height) {
+        this.simulation.force("boundingbox", boundingBoxForce(width, height));
+        this.alpha(1);
+        this.restart();
+      }
+    }, {
+      key: "removeBoundingBox",
+      value: function removeBoundingBox() {
+        this.simulation.force("boundingbox", null);
+        this.alpha(1);
+        this.restart();
+      }
+    }, {
+      key: "setLayout",
+      value: function setLayout(layout, options) {
+        this.clearLayoutGUI();
+
+        switch (layout) {
+          case "hierarchy":
+            this.simulation.force("layout", hierarchyForce(options.groupBy, options.useY, options.distance));
+            this.linkForce.strength(Env.EDGE_STRENGTH);
+            break;
+
+          case "grid":
+            this.simulation.force("layout", matrixForce(options.useY, options.useX, options.strength, options.size, options.multiplier));
+            this.linkForce.strength(0.1);
+            break;
+
+          case "matrix":
+            this.simulation.force("layout", listForce(options.groupBy, options.strength));
+            this.linkForce.strength(0);
+            break;
+
+          case "cluster":
+            this.simulation.force("layout", clusterForce(options.groupBy, options.strength));
+            this.linkForce.strength(0);
+            break;
+
+          case "treemap":
+            this.simulation.force("layout", treemapForce(options.groupBy, options.width, options.height, options.strength));
+            this.linkForce.strength(0);
+            break;
+
+          case "radial":
+            this.simulation.force("layout", radial().strength(options.strength ? options.strength : 0.9).x(this.forceCenterX).y(this.forceCenterY).radius(function (d) {
+              return options.radius ? options.radius : 1400;
+            }));
+            this.linkForce.strength(0);
+            break;
+
+          default:
+            this.simulation.force("layout", null);
+            this.linkForce.strength(Env.EDGE_STRENGTH);
+            break;
+        }
+
+        this.alpha(1);
+        this.restart();
+      }
+    }, {
+      key: "clearLayout",
+      value: function clearLayout() {
+        this.clearLayoutGUI();
+        this.simulation.force("layout", null);
+        this.linkForce.strength(Env.EDGE_STRENGTH);
+        this.alpha(1);
+        this.restart();
+      }
+    }, {
+      key: "clearLayoutGUI",
+      value: function clearLayoutGUI() {
+        select("#layout-extras").selectAll("*").remove();
+      }
       /**
        * Update the simulation with a new data set
        * @param {object[]} nodes
@@ -10961,12 +11585,8 @@
     }, {
       key: "updateSimulation",
       value: function updateSimulation(nodes, edges) {
-        var _this3 = this;
-
         this.simulation.nodes(nodes);
-        this.simulation.force("link", link().links(edges).distance(function (l) {
-          return _this3.getEdgeDistance(l);
-        }).strength(Env.EDGE_STRENGTH));
+        this.linkForce.links(edges);
         this.simulation.alpha(1).restart();
       }
       /**
@@ -11016,93 +11636,6 @@
       key: "decay",
       value: function decay(target) {
         this.simulation.alphaDecay(target);
-      }
-      /**
-       * Creates a force group layout and positions nodes in the different groups depending on given input.
-       * @param {object[]} nodes - All nodes to be affected
-       * @param {object[]} edges - All edges to be affected
-       * @param {string} attribute - Attribute to be used to determine the group of a node
-       * @param {Function} filterFunction - Optional filter function that can be used instead of the attribute. Should return a string that determines the group of the provided node.
-       * @param {Function} sortFunction - Optional sort function that will determine the order of the groups in the layout. Starting from left to right, top to bottom.
-       */
-
-    }, {
-      key: "createLayout",
-      value: function createLayout(nodes, edges, attribute, filterFunction, sortFunction) {
-        var _this4 = this;
-
-        if (sortFunction) {
-          nodes = nodes.sort(function (a, b) {
-            return sortFunction(a, b);
-          });
-        }
-
-        var allGroups;
-
-        if (filterFunction) {
-          allGroups = nodes.map(function (node) {
-            return filterFunction(node.data);
-          });
-        } else {
-          allGroups = nodes.map(function (node) {
-            return node[attribute];
-          });
-        }
-
-        var xGroups = _toConsumableArray(new Set(allGroups));
-
-        var numberOfRowsAndColumns = Math.ceil(Math.sqrt(xGroups.length));
-        var currentRow = 0;
-        var currentColumn = 0;
-        var matrix = xGroups.map(function () {
-          if (currentColumn === numberOfRowsAndColumns) {
-            currentColumn = 0;
-            currentRow += 1;
-          }
-
-          currentColumn += 1;
-          return [currentRow, currentColumn - 1];
-        });
-        var columnScale = point$1().domain(_toConsumableArray(Array(numberOfRowsAndColumns).keys())).range([30, 2000]);
-        var rowScale = point$1().domain(_toConsumableArray(Array(numberOfRowsAndColumns).keys())).range([30, 2000]);
-        this.simulation.force("x", x$2(function (d) {
-          var value;
-
-          if (filterFunction) {
-            value = filterFunction(d.data);
-          } else {
-            value = d[attribute];
-          }
-
-          return columnScale(matrix[xGroups.indexOf(value)][1]);
-        })).force("y", y$2(function (d) {
-          var value;
-
-          if (filterFunction) {
-            value = filterFunction(d.data);
-          } else {
-            value = d[attribute];
-          }
-
-          return rowScale(matrix[xGroups.indexOf(value)][0]);
-        })).force("link", link().links(edges).distance(function (l) {
-          return _this4.getEdgeDistance(l);
-        }).strength(0)).force("charge", manyBody().strength(-800)).alpha(1).restart();
-      }
-      /**
-       * Resets the force layout to its default mode and removes any existing groups.
-       * @param {object[]} nodes - Nodes affected
-       * @param {object[]} edges - Edges affected
-       */
-
-    }, {
-      key: "resetLayout",
-      value: function resetLayout(nodes, edges) {
-        var _this5 = this;
-
-        this.simulation.force("charge", manyBody().strength(Env.CHARGE)).force("y", y$2(this.forceCenterX).strength(Env.GRAVITY)).force("x", x$2(this.forceCenterY).strength(Env.GRAVITY)).force("link", link().links(edges).distance(function (l) {
-          return _this5.getEdgeDistance(l);
-        }).strength(Env.EDGE_STRENGTH));
       }
       /**
        * Returns the distance (length) of the passed edge
@@ -11339,17 +11872,16 @@
         }
       }
       /**
-       * Sets a matrix layout for the simulation.
-       * @param {string} attribute - Property name on the nodes to group by
-       * @param {Function} filterFunction  - Optional filter function that can be used instead of attribute. Should return a string that represents the group that the node belongs to.
-       * @param {Function} sortFunction  - Optional sort function that will be applied to nodes before the layout is created. Use this to ensure correct positioning of groups on the screen
+       * Updates the graph layout
+       * @param {"hierarchy"|"matrix"|"list"|"cluster"|"treemap"|"radial"} layout - Which layout to set
+       * @param {any} options  - Layout specific options
        * @return {void}
        */
 
     }, {
-      key: "setMatrixLayout",
-      value: function setMatrixLayout(attribute, filterFunction, sortFunction) {
-        this._ee.trigger(EVENTS.ENGINE_LAYOUT_REQUESTED, this._datastore.nodes, this._datastore.edges, attribute, filterFunction, sortFunction);
+      key: "setLayout",
+      value: function setLayout(layout, options) {
+        this._ee.trigger(EVENTS.ENGINE_LAYOUT_REQUESTED, layout, options ? options : {});
       }
       /**
        * Resets the layout to the default mode.
@@ -11359,7 +11891,27 @@
     }, {
       key: "resetLayout",
       value: function resetLayout() {
-        this._ee.trigger(EVENTS.ENGINE_LAYOUT_RESET_REQUESTED, this._datastore.nodes, this._datastore.edges);
+        this._ee.trigger(EVENTS.ENGINE_LAYOUT_RESET_REQUESTED);
+      }
+      /**
+       * Sets a bounding box for the graph where nodes cannot move outside the bounds. If no bounds are provided they will be determined based on the amount of nodes and node sizes.
+       * @param {*} width - Width of the bounding box
+       * @param {*} height - Height of the bounding box
+       */
+
+    }, {
+      key: "setBoundingBox",
+      value: function setBoundingBox(width, height) {
+        this._engine.setBoundingBox(width, height);
+      }
+      /**
+       * Removes the bounding box from the graph if present
+       */
+
+    }, {
+      key: "clearBoundingBox",
+      value: function clearBoundingBox() {
+        this._engine.removeBoundingBox();
       }
       /**
        * Pins a node to the center of the graph.
@@ -11543,6 +12095,10 @@
       key: "setCenterForce",
       value: function setCenterForce(isEnable) {
         isEnable ? this._engine.enableCenterForce() : this._engine.disableCenterForce();
+
+        this._engine.alpha(0.5);
+
+        this._engine.restart();
       }
       /**
        * Updates the data in the graph. This is commonly used for reflecting changes in the outer application
