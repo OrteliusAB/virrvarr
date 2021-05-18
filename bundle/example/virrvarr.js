@@ -7430,7 +7430,7 @@
   var VVNode =
   /*#__PURE__*/
   function () {
-    function VVNode(id, type, name, icon, data) {
+    function VVNode(id, type, name, icon, data, isHidden) {
       _classCallCheck(this, VVNode);
 
       //User provided information
@@ -7452,7 +7452,7 @@
       this.vy = undefined; //Visibility information
 
       this.isFiltered = false;
-      this.isHidden = false; //E.g. imploded
+      this.isHidden = typeof isHidden === "boolean" ? isHidden : false; //E.g. imploded
       //Status
 
       this.isFocused = false; //Other Meta data
@@ -7681,7 +7681,7 @@
       _classCallCheck(this, Datastore);
 
       this.allNodes = nodes.map(function (node) {
-        return new VVNode(node.id, node.type, node.name, node.icon, node.data);
+        return new VVNode(node.id, node.type, node.name, node.icon, node.data, node.isHidden);
       });
       this.allEdges = edges.map(function (edge) {
         return new VVEdge(edge.id, edge.type, edge.sourceNode, edge.targetNode, edge.nameFrom, edge.nameTo, edge.multiplicityFrom, edge.multiplicityTo, edge.lineType, edge.markerFrom, edge.markerTo, edge.data);
@@ -7814,7 +7814,7 @@
             return existingNode;
           }
 
-          return new VVNode(node.id, node.type, node.name, node.icon, node.data);
+          return new VVNode(node.id, node.type, node.name, node.icon, node.data, node.isHidden);
         });
         this.allEdges = newEdges.map(function (edge) {
           var existingEdge = _this3.allEdges.find(function (oldEdge) {
@@ -11422,7 +11422,7 @@
       this.ee.on(EVENTS.ENGINE_LAYOUT_REQUESTED, function (layout, options) {
         _this.setLayout(layout, options ? options : {});
       });
-      this.ee.on(EVENTS.ENGINE_LAYOUT_RESET_REQUESTED, function (nodes, edges) {
+      this.ee.on(EVENTS.ENGINE_LAYOUT_RESET_REQUESTED, function () {
         _this.clearLayout();
 
         _this.alpha(2);
@@ -11547,7 +11547,7 @@
             break;
 
           case "radial":
-            this.simulation.force("layout", radial().strength(options.strength ? options.strength : 0.9).x(this.forceCenterX).y(this.forceCenterY).radius(function (d) {
+            this.simulation.force("layout", radial().strength(options.strength ? options.strength : 0.9).x(this.forceCenterX).y(this.forceCenterY).radius(function () {
               return options.radius ? options.radius : 1400;
             }));
             this.linkForce.strength(0);

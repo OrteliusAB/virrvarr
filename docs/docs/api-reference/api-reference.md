@@ -14,6 +14,8 @@ Attribute | Datatype
 `id*`   |   String
 `name*`   |   String
 type   |   String (id of node style object)
+icon   |   String (URL)
+isHidden   |   boolean
 data   |   Any (data bound to object)
 
 ### Data.edges{Array}

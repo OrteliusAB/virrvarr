@@ -10,7 +10,7 @@ import VVEdge from "../Model/Edge"
  */
 export default class Datastore {
 	constructor(nodes, edges, eventEmitter, styles, userDefinedOptions) {
-		this.allNodes = nodes.map(node => new VVNode(node.id, node.type, node.name, node.icon, node.data))
+		this.allNodes = nodes.map(node => new VVNode(node.id, node.type, node.name, node.icon, node.data, node.isHidden))
 		this.allEdges = edges.map(
 			edge =>
 				new VVEdge(
@@ -134,7 +134,7 @@ export default class Datastore {
 				existingNode.updateData(node.type, node.name, node.icon, node.data)
 				return existingNode
 			}
-			return new VVNode(node.id, node.type, node.name, node.icon, node.data)
+			return new VVNode(node.id, node.type, node.name, node.icon, node.data, node.isHidden)
 		})
 		this.allEdges = newEdges.map(edge => {
 			const existingEdge = this.allEdges.find(oldEdge => oldEdge.id === edge.id)
