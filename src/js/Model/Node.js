@@ -1,7 +1,7 @@
 import Env from "../Config/Env"
 
 export default class VVNode {
-	constructor(id, type, name, icon, data) {
+	constructor(id, type, name, icon, data, isHidden) {
 		//User provided information
 		this.id = id
 		this.type = type
@@ -25,7 +25,7 @@ export default class VVNode {
 
 		//Visibility information
 		this.isFiltered = false
-		this.isHidden = false //E.g. imploded
+		this.isHidden = typeof isHidden === "boolean" ? isHidden : false //E.g. imploded
 
 		//Status
 		this.isFocused = false

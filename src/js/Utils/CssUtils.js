@@ -72,43 +72,81 @@ const initializeGraphStyles = (style, id) => {
                 }
                 
                 .virrvarr-context-menu {
-                  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+                  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2);
                   position: relative;
                   display: block;
                   background: #FFFFFF;
+                  border-radius: 4px;
                 }
                 
                 .virrvarr-context-menu-options {
                   min-width: 150px;
                   list-style: none;
                   padding: 0px;
-                  margin-top: 10px;
-                  margin-bottom: 10px;
+                  margin-top: 6px;
+                  margin-bottom: 6px;
+                }
+
+                .virrvarr-context-menu-option:hover>.virrvarr-context-menu {
+                    display: block !important;
                 }
                 
                 .virrvarr-context-menu-option {
-                  font-size: 14px;
-                  padding: 7px 20px 7px 20px;
+                  font-size: 12px;
+                  padding: 7px 16px 7px 16px;
                   cursor: pointer;
+                  display: flex;
+                  gap: 12px;
+                  align-items: center;
+                }
+
+                .virrvarr-context-menu-option-icon {
+                    height: 12px;
+                    width: 12px;
+                    min-height: 12px;
+                    min-width: 12px;
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    background-image: none;                
+                }
+
+                .virrvarr-context-menu-option-title {
+                    flex: auto;
+                    white-space: nowrap;
+                }
+                
+                .virrvarr-context-menu-option-title-disabled {
+                    color: #9b9b9b;
+                    user-select: none;
                 }
                 
                 .virrvarr-context-menu-divider {
-                  width: 90%;
-                  height: 1px;
-                  margin-right: 5%;
-                  margin-left: 5%;
-                  margin-top: 8px;
-                  margin-bottom: 8px;
-                  background: #d5d5d5;
+                  width: 100%;
+                  margin-top: 6px;
+                  margin-bottom: 6px;
+                  border-top: 1px solid #d5d5d5;
                 }
                 
                 .virrvarr-context-menu-option:hover {
-                  background: rgba(0, 0, 0, 0.2);
+                  background: #f7f7f7;
+                }
+
+                .virrvarr-context-menu-option-disabled:hover {
+                    background: initial;
+                    cursor: default;
                 }
                 
                 .virrvarr-node-badge {
                   fill: #505759;
                   stroke: none !important;
+                }
+                
+			    .virrvarr-floating-node-meta {
+                    display: ${style.common.hideNodeBadgesOnNoHover ? "none" : Env.NODE_BADGES_DEFAULT_DISPLAY};
+                }
+
+                g > .virrvarr-floating-node-meta {
+                    display: block;
                 }
                 
                 .virrvarr-node-edge-counter-badge-text {

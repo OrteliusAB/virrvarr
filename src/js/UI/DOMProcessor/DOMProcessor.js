@@ -13,6 +13,8 @@ export default class DOMProcessor {
 		this.enableMultiLineNodeLabels =
 			userDefinedOptions.enableMultiLineNodeLabels !== undefined ? userDefinedOptions.enableMultiLineNodeLabels : Env.DEFAULT_NODE_TEXT_MULTILINE
 		this.rotateLabels = userDefinedOptions.rotateLabels !== undefined ? userDefinedOptions.rotateLabels : Env.ROTATE_LABELS
+		this.lineType = userDefinedOptions.lineType !== undefined ? userDefinedOptions.lineType : Env.DEFAULT_LINE_TYPE
+		this.markerSize = userDefinedOptions.markerSize !== undefined ? userDefinedOptions.markerSize : Env.DEFAULT_MARKER_SIZE
 
 		this.rootG = rootG
 		this.nodes = []
@@ -130,7 +132,7 @@ export default class DOMProcessor {
 		defs.selectAll("marker").remove()
 		edges.forEach(l => {
 			this.drawMarker(defs, l, false)
-			if (l.nameFrom) {
+			if (l.nameFrom || l.markerFrom) {
 				this.drawMarker(defs, l, true)
 			}
 		})
@@ -359,15 +361,25 @@ export default class DOMProcessor {
 			.attr("viewBox", "0 -8 14 16")
 			.attr("refX", inverse ? 0 : 12)
 			.attr("refY", 0)
-			.attr("markerWidth", 12)
-			.attr("markerHeight", 12)
+			.attr("markerWidth", this.markerSize)
+			.attr("markerHeight", this.markerSize)
 			.attr("markerUnits", "userSpaceOnUse")
 			.attr("orient", "auto")
 			.attr("class", (edge.type ? edge.type : "normal") + "Marker")
 			.attr("class", "marker-" + (edge.type ? edge.type : "default"))
 			.append("path")
 			.attr("d", () => {
-				return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z"
+				const markerType = inverse ? edge.markerFrom : edge.markerTo
+				if (markerType === "diamond") {
+					return "M0,0L6,6L12,0L6,-6Z"
+				} else if (markerType === "square") {
+					return "M12,-12L12,12L0,12L0,-12Z"
+				} else if (markerType === "none") {
+					return ""
+				} else {
+					//Arrow
+					return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z"
+				}
 			})
 	}
 
@@ -447,17 +459,17 @@ export default class DOMProcessor {
 	labelMouseEnter(edgeData, direction) {
 		const inverse = direction === "from"
 		this.rootG
-			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
+			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
 			.select("path")
 			.classed("hovered", true)
 		this.rootG
-			.selectAll("." + this.getMarkerId(edgeData, inverse))
+			.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`)
 			.selectAll("path, text")
 			.classed("hovered", true)
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 		this.handleHoverEvent(edgeData, "enter", direction)
 		setTimeout(() => {
-			const marker = this.rootG.selectAll("marker#" + this.getMarkerId(edgeData, inverse)).select("path")
+			const marker = this.rootG.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`).select("path")
 			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
@@ -483,11 +495,11 @@ export default class DOMProcessor {
 		this.handleHoverEvent(edgeData, "leave", direction)
 		const inverse = direction === "from"
 		this.rootG
-			.selectAll("marker#" + this.getMarkerId(edgeData, inverse))
+			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
 			.select("path")
 			.classed("hovered", false)
 		this.rootG
-			.selectAll("." + this.getMarkerId(edgeData, inverse))
+			.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`)
 			.selectAll("path, text")
 			.classed("hovered", false)
 	}
@@ -698,6 +710,7 @@ export default class DOMProcessor {
 		element
 			.append("g")
 			.attr("id", "badge-" + data.id + "-hidden-edge-counter")
+			.attr("class", "virrvarr-floating-node-meta")
 			.attr("style", "pointer-events:none;")
 			.attr("transform", `translate(${translateX} ${translateY})`)
 			.append("path")
@@ -739,6 +752,7 @@ export default class DOMProcessor {
 		element
 			.append("g")
 			.attr("id", "pin-" + data.id)
+			.attr("class", "virrvarr-floating-node-meta")
 			.attr("style", "pointer-events:none;")
 			.attr("transform", `translate(${translateX - rectWidth / 2} ${translateY})`)
 			.append("path")
@@ -831,7 +845,7 @@ export default class DOMProcessor {
 				this.ee.trigger(EventEnum.DBL_CLICK_ENTITY, {
 					id: d.id,
 					data: d.data,
-					direction: "from"
+					direction: "to"
 				})
 			})
 			.on("contextmenu", d => {
@@ -925,26 +939,57 @@ export default class DOMProcessor {
 			if (this.rotateLabels) {
 				l.angle = MathUtil.calculateLabelAngle(l.source, l.target)
 			}
+			//Calculate curve point (this will also be used later for multiplicity and label positioning)
 			const pathStart = MathUtil.calculateIntersection(l.target, l.source, 1)
 			const pathEnd = MathUtil.calculateIntersection(l.source, l.target, 1)
-			const curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
-			l.curvePoint = curvePoint
-			return MathUtil.curveFunction([
-				MathUtil.calculateIntersection(l.curvePoint, l.source, 1),
-				curvePoint,
-				MathUtil.calculateIntersection(l.curvePoint, l.target, 1)
-			])
+			const lineTypeToUse = l.lineType ? l.lineType : this.lineType
+			//Taxi lines
+			if ((lineTypeToUse === "taxi" && l.multiEdgeCount === 1) || lineTypeToUse === "fulltaxi") {
+				let midPointY = pathStart.y + (pathEnd.y - pathStart.y) / 2
+				//Fulltaxi means we apply the taxi lines to the multi edge edges as well
+				if (lineTypeToUse === "fulltaxi" && l.multiEdgeCount > 1) {
+					const dividedDistance = (pathEnd.y - pathStart.y) / l.multiEdgeCount
+					midPointY = pathStart.y + dividedDistance * l.multiEdgeIndex + dividedDistance / 2
+					l.curvePoint = {
+						x: pathStart.x + (pathEnd.x - pathStart.x) / 2,
+						y: midPointY
+					}
+				} else {
+					l.curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
+				}
+				return `M${pathStart.x},${pathStart.y} 
+					L${pathStart.x},${midPointY} 
+					L${pathEnd.x},${midPointY} 
+					${pathEnd.x},${pathEnd.y}`
+			}
+			//Cubic bezier curve
+			if (lineTypeToUse === "cubicbezier" && l.multiEdgeCount === 1) {
+				l.curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
+				return `M${pathStart.x}, ${pathStart.y} 
+					C${(pathStart.x + pathEnd.x) / 2}, ${pathStart.y} 
+					${(pathStart.x + pathEnd.x) / 2}, ${pathEnd.y} 
+					${pathEnd.x}, ${pathEnd.y}`
+			}
+			//Straight line
+			else {
+				l.curvePoint = MathUtil.calculateCurvePoint(pathStart, pathEnd, l)
+				return MathUtil.curveFunction([
+					MathUtil.calculateIntersection(l.curvePoint, l.source, 1),
+					l.curvePoint,
+					MathUtil.calculateIntersection(l.curvePoint, l.target, 1)
+				])
+			}
 		})
 		//Multiplicities
 		this.activeMultiplicities.attr("transform", function (l) {
 			const group = d3.select(this)
 			let pos
 			if (group.classed("to")) {
-				pos = MathUtil.calculateIntersection(l.curvePoint, l.source, Env.MULTIPLICITY_HDISTANCE)
-			} else {
 				pos = MathUtil.calculateIntersection(l.curvePoint, l.target, Env.MULTIPLICITY_HDISTANCE)
+			} else {
+				pos = MathUtil.calculateIntersection(l.curvePoint, l.source, Env.MULTIPLICITY_HDISTANCE)
 			}
-			const n = MathUtil.calculateNormalVector(l.curvePoint, l.source, Env.MULTIPLICITY_VDISTANCE)
+			const n = MathUtil.calculateNormalizedVector(l.curvePoint, l.source, Env.MULTIPLICITY_VDISTANCE)
 			if (l.source.index < l.target.index) {
 				n.x = -n.x
 				n.y = -n.y

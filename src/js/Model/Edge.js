@@ -1,5 +1,5 @@
 export default class VVEdge {
-	constructor(id, type, sourceNode, targetNode, nameFrom, nameTo, multiplicityFrom, multiplicityTo, data) {
+	constructor(id, type, sourceNode, targetNode, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, markerFrom, markerTo, data) {
 		//User provided information
 		this.id = id
 		this.type = type
@@ -9,6 +9,9 @@ export default class VVEdge {
 		this.nameTo = nameTo
 		this.multiplicityFrom = multiplicityFrom
 		this.multiplicityTo = multiplicityTo
+		this.lineType = lineType
+		this.markerFrom = markerFrom
+		this.markerTo = markerTo
 		this.data = data
 
 		//Status
@@ -49,14 +52,20 @@ export default class VVEdge {
 	 * @param {string} nameTo - Name in the to direction
 	 * @param {string} multiplicityFrom - Multiplicity in the from direction
 	 * @param {string} multiplicityTo - Multiplicity in the to direction
+	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} lineType - Line type for the edge
+	 * @param {"arrow"|"diamond"|"square"|"none"} markerFrom - Marker type in the from direction
+	 * @param {"arrow"|"diamond"|"square"|"none"} markerTo - Marker type in the to direction
 	 * @param {any} data - Bound data
 	 */
-	updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, data) {
+	updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, markerFrom, markerTo, data) {
 		this.type = type
 		this.nameFrom = nameFrom
 		this.nameTo = nameTo
 		this.multiplicityFrom = multiplicityFrom
 		this.multiplicityTo = multiplicityTo
+		this.lineType = lineType
+		this.markerFrom = markerFrom
+		this.markerTo = markerTo
 		this.data = data
 	}
 }

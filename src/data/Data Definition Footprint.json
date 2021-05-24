@@ -10,7 +10,8 @@
             "selectionLassoColor": "String",
             "selectionLassoOpacity": "String",
             "selectionLassoBorderWidth": "String",
-            "selectionLassoBorderColor": "String"
+            "selectionLassoBorderColor": "String",
+            "hideNodeBadgesOnNoHover": "Boolean"
         },
         "nodes": [
             {
@@ -89,7 +90,9 @@
             "nameTo": "String",
             "nameFrom": "String",
             "multiplicityFrom": "String",
-            "multiplicityTo": "String"
+            "multiplicityTo": "String",
+            "markerFrom": "String",
+            "markerTo": "String"
         }
     ]
 }

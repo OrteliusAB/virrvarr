@@ -14,6 +14,8 @@ Attribute | Datatype
 `id*`   |   String
 `name*`   |   String
 type   |   String (id of node style object)
+icon   |   String (URL)
+isHidden   |   boolean
 data   |   Any (data bound to object)
 
 ### Data.edges{Array}
@@ -26,6 +28,9 @@ nameTo   |   String
 nameFrom   |   String
 multiplicityTo   |   String
 multiplicityFrom   |   String
+lineType   |   String
+markerFrom   |   "arrow" | "diamond" | "square" | "none"
+markerTo   |   "arrow" | "diamond" | "square" | "none"
 type   |   String (id of node style object)
 data   |   Any (data bound to object)
 
@@ -49,6 +54,7 @@ selectionLassoColor   |   String
 selectionLassoOpacity   |   String
 selectionLassoBorderWidth   |   String
 selectionLassoBorderColor   |   String
+hideNodeBadgesOnNoHover   |   Boolean
 
 ###	Data.style.nodes{Array}
 Attribute | Datatype
@@ -122,12 +128,14 @@ maxedgeLabelWidth   |   String {Measurement}
 edgeLabelWidth   |   String {Measurement}
 enableZoomButtons   |   Boolean
 enableScaleGridOnZoom   |   Boolean
-enableContextMenu   |   Boolean
+enableBuiltinContextMenu   |   Boolean
 enableFadeOnHover   |   boolean
 enableGrid   |   Boolean
 customContextMenu   |   Object
 enableMultiLineNodeLabels   |   Boolean
 rotateLabels   |   Boolean
+markerSize   |   Number
+lineType   |   String
 enableOnionOnFocus   |   Boolean
 enableOnionOnHover   |   Boolean
 onionNumberOfLayers   |   Number
@@ -147,8 +155,12 @@ clearDisable   |   Function<(attribute, value, filterFunction)>   |   Clears all
 updateDataset   |   Function<(newDataset)>   |   This function updates the dataset in the graph, applies all existing filters, and then updates the selection, DOM, and simulation.
 resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph
-setMatrixLayout   |   Function<(attribute, filterFunction, sortFunction)>   |   Sets the layout to a fixed matrix. This enables the developer to group things together. The function can either take an attribute (with values set for it on each node, such as “type”) and use that as the criteria for grouping, or use a custom filter function which takes the bound data as input and returns a group name as a string.  A sortFunction can also be supplied in order to determine the order of things in the matrix. The order will read from left to right, top to bottom. Like a book.
-resetLayout   |   Function<()>   |   Resets the layout to the default layout
+setBoundingBox   |   Function<(width, height)>   |   Sets a bounding box for the graph
+clearBoundingBox   |   Function<()>   |   Clears the bounding box for the graph
+setLayout   |   Function<(type, config)>   |   Sets a new graph layout
+resetLayout   |   Function<()>   |   Resets the graph layout to the default layout
+setDefaultLineType   |   Function<(newType)>   |   Updates the default line type to use.
+setCenterForce   |   Function<(isEnabled)>   |   Toggles the center force on or off. Typically this is useful for graphs are not disjointed.
 setPinMode   |   Function<(isEnabled)>   |   Sets the pin mode of the graph
 setlassoMode   |   Function<(isEnabled)>   |   Sets the lasso selection mode of the graph
 setMultiSelectMode   |   Function<(isEnabled)>   |   Sets the multi select mode of the graph

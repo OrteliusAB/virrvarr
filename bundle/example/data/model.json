@@ -6,7 +6,8 @@
             "edgeCursor": "auto",
             "edgeCursorActive": "auto",
             "canvasCursor": "move",
-            "canvasCursorActive": "move"
+            "canvasCursorActive": "move",
+            "hideNodeBadgesOnNoHover": false
         },
         "nodes": [
             {
@@ -182,9 +183,9 @@
         {"id": "L31", "sourceNode": "n18", "targetNode": "n15", "nameTo": "is primary topic of", "nameFrom": "primary topic"},
         {"id": "L32", "sourceNode": "n15", "targetNode": "n42", "nameTo": "sha1sum (hex)", "type": "attribute"},
         {"id": "L33", "sourceNode": "n19", "targetNode": "n15", "nameTo": "account service homepage"},
-        {"id": "L34", "sourceNode": "n20", "targetNode": "n19", "type": "relation", "nameTo": "Subclass of"},
-        {"id": "L35", "sourceNode": "n21", "targetNode": "n19", "type": "relation", "nameTo": "Subclass of"},
-        {"id": "L36", "sourceNode": "n22", "targetNode": "n19", "type": "relation", "nameTo": "Subclass of"},
+        {"id": "L34", "sourceNode": "n20", "targetNode": "n19", "type": "relation", "nameTo": "Subclass of", "markerFrom": "square", "markerTo": "diamond"},
+        {"id": "L35", "sourceNode": "n21", "targetNode": "n19", "type": "relation", "nameTo": "Subclass of", "markerFrom": "square", "markerTo": "diamond"},
+        {"id": "L36", "sourceNode": "n22", "targetNode": "n19", "type": "relation", "nameTo": "Subclass of", "markerFrom": "square", "markerTo": "diamond"},
         {"id": "L37", "sourceNode": "n19", "targetNode": "n32", "nameTo": "account name", "type": "attribute"},
         {"id": "L38", "sourceNode": "n30", "targetNode": "n17", "nameTo": "member"},
         {"id": "L39", "sourceNode": "n30", "targetNode": "n17", "type": "relation", "nameTo": "Subclass of"},

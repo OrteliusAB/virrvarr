@@ -241,12 +241,13 @@
                         <h3 class="menu-title">Layout</h3>
                     </summary>
                     <hr />
-                    <button class="menu-button menu-button-confirm" onclick="setGridLayout()">Group
-                        Layout</button>
-                    <button class="menu-button menu-button-confirm" onclick="setMatrixLayout()">Matrix
-                        Layout</button>
-                    <button class="menu-button menu-button-warning" onclick="resetLayout()">Reset
-                        Layout</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('hierarchy')">Hierarchy</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('matrix')">Matrix</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('grid')">Grid</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('cluster')">Cluster</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('treemap')">Treemap</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('radial')">Radial</button>
+                    <button class="menu-button menu-button-warning" onclick="resetLayout()">Reset Layout</button>
                 </details>
 
                 <details>
@@ -263,6 +264,19 @@
 
                 <details>
                     <summary>
+                        <h3 class="menu-title">Line Types</h3>
+                    </summary>
+                    <hr />
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('line')">Line</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('cubicbezier')">Cubic
+                        Bezier</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('taxi')">Taxi</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('fulltaxi')">Full
+                        Taxi</button>
+                </details>
+
+                <details>
+                    <summary>
                         <h3 class="menu-title">Other</h3>
                     </summary>
                     <hr />
@@ -273,6 +287,8 @@
                     <button class="menu-button menu-button-confirm" onclick="toggleMultiSelectDragMode()">Multi-select
                         drag
                         Mode</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleCenterForce()">Center Force</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleBoundingBox()">Bounding Box</button>
                     <button class="menu-button menu-button-warning" onclick="destroyGraph()">Destroy
                         Graph</button>
                 </details>
@@ -301,46 +317,105 @@
                         selectionListener: function (selection) {
                             console.log("Selection Updated:", selection)
                         },
-                        showContextMenu: true,
+                        enableBuiltinContextMenu: true,
                         customContextMenu: {
-                            node: [[
-                                {
-                                    label: "Implode Node",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNode(id, true)
+                            canvas: [
+                                [
+                                    {
+                                        label: "Disabled Item",
+                                        disabled: true,
+                                        action: () => console.log("Disabled item was clicked")
+                                    },
+                                    {
+                                        label: "Child Menu Holder",
+                                        children: [
+                                            [
+                                                {
+                                                    label: "Child Item",
+                                                    action: () => console.log("I'm a child item.")
+                                                },
+                                                {
+                                                    label: "Child Item 2",
+                                                    action: () => console.log("I'm a child item.")
+                                                },
+                                                {
+                                                    label: "Child Item 3",
+                                                    action: () => console.log("I'm a child item."),
+                                                    children: [
+                                                        [
+                                                            {
+                                                                label: "Child Item",
+                                                                action: () => console.log("I'm a child item.")
+                                                            },
+                                                            {
+                                                                label: "Child Item 2",
+                                                                action: () => console.log("I'm a child item.")
+                                                            },
+                                                            {
+                                                                label: "Child Item 3",
+                                                                action: () => console.log("I'm a child item.")
+                                                            },
+                                                        ]
+                                                    ]
+                                                },
+                                            ]
+                                        ]
                                     }
-                                },
-                                {
-                                    label: "Implode Node Leafs",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeLeafs(id, true)
-                                    }
-                                },
-                                {
-                                    label: "Implode Node Recursive",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeRecursive(id, true)
-                                    }
-                                },
-                                {
-                                    label: "Implode Node non-circular",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeNonCircular(id, true)
-                                    }
-                                },
-                                {
-                                    label: "Explode Node",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNode(id, false)
-                                    }
-                                },
-                                {
-                                    label: "Explode Node Recursive",
-                                    action: (data, id) => {
-                                        window.graph.implodeOrExplodeNodeRecursive(id, false)
-                                    }
-                                },
-                            ]]
+                                ]
+                            ],
+                            node: [
+                                [
+                                    {
+                                        label: "Type specific option",
+                                        type: ["equivalent"],
+                                        action: (data, id) => {
+                                            console.log("This will only appear for nodes of type 'equivalent'")
+                                        }
+                                    },
+                                    (data, id) => ({
+                                        label: "Node ID: " + id,
+                                        action: (data, id) => console.log(data)
+                                    })
+                                ],
+                                [
+                                    {
+                                        label: "Implode Node",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNode(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node Leafs",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeLeafs(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node Recursive",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeRecursive(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Implode Node non-circular",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeNonCircular(id, true)
+                                        }
+                                    },
+                                    {
+                                        label: "Explode Node",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNode(id, false)
+                                        }
+                                    },
+                                    {
+                                        label: "Explode Node Recursive",
+                                        action: (data, id) => {
+                                            window.graph.implodeOrExplodeNodeRecursive(id, false)
+                                        }
+                                    },
+                                ]
+                            ]
                         },
                         fixedEdgeLabelWidth: true,
                         maxEdgeLabelWidth: 130,
@@ -399,23 +474,27 @@
             }
         }
 
+        function setDefaultLineType(type) {
+            graph.setDefaultLineType(type)
+        }
+
         function togglePinMode() {
-            window.pinMode = !!!window.pinMode
+            window.pinMode = !window.pinMode
             window.graph.setPinMode(window.pinMode)
         }
 
         function toggleLassoMode() {
-            window.lassoMode = !!!window.lassoMode
+            window.lassoMode = !window.lassoMode
             window.graph.setLassoMode(window.lassoMode)
         }
 
         function toggleMultiSelectMode() {
-            window.multiSelectMode = !!!window.multiSelectMode
+            window.multiSelectMode = !window.multiSelectMode
             window.graph.setMultiSelectMode(window.multiSelectMode)
         }
 
         function toggleMultiSelectDragMode() {
-            window.multiSelectDragMode = !!!window.multiSelectDragMode
+            window.multiSelectDragMode = !window.multiSelectDragMode
             window.graph.setMultiSelectDragMode(window.multiSelectDragMode)
         }
 
@@ -431,16 +510,27 @@
             window.graph.resetZoom()
         }
 
-        function setGridLayout() {
-            window.graph.setMatrixLayout("type")
-        }
-
-        function setMatrixLayout() {
-            window.graph.setMatrixLayout("id")
+        function setLayout(type) {
+            window.graph.setLayout(type)
         }
 
         function resetLayout() {
             window.graph.resetLayout()
+        }
+
+        function toggleBoundingBox() {
+            window.boundingBox = !window.boundingBox
+            if (boundingBox) {
+                window.graph.setBoundingBox(1400, 1000)
+            }
+            else {
+                window.graph.clearBoundingBox()
+            }
+        }
+
+        function toggleCenterForce() {
+            window.centerForce = !window.centerForce
+            window.graph.setCenterForce(window.centerForce)
         }
 
         function destroyGraph() {

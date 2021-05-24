@@ -1,6 +1,12 @@
 import * as d3 from "d3"
 import EventEnum from "../Events/EventEnum"
 import Env from "../Config/Env"
+import boundingBoxForce from "./forces/boundingBoxForce"
+import clusterForce from "./forces/clusterForce"
+import hierarchyForce from "./forces/hierarchyForce"
+import gridForce from "./forces/gridForce"
+import matrixForce from "./forces/matrixForce"
+import treemapForce from "./forces/treemapForce"
 
 /**
  * The Engine class is responsible for running the physics simulation of the graph.
@@ -14,7 +20,7 @@ export default class Engine {
 		})
 		this.ee.on(EventEnum.NODE_DRAG_START, () => {
 			this.stop()
-			this.target(0.5)
+			this.target(0.2)
 		})
 		this.ee.on(EventEnum.NODE_DRAG_DRAGGED, () => {
 			this.restart()
@@ -25,11 +31,11 @@ export default class Engine {
 		this.ee.on(EventEnum.CLICK_ENTITY, () => {
 			this.alpha(0)
 		})
-		this.ee.on(EventEnum.ENGINE_LAYOUT_REQUESTED, (nodes, edges, attribute, filterFunction, sortFunction) => {
-			this.createLayout(nodes, edges, attribute, filterFunction, sortFunction)
+		this.ee.on(EventEnum.ENGINE_LAYOUT_REQUESTED, (layout, options) => {
+			this.setLayout(layout, options ? options : {})
 		})
-		this.ee.on(EventEnum.ENGINE_LAYOUT_RESET_REQUESTED, (nodes, edges) => {
-			this.resetLayout(nodes, edges)
+		this.ee.on(EventEnum.ENGINE_LAYOUT_RESET_REQUESTED, () => {
+			this.clearLayout()
 			this.alpha(2)
 			this.restart()
 		})
@@ -50,17 +56,29 @@ export default class Engine {
 			this.restart()
 		})
 		this.ee.on(EventEnum.TOGGLE_MULTIPLICITY_REQUESTED, () => {
-			this.alpha(0.001)
-			this.restart()
+			this.softRestart()
 		})
 		this.ee.on(EventEnum.LASSO_ENTER, () => {
-			this.alpha(0.001)
-			this.restart()
+			this.softRestart()
 		})
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.stop())
 		this.forceCenterX = forceCenterX
 		this.forceCenterY = forceCenterY
+		this.linkForce = d3
+			.forceLink()
+			.distance(edge => {
+				return this.getEdgeDistance(edge)
+			})
+			.strength(Env.EDGE_STRENGTH)
 		this.simulation = this.initializeSimulation()
+	}
+
+	/**
+	 * Lightly pokes the graph. This can be used if you want to trigger a tick.
+	 */
+	softRestart() {
+		this.alpha(0.001)
+		this.restart()
 	}
 
 	/**
@@ -69,24 +87,98 @@ export default class Engine {
 	initializeSimulation() {
 		return d3
 			.forceSimulation()
-			.force("charge", d3.forceManyBody().strength(Env.CHARGE))
-			.force("center", d3.forceCenter(this.forceCenterX, this.forceCenterY))
-			.force("y", d3.forceY(0).strength(Env.GRAVITY))
-			.force("x", d3.forceX(0).strength(Env.GRAVITY))
-			.nodes([])
+			.force("charge", d3.forceManyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE))
 			.force(
-				"link",
+				"collide",
 				d3
-					.forceLink()
-					.links([])
-					.distance(l => {
-						return this.getEdgeDistance(l)
-					})
-					.strength(Env.EDGE_STRENGTH)
+					.forceCollide()
+					.radius(d => (d.width ? Math.max(d.width, d.height) / 2 + 5 : d.radius + 5))
+					.strength(1)
+					.iterations(1)
 			)
+			.force("y", d3.forceY(this.forceCenterX).strength(Env.GRAVITY))
+			.force("x", d3.forceX(this.forceCenterY).strength(Env.GRAVITY))
+			.nodes([])
+			.force("link", this.linkForce)
 			.on("tick", () => {
 				this.ee.trigger(EventEnum.ENGINE_TICK)
 			})
+	}
+
+	enableCenterForce() {
+		this.simulation.force("center", d3.forceCenter(this.forceCenterX, this.forceCenterY))
+	}
+
+	disableCenterForce() {
+		this.simulation.force("center", null)
+	}
+
+	setBoundingBox(width, height) {
+		this.simulation.force("boundingbox", boundingBoxForce(width, height))
+		this.alpha(1)
+		this.restart()
+	}
+
+	removeBoundingBox() {
+		this.simulation.force("boundingbox", null)
+		this.alpha(1)
+		this.restart()
+	}
+
+	setLayout(layout, options) {
+		this.clearLayoutGUI()
+		switch (layout) {
+			case "hierarchy":
+				this.simulation.force("layout", hierarchyForce(options.groupBy, options.useY, options.distance))
+				this.linkForce.strength(Env.EDGE_STRENGTH)
+				break
+			case "grid":
+				this.simulation.force("layout", gridForce(options.useY, options.useX, options.strength, options.size, options.multiplier))
+				this.linkForce.strength(0.1)
+				break
+			case "matrix":
+				this.simulation.force("layout", matrixForce(options.groupBy, options.strength))
+				this.linkForce.strength(0)
+				break
+			case "cluster":
+				this.simulation.force("layout", clusterForce(options.groupBy, options.strength))
+				this.linkForce.strength(0)
+				break
+			case "treemap":
+				this.simulation.force("layout", treemapForce(options.groupBy, options.width, options.height, options.strength))
+				this.linkForce.strength(0)
+				break
+			case "radial":
+				this.simulation.force(
+					"layout",
+					d3
+						.forceRadial()
+						.strength(options.strength ? options.strength : 0.9)
+						.x(this.forceCenterX)
+						.y(this.forceCenterY)
+						.radius(() => (options.radius ? options.radius : 1400))
+				)
+				this.linkForce.strength(0)
+				break
+			default:
+				this.simulation.force("layout", null)
+				this.linkForce.strength(Env.EDGE_STRENGTH)
+				break
+		}
+		this.alpha(1)
+		this.restart()
+	}
+
+	clearLayout() {
+		this.clearLayoutGUI()
+		this.simulation.force("layout", null)
+		this.linkForce.strength(Env.EDGE_STRENGTH)
+		this.alpha(1)
+		this.restart()
+	}
+
+	clearLayoutGUI() {
+		d3.select("#layout-extras").selectAll("*").remove()
 	}
 
 	/**
@@ -96,16 +188,7 @@ export default class Engine {
 	 */
 	updateSimulation(nodes, edges) {
 		this.simulation.nodes(nodes)
-		this.simulation.force(
-			"link",
-			d3
-				.forceLink()
-				.links(edges)
-				.distance(l => {
-					return this.getEdgeDistance(l)
-				})
-				.strength(Env.EDGE_STRENGTH)
-		)
+		this.linkForce.links(edges)
 		this.simulation.alpha(1).restart()
 	}
 
@@ -145,112 +228,6 @@ export default class Engine {
 	 */
 	decay(target) {
 		this.simulation.alphaDecay(target)
-	}
-
-	/**
-	 * Creates a force group layout and positions nodes in the different groups depending on given input.
-	 * @param {object[]} nodes - All nodes to be affected
-	 * @param {object[]} edges - All edges to be affected
-	 * @param {string} attribute - Attribute to be used to determine the group of a node
-	 * @param {Function} filterFunction - Optional filter function that can be used instead of the attribute. Should return a string that determines the group of the provided node.
-	 * @param {Function} sortFunction - Optional sort function that will determine the order of the groups in the layout. Starting from left to right, top to bottom.
-	 */
-	createLayout(nodes, edges, attribute, filterFunction, sortFunction) {
-		if (sortFunction) {
-			nodes = nodes.sort((a, b) => sortFunction(a, b))
-		}
-
-		let allGroups
-		if (filterFunction) {
-			allGroups = nodes.map(node => filterFunction(node.data))
-		} else {
-			allGroups = nodes.map(node => node[attribute])
-		}
-
-		const xGroups = [...new Set(allGroups)]
-
-		const numberOfRowsAndColumns = Math.ceil(Math.sqrt(xGroups.length))
-		let currentRow = 0
-		let currentColumn = 0
-		const matrix = xGroups.map(() => {
-			if (currentColumn === numberOfRowsAndColumns) {
-				currentColumn = 0
-				currentRow += 1
-			}
-			currentColumn += 1
-			return [currentRow, currentColumn - 1]
-		})
-
-		const columnScale = d3
-			.scalePoint()
-			.domain([...Array(numberOfRowsAndColumns).keys()])
-			.range([30, 2000])
-
-		const rowScale = d3
-			.scalePoint()
-			.domain([...Array(numberOfRowsAndColumns).keys()])
-			.range([30, 2000])
-
-		this.simulation
-			.force(
-				"x",
-				d3.forceX(d => {
-					let value
-					if (filterFunction) {
-						value = filterFunction(d.data)
-					} else {
-						value = d[attribute]
-					}
-					return columnScale(matrix[xGroups.indexOf(value)][1])
-				})
-			)
-			.force(
-				"y",
-				d3.forceY(d => {
-					let value
-					if (filterFunction) {
-						value = filterFunction(d.data)
-					} else {
-						value = d[attribute]
-					}
-					return rowScale(matrix[xGroups.indexOf(value)][0])
-				})
-			)
-			.force(
-				"link",
-				d3
-					.forceLink()
-					.links(edges)
-					.distance(l => {
-						return this.getEdgeDistance(l)
-					})
-					.strength(0)
-			)
-			.force("charge", d3.forceManyBody().strength(-800))
-			.alpha(1)
-			.restart()
-	}
-
-	/**
-	 * Resets the force layout to its default mode and removes any existing groups.
-	 * @param {object[]} nodes - Nodes affected
-	 * @param {object[]} edges - Edges affected
-	 */
-	resetLayout(nodes, edges) {
-		this.simulation
-			.force("y", d3.forceY(0).strength(Env.GRAVITY))
-			.force("x", d3.forceX(0).strength(Env.GRAVITY))
-			.force(
-				"link",
-				d3
-					.forceLink()
-					.links(edges)
-					.distance(l => {
-						return this.getEdgeDistance(l)
-					})
-					.strength(Env.EDGE_STRENGTH)
-			)
-			.force("charge", d3.forceManyBody().strength(Env.CHARGE))
 	}
 
 	/**

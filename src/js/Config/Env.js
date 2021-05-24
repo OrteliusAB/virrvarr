@@ -40,6 +40,8 @@ export default Object.freeze({
 	DEFAULT_ARROW_COLOR: "#000000",
 	DEFAULT_MULTIPLICITY_FONT_SIZE: "10px",
 	DEFAULT_EDGE_WIDTH: "2px",
+	DEFAULT_LINE_TYPE: "line",
+	DEFAULT_MARKER_SIZE: 12,
 
 	//Labels
 	DEFAULT_LABEL_TEXT_COLOR: "#000000",
@@ -74,6 +76,7 @@ export default Object.freeze({
 	DEFAULT_NODE_FILTER: false,
 	DEFAULT_NODE_HOVER_FILTER: false,
 	DEFAULT_NODE_FOCUSED_FILTER: false,
+	NODE_BADGES_DEFAULT_DISPLAY: "block",
 
 	//Cursor
 	DEFAULT_NODE_CURSOR: "pointer",
@@ -121,8 +124,9 @@ export default Object.freeze({
 
 	//Force Layout
 	EDGE_STRENGTH: 0.7,
-	GRAVITY: 0.06,
+	GRAVITY: 0.02,
 	CHARGE: -2000,
-	SCALE_EXTENT: [0.1, 4],
+	CHARGE_MAX_DISTANCE: 1200,
+	SCALE_EXTENT: [0.05, 5],
 	INITIAL_SCALE: 0.3
 })
