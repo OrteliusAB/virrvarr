@@ -63,23 +63,64 @@ export default class ContextMenu {
 			.style("position", "fixed")
 			.style("display", "block")
 		const ulElement = mainDiv.append("ul").attr("class", "virrvarr-context-menu-options")
-		let previousSectionWasSeen = false
-		if (this.enableBuiltinContextMenu) {
-			contextSectionsArray.forEach(section => {
-				this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction)
+		const addItems = (left, top) => {
+			let previousSectionWasSeen = false
+			if (this.enableBuiltinContextMenu) {
+				contextSectionsArray.forEach(section => {
+					this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction, left, top)
+					previousSectionWasSeen = true
+				})
+			}
+			customSectionsArray.forEach(section => {
+				this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction, left, top)
 				previousSectionWasSeen = true
 			})
 		}
-		customSectionsArray.forEach(section => {
-			this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction)
-			previousSectionWasSeen = true
-		})
+		addItems(0, 0)
 		const divNode = mainDiv.node()
 		const width = divNode.getBoundingClientRect().width
 		const height = divNode.getBoundingClientRect().height
 		const left = window.innerWidth - mouseX < width ? window.innerWidth - width : mouseX
 		const top = window.innerHeight - mouseY < height ? window.innerHeight - height : mouseY
 		mainDiv.style("left", left + "px").style("top", top + "px")
+		ulElement.node().innerHTML = ""
+		//The reason for doing this twice is because we need to know the full height in order to ensure the menu does not overflow the viewport.
+		addItems(left, top)
+	}
+
+	/**
+	 * Creates a sub menu for the context menu
+	 * @param {object|null} clickedItem - Node, Edge, or "null" (canvas) that has been clicked
+	 * @param {object[]} sections - User provided menu items
+	 * @param {string?} direction The direction of the edge clicked (if applicable)
+	 * @param {number} startX - Start X coordinate
+	 * @param {number} startY - Start Y coordinate
+	 */
+	createSubMenu(parent, clickedItem, sections, direction = undefined, startX, startY) {
+		const mainDiv = parent.append("div").attr("class", "virrvarr-context-menu").style("position", "fixed")
+		const ulElement = mainDiv.append("ul").attr("class", "virrvarr-context-menu-options")
+		const addItems = (left, top) => {
+			let previousSectionWasSeen = false
+			sections.forEach(section => {
+				this.processSection(ulElement, section, previousSectionWasSeen, clickedItem, direction, left, top)
+				previousSectionWasSeen = true
+			})
+		}
+		addItems()
+		const parentNode = parent.node()
+		const offsetTop = parentNode.offsetTop
+		const offsetLeft = parentNode.getBoundingClientRect().width
+		const relativeStartX = startX + offsetLeft
+		const relativeStartY = startY + offsetTop - 6 //6 is the top and bottom margin for the menu. If it is changed then this part must be changed as well
+		const divNode = mainDiv.node()
+		const width = divNode.getBoundingClientRect().width
+		const height = divNode.getBoundingClientRect().height
+		const left = window.innerWidth - relativeStartX < width ? window.innerWidth - width : relativeStartX
+		const top = window.innerHeight - relativeStartY < height ? window.innerHeight - height : relativeStartY
+		mainDiv.style("left", left + "px").style("top", top + "px")
+		ulElement.node().innerHTML = ""
+		addItems(left, top)
+		mainDiv.style("display", "none")
 	}
 
 	/**
@@ -89,8 +130,10 @@ export default class ContextMenu {
 	 * @param {boolean} shouldAddSeparatorBefore - Add a separating line before this new section?
 	 * @param {object|null} clickedItem - Item that was clicked
 	 * @param {string?} direction - Direction of the clicked edge, if applicable.
+	 * @param {number} startX - Start X coordinate.
+	 * @param {number} startY - Start Y coordinate.
 	 */
-	processSection(ul, section, shouldAddSeparatorBefore, clickedItem, direction = undefined) {
+	processSection(ul, section, shouldAddSeparatorBefore, clickedItem, direction = undefined, startX, startY) {
 		if (shouldAddSeparatorBefore) {
 			ul.append("li").append("div").attr("class", "virrvarr-context-menu-divider")
 		}
@@ -99,20 +142,32 @@ export default class ContextMenu {
 				.append("li")
 				.append("div")
 				.attr("class", "virrvarr-context-menu-option")
-				.on("click", () => {
+				.classed("virrvarr-context-menu-option-disabled", menuItem.disabled)
+			if (!menuItem.disabled) {
+				mainContainer.on("click", () => {
 					this.removeContextmenu()
 					const data = (clickedItem && clickedItem.data) || null
 					const id = (clickedItem && clickedItem.id) || null
 					const edgeDirection = direction
-					return menuItem.action(data, id, edgeDirection)
+					typeof menuItem.action === "function" ? menuItem.action(data, id, edgeDirection) : null
 				})
+			}
 			if (menuItem.icon) {
 				mainContainer.append("div").attr("class", "virrvarr-context-menu-option-icon").style("background-image", `url("${menuItem.icon}")`)
 			}
 			mainContainer
 				.append("div")
 				.attr("class", "virrvarr-context-menu-option-title")
+				.classed("virrvarr-context-menu-option-title-disabled", menuItem.disabled)
 				.text(() => menuItem.label)
+			const arrowIconContainer = mainContainer.append("div").attr("class", "virrvarr-context-menu-option-icon")
+			if (menuItem.children) {
+				arrowIconContainer.style(
+					"background-image",
+					"url(\"data:image/svg+xml;utf8,<svg width='16px' height='16px' viewBox='0 0 16 16' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><path d='M3.70710678,4.29289322 C3.31658249,3.90236893 2.68341751,3.90236893 2.29289322,4.29289322 C1.90236893,4.68341751 1.90236893,5.31658249 2.29289322,5.70710678 L8,11.4142136 L13.7071068,5.70710678 C14.0976311,5.31658249 14.0976311,4.68341751 13.7071068,4.29289322 C13.3165825,3.90236893 12.6834175,3.90236893 12.2928932,4.29289322 L8,8.58578644 L3.70710678,4.29289322 Z' transform='translate(8.000000, 7.707107) rotate(-90.000000) translate(-8.000000, -7.707107) '/></svg>\")"
+				)
+				this.createSubMenu(mainContainer, clickedItem, menuItem.children, (direction = undefined), startX, startY)
+			}
 		})
 	}
 
@@ -131,6 +186,7 @@ export default class ContextMenu {
 					return section.filter(menuItem => (menuItem.type ? menuItem.type.includes(clickedItem.type) : true))
 				})
 				.filter(section => section.length > 0)
+				.map(section => this.preProcessSection(section, clickedItem.data, clickedItem.id))
 		}
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY)
 	}
@@ -151,8 +207,8 @@ export default class ContextMenu {
 					return section.filter(menuItem => (menuItem.type ? menuItem.type.includes(clickedItem.type) : true))
 				})
 				.filter(section => section.length > 0)
+				.map(section => this.preProcessSection(section, clickedItem.data, clickedItem.id, direction))
 		}
-
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY, direction)
 	}
 
@@ -166,10 +222,30 @@ export default class ContextMenu {
 		const sections = [this.UniversalMenu]
 		let customSections = []
 		if (this.customContextMenu.canvas) {
-			customSections = [...this.customContextMenu.canvas]
+			customSections = [...this.customContextMenu.canvas].map(section => this.preProcessSection(section))
 		}
-
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY)
+	}
+
+	/**
+	 * The preprocessor makes sure to execute custom function menu items that are nested in child arrays. The function is executed recursively for all children's children.
+	 * @param {*} section - Section to be preprocessed
+	 * @param  {...any} ...args - Arguments depending on if it is a node an edge or the canvas that has been clicked
+	 * @returns
+	 */
+	preProcessSection(section, ...args) {
+		return section
+			.map(item => {
+				let executedItem = item
+				if (typeof item === "function") {
+					executedItem = item(...args)
+				}
+				if (executedItem.children) {
+					executedItem.children = executedItem.children.map(childSection => this.preProcessSection(childSection, ...args))
+				}
+				return executedItem
+			})
+			.filter(item => item)
 	}
 
 	/**

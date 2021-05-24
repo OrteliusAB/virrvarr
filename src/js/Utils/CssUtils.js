@@ -86,6 +86,10 @@ const initializeGraphStyles = (style, id) => {
                   margin-top: 6px;
                   margin-bottom: 6px;
                 }
+
+                .virrvarr-context-menu-option:hover>.virrvarr-context-menu {
+                    display: block !important;
+                }
                 
                 .virrvarr-context-menu-option {
                   font-size: 12px;
@@ -99,6 +103,8 @@ const initializeGraphStyles = (style, id) => {
                 .virrvarr-context-menu-option-icon {
                     height: 12px;
                     width: 12px;
+                    min-height: 12px;
+                    min-width: 12px;
                     background-repeat: no-repeat;
                     background-size: contain;
                     background-image: none;                
@@ -106,6 +112,12 @@ const initializeGraphStyles = (style, id) => {
 
                 .virrvarr-context-menu-option-title {
                     flex: auto;
+                    white-space: nowrap;
+                }
+                
+                .virrvarr-context-menu-option-title-disabled {
+                    color: #9b9b9b;
+                    user-select: none;
                 }
                 
                 .virrvarr-context-menu-divider {
@@ -117,6 +129,11 @@ const initializeGraphStyles = (style, id) => {
                 
                 .virrvarr-context-menu-option:hover {
                   background: #f7f7f7;
+                }
+
+                .virrvarr-context-menu-option-disabled:hover {
+                    background: initial;
+                    cursor: default;
                 }
                 
                 .virrvarr-node-badge {

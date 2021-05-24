@@ -132,7 +132,7 @@ export default class DOMProcessor {
 		defs.selectAll("marker").remove()
 		edges.forEach(l => {
 			this.drawMarker(defs, l, false)
-			if (l.nameFrom) {
+			if (l.nameFrom || l.markerFrom) {
 				this.drawMarker(defs, l, true)
 			}
 		})

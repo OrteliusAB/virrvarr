@@ -319,24 +319,65 @@
                         },
                         enableBuiltinContextMenu: true,
                         customContextMenu: {
+                            canvas: [
+                                [
+                                    {
+                                        label: "Disabled Item",
+                                        disabled: true,
+                                        action: () => console.log("Disabled item was clicked")
+                                    },
+                                    {
+                                        label: "Child Menu Holder",
+                                        children: [
+                                            [
+                                                {
+                                                    label: "Child Item",
+                                                    action: () => console.log("I'm a child item.")
+                                                },
+                                                {
+                                                    label: "Child Item 2",
+                                                    action: () => console.log("I'm a child item.")
+                                                },
+                                                {
+                                                    label: "Child Item 3",
+                                                    action: () => console.log("I'm a child item."),
+                                                    children: [
+                                                        [
+                                                            {
+                                                                label: "Child Item",
+                                                                action: () => console.log("I'm a child item.")
+                                                            },
+                                                            {
+                                                                label: "Child Item 2",
+                                                                action: () => console.log("I'm a child item.")
+                                                            },
+                                                            {
+                                                                label: "Child Item 3",
+                                                                action: () => console.log("I'm a child item.")
+                                                            },
+                                                        ]
+                                                    ]
+                                                },
+                                            ]
+                                        ]
+                                    }
+                                ]
+                            ],
                             node: [
                                 [
                                     {
-                                        label: "Type specific options",
-                                        type: ["equivalent"],
-                                        action: (data, id) => {
-                                            console.log("This will only appear for nodes of type 'equivalent'")
-                                        }
-                                    }
-                                ],
-                                [
-                                    {
-                                        label: "Type specific options",
+                                        label: "Type specific option",
                                         type: ["equivalent"],
                                         action: (data, id) => {
                                             console.log("This will only appear for nodes of type 'equivalent'")
                                         }
                                     },
+                                    (data, id) => ({
+                                        label: "Node ID: " + id,
+                                        action: (data, id) => console.log(data)
+                                    })
+                                ],
+                                [
                                     {
                                         label: "Implode Node",
                                         action: (data, id) => {
@@ -373,7 +414,8 @@
                                             window.graph.implodeOrExplodeNodeRecursive(id, false)
                                         }
                                     },
-                                ]]
+                                ]
+                            ]
                         },
                         fixedEdgeLabelWidth: true,
                         maxEdgeLabelWidth: 130,
@@ -437,22 +479,22 @@
         }
 
         function togglePinMode() {
-            window.pinMode = !!!window.pinMode
+            window.pinMode = !window.pinMode
             window.graph.setPinMode(window.pinMode)
         }
 
         function toggleLassoMode() {
-            window.lassoMode = !!!window.lassoMode
+            window.lassoMode = !window.lassoMode
             window.graph.setLassoMode(window.lassoMode)
         }
 
         function toggleMultiSelectMode() {
-            window.multiSelectMode = !!!window.multiSelectMode
+            window.multiSelectMode = !window.multiSelectMode
             window.graph.setMultiSelectMode(window.multiSelectMode)
         }
 
         function toggleMultiSelectDragMode() {
-            window.multiSelectDragMode = !!!window.multiSelectDragMode
+            window.multiSelectDragMode = !window.multiSelectDragMode
             window.graph.setMultiSelectDragMode(window.multiSelectDragMode)
         }
 
@@ -477,7 +519,7 @@
         }
 
         function toggleBoundingBox() {
-            window.boundingBox = !!!window.boundingBox
+            window.boundingBox = !window.boundingBox
             if (boundingBox) {
                 window.graph.setBoundingBox(1400, 1000)
             }
@@ -487,7 +529,7 @@
         }
 
         function toggleCenterForce() {
-            window.centerForce = !!!window.centerForce
+            window.centerForce = !window.centerForce
             window.graph.setCenterForce(window.centerForce)
         }
 
