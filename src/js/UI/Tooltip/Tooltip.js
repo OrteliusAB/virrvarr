@@ -36,7 +36,7 @@ export default class Tooltip {
 			.style("top", coordinates[1] + 20 - window.pageYOffset + "px")
 			.style("display", "inline-block")
 			.style("position", "fixed")
-			.html(node.name)
+			.text(node.name)
 	}
 
 	/**
