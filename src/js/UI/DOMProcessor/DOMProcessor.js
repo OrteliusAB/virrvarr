@@ -259,11 +259,12 @@ export default class DOMProcessor {
 					})
 					.on("end", () => {
 						for (let i = 0; i < this.dragSelection.length; i++) {
+							const node = this.dragSelection[i]
 							if (!this.pinMode) {
-								this.dragSelection[i].unPin()
+								node.unPin()
 							}
-							this.updateNodes(this.nodes)
-							this.ee.trigger(EventEnum.NODE_DRAG_ENDED, this.dragSelection[i])
+							this.drawPinBadgeForNode(node)
+							this.ee.trigger(EventEnum.NODE_DRAG_ENDED, node)
 						}
 						this.dragSelection = []
 						this.lastDragX = 0
@@ -275,26 +276,30 @@ export default class DOMProcessor {
 				this.drawNode(element, d)
 			})
 		//Draw counter badges for imploded edges
-		nodes.forEach(node => {
-			this.rootG.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
-			if (node.hiddenEdgeCount) {
-				const element = this.rootG.select(`[id='${node.id}']`).select(function () {
-					return this.parentNode
-				})
-				this.drawNodeCollapsedEdgeCounter(element, node)
-			}
-		})
+		nodes.forEach(node => this.drawCounterBadgeForNode(node))
 		//Draw pin badge for fixated nodes
-		nodes.forEach(node => {
-			this.rootG.select(`[id='pin-${node.id}']`).remove()
-			if (node.fx && node.fy && !node.animating) {
-				const element = this.rootG.select(`[id='${node.id}']`).select(function () {
-					return this.parentNode
-				})
-				this.drawPin(element, node)
-			}
-		})
+		nodes.forEach(node => this.drawPinBadgeForNode(node))
 		this.nodeElements = this.rootG.select("#node-container").selectAll(".node")
+	}
+
+	drawPinBadgeForNode(node) {
+		this.rootG.select(`[id='pin-${node.id}']`).remove()
+		if (node.fx && node.fy && !node.animating) {
+			const element = this.rootG.select(`[id='${node.id}']`).select(function () {
+				return this.parentNode
+			})
+			this.drawPin(element, node)
+		}
+	}
+
+	drawCounterBadgeForNode(node) {
+		this.rootG.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
+		if (node.hiddenEdgeCount) {
+			const element = this.rootG.select(`[id='${node.id}']`).select(function () {
+				return this.parentNode
+			})
+			this.drawNodeCollapsedEdgeCounter(element, node)
+		}
 	}
 
 	/**
