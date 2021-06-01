@@ -943,6 +943,8 @@ export default class DOMProcessor {
 			}
 			if (this.rotateLabels) {
 				l.angle = MathUtil.calculateLabelAngle(l.source, l.target)
+			} else {
+				l.angle = 0
 			}
 			//Calculate curve point (this will also be used later for multiplicity and label positioning)
 			const pathStart = MathUtil.calculateIntersection(l.target, l.source, 1)

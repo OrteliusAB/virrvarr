@@ -357,6 +357,33 @@ export class Virrvarr {
 	}
 
 	/**
+	 * Toggles rotation of edge labels on and off
+	 * @param {boolean} shouldRotate
+	 */
+	setRotateLabels(shouldRotate) {
+		this._UI.DOMProcessor.rotateLabels = shouldRotate
+		this._engine.softRestart()
+	}
+
+	/**
+	 * Toggles the background grid
+	 * @param {"primary"|"secondary"|boolean} grid
+	 */
+	setGrid(grid) {
+		if (grid === "secondary") {
+			this._UI.grid.enableGrid = false
+			this._UI.grid.enableSecondaryGrid = true
+		} else if (grid) {
+			this._UI.grid.enableGrid = true
+			this._UI.grid.enableSecondaryGrid = false
+		} else {
+			this._UI.grid.enableGrid = false
+			this._UI.grid.enableSecondaryGrid = false
+		}
+		this._UI.grid.initialize()
+	}
+
+	/**
 	 * Updates the data in the graph. This is commonly used for reflecting changes in the outer application
 	 * @param {object} newDataset - New data set
 	 * @return {void}

@@ -289,6 +289,8 @@
                         Mode</button>
                     <button class="menu-button menu-button-confirm" onclick="toggleCenterForce()">Center Force</button>
                     <button class="menu-button menu-button-confirm" onclick="toggleBoundingBox()">Bounding Box</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleRotateLabels()">Rotate Labels</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleGrid()">Toggle Grid</button>
                     <button class="menu-button menu-button-warning" onclick="destroyGraph()">Destroy
                         Graph</button>
                 </details>
@@ -421,7 +423,7 @@
                         maxEdgeLabelWidth: 130,
                         edgeLabelWidth: 80,
                         enableZoomButtons: true,
-                        enableSecondaryGrid: true
+                        enableGrid: true
                     }
                     window.graph = new Virrvarr(graphContainer, data, options)
                 }
@@ -496,6 +498,16 @@
         function toggleMultiSelectDragMode() {
             window.multiSelectDragMode = !window.multiSelectDragMode
             window.graph.setMultiSelectDragMode(window.multiSelectDragMode)
+        }
+
+        function toggleRotateLabels() {
+            window.rotateLabels = !window.rotateLabels
+            window.graph.setRotateLabels(window.rotateLabels)
+        }
+
+        function toggleGrid() {
+            window.grid = !window.grid
+            window.graph.setGrid(window.grid)
         }
 
         function pinGraph() {
