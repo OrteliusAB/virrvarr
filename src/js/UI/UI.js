@@ -79,6 +79,12 @@ export default class UI {
 		return rootG
 	}
 
+	updateStyles(newStyles) {
+		this.style = newStyles
+		d3.select(`#${this.stylesID}`).remove()
+		CSSUtil.initializeGraphStyles(this.style, this.stylesID)
+	}
+
 	destroy() {
 		this.rootG.select("#edge-container").selectAll(".edge").remove()
 		this.rootG.select("#multiplicity-container").selectAll(".multiplicity").remove()
