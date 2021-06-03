@@ -65,7 +65,9 @@ export default class VVNode {
 		this.name = name
 		this.icon = icon
 		this.data = data
-		this.isHidden = isHidden
+		if (typeof isHidden === "boolean") {
+			this.isHidden = isHidden
+		}
 	}
 
 	/**

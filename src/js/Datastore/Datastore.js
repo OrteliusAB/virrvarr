@@ -121,10 +121,28 @@ export default class Datastore {
 	 * @param {{isHidden: boolean, id: string}[]} newValues - An array of new values to be applied to the given nodes
 	 */
 	updateNodesHiddenStatus(newValues) {
+		const connectedEdgesMap = new Map()
+		const nodeMap = new Map()
+		this.allNodes.forEach(node => nodeMap.set(node.id, node))
+		this.allEdges.forEach(edge => {
+			!connectedEdgesMap.has(edge.sourceNode) && connectedEdgesMap.set(edge.sourceNode, [])
+			!connectedEdgesMap.has(edge.targetNode) && connectedEdgesMap.set(edge.targetNode, [])
+			connectedEdgesMap.get(edge.sourceNode).push(edge)
+			connectedEdgesMap.get(edge.targetNode).push(edge)
+		})
 		newValues.forEach(newStatus => {
-			const node = this.allNodes.find(node => node.id === newStatus.id)
-			if (node) {
+			if (nodeMap.has(newStatus.id)) {
+				const node = nodeMap.get(newStatus.id)
 				node.isHidden = newStatus.isHidden
+				if (connectedEdgesMap.has(node.id)) {
+					connectedEdgesMap.get(node.id).forEach(edge => {
+						if (this.isNodeLive(edge.sourceNode) && this.isNodeLive(edge.targetNode)) {
+							edge.isHidden = false
+						} else {
+							edge.isHidden = true
+						}
+					})
+				}
 			}
 		})
 	}
