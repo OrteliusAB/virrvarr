@@ -42,6 +42,7 @@ export default class Datastore {
 		})
 		this.ee.on(EventEnum.NODE_HIDDEN_STATUS_UPDATE_REQUEST, newValues => {
 			this.updateNodesHiddenStatus(newValues)
+			this.updateHiddenEdges()
 			this.updateNumberOfHiddenEdgesOnNodes()
 			this.updateLiveData()
 		})
@@ -121,28 +122,26 @@ export default class Datastore {
 	 * @param {{isHidden: boolean, id: string}[]} newValues - An array of new values to be applied to the given nodes
 	 */
 	updateNodesHiddenStatus(newValues) {
-		const connectedEdgesMap = new Map()
 		const nodeMap = new Map()
 		this.allNodes.forEach(node => nodeMap.set(node.id, node))
-		this.allEdges.forEach(edge => {
-			!connectedEdgesMap.has(edge.sourceNode) && connectedEdgesMap.set(edge.sourceNode, [])
-			!connectedEdgesMap.has(edge.targetNode) && connectedEdgesMap.set(edge.targetNode, [])
-			connectedEdgesMap.get(edge.sourceNode).push(edge)
-			connectedEdgesMap.get(edge.targetNode).push(edge)
-		})
 		newValues.forEach(newStatus => {
 			if (nodeMap.has(newStatus.id)) {
 				const node = nodeMap.get(newStatus.id)
 				node.isHidden = newStatus.isHidden
-				if (connectedEdgesMap.has(node.id)) {
-					connectedEdgesMap.get(node.id).forEach(edge => {
-						if (this.isNodeLive(edge.sourceNode) && this.isNodeLive(edge.targetNode)) {
-							edge.isHidden = false
-						} else {
-							edge.isHidden = true
-						}
-					})
-				}
+			}
+		})
+	}
+
+	updateHiddenEdges() {
+		const nodeMap = new Map()
+		this.allNodes.forEach(node => nodeMap.set(node.id, node))
+		this.allEdges.forEach(edge => {
+			const source = nodeMap.get(edge.sourceNode)
+			const target = nodeMap.get(edge.targetNode)
+			if (this.isNodeLive(source) && this.isNodeLive(target)) {
+				edge.isHidden = false
+			} else {
+				edge.isHidden = true
 			}
 		})
 	}
@@ -200,6 +199,7 @@ export default class Datastore {
 				edge.data
 			)
 		})
+		this.updateHiddenEdges()
 		this.updateEdgeIDs()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
