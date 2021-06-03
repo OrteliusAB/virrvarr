@@ -338,6 +338,14 @@ export class Virrvarr {
 	}
 
 	/**
+	 * Updates the hidden status on the input nodes
+	 * @param {{isHidden: boolean, id: string}[]} newValues - An array of new values to be applied to the given nodes
+	 */
+	setNodesHiddenStatus(newValues) {
+		this._ee.trigger(EventEnum.NODE_HIDDEN_STATUS_UPDATE_REQUEST, newValues)
+	}
+
+	/**
 	 * Sets the default line type for edges
 	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} newLineType
 	 */

@@ -40,6 +40,11 @@ export default class Datastore {
 			this.entityProcessor.executePreProcessor(this.nodes, this.edges)
 			this.ee.trigger(EventEnum.DATASTORE_UPDATED, this.nodes, this.edges)
 		})
+		this.ee.on(EventEnum.NODE_HIDDEN_STATUS_UPDATE_REQUEST, newValues => {
+			this.updateNodesHiddenStatus(newValues)
+			this.updateNumberOfHiddenEdgesOnNodes()
+			this.updateLiveData()
+		})
 		this.ee.on(EventEnum.DATA_FILTER_REQUESTED, filters => {
 			this.setFilters(filters)
 			this.applyFilters()
@@ -112,6 +117,19 @@ export default class Datastore {
 	}
 
 	/**
+	 * Updates the hidden status on the input nodes
+	 * @param {{isHidden: boolean, id: string}[]} newValues - An array of new values to be applied to the given nodes
+	 */
+	updateNodesHiddenStatus(newValues) {
+		newValues.forEach(newStatus => {
+			const node = this.allNodes.find(node => node.id === newStatus.id)
+			if (node) {
+				node.isHidden = newStatus.isHidden
+			}
+		})
+	}
+
+	/**
 	 * If there are edges that lack IDs this function will set these to a number that represents the index in the edge array.
 	 */
 	updateEdgeIDs() {
@@ -131,7 +149,7 @@ export default class Datastore {
 		this.allNodes = newNodes.map(node => {
 			const existingNode = this.allNodes.find(oldNode => oldNode.id === node.id)
 			if (existingNode) {
-				existingNode.updateData(node.type, node.name, node.icon, node.data)
+				existingNode.updateData(node.type, node.name, node.icon, node.data, node.isHidden)
 				return existingNode
 			}
 			return new VVNode(node.id, node.type, node.name, node.icon, node.data, node.isHidden)

@@ -162,6 +162,7 @@ resetLayout   |   Function<()>   |   Resets the graph layout to the default layo
 setDefaultLineType   |   Function<(newType)>   |   Updates the default line type to use.
 setCenterForce   |   Function<(isEnabled)>   |   Toggles the center force on or off. Typically this is useful for graphs are not disjointed.
 setPinMode   |   Function<(isEnabled)>   |   Sets the pin mode of the graph
+setNodesHiddenStatus   |   Function<({isHidden: boolean, id: string}[])>   |   Toggles the hidden status of nodes
 setlassoMode   |   Function<(isEnabled)>   |   Sets the lasso selection mode of the graph
 setMultiSelectMode   |   Function<(isEnabled)>   |   Sets the multi select mode of the graph
 setMultiSelectDragMode   |   Function<(isEnabled)>   |   Sets the multi select drag mode of the graph

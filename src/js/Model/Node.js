@@ -57,13 +57,15 @@ export default class VVNode {
 	 * @param {string} type - Node type
 	 * @param {string} name - Node name
 	 * @param {string} icon - Icon URL
+	 * @param {boolean} isHidden - Is the node hidden?
 	 * @param {any} data - New bound data
 	 */
-	updateData(type, name, icon, data) {
+	updateData(type, name, icon, data, isHidden) {
 		this.type = type
 		this.name = name
 		this.icon = icon
 		this.data = data
+		this.isHidden = isHidden
 	}
 
 	/**
