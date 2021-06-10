@@ -1,6 +1,16 @@
 # Edge line types
 By default edges will be drawn as straight lines. You can change this behaviour if you want. Note, however, that straight lines are far more performant as they are easier to compute.
 
+The following line types are available for use:
+- "line"
+- "cubicbezier"
+- "taxi"
+- "fulltaxi"
+- "arctop"
+- "arcright"
+- "arcbottom"
+- "arcleft"
+
 Check out the following example:
 ```javascript
 const data = {

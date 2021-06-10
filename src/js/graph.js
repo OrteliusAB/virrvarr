@@ -17,6 +17,7 @@ export class Virrvarr {
 	 * @param {boolean=} options.enableGrid - Should the grid background pattern be enabled?
 	 * @param {boolean=} options.enableFadeOnHover - Should nodes and edges that are not directly connected to a hovered node be faded out when said node is hovered?
 	 * @param {boolean=} options.enableZoomButtons - Should zoom buttons be enabled?
+	 * @param {boolean=} options.hideDetailsZoomScale - At what zoom scale should details be hidden?
 	 * @param {boolean=} options.enableScaleGridOnZoom - Should the grid scale with the zoom?
 	 * @param {boolean=} options.enableBuiltinContextMenu - Should the built in conext menu be enabled?
 	 * @param {Function=} options.entityClickedListener - Click listener for entities.
@@ -34,10 +35,18 @@ export class Virrvarr {
 	 * @param {number=} options.onionNumberOfLayers - How many layers should onion borders have by default?
 	 * @param {string=} options.onionBaseColor - What should the base color be of the onion borders?
 	 * @param {number=} options.onionLayerSize - How big should each layer in the onion border be by default?
-	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} options.lineType - How should edges be drawn?
+	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"|"arctop"|"arcright"|"arcbottom"|"arcleft"} options.lineType - How should edges be drawn?
 	 *
 	 */
 	constructor(graphContainerElement, inputData, options) {
+		/* Init Shadow DOM */
+		const shadowRoot = graphContainerElement.attachShadow({ mode: "open" })
+		const div = document.createElement("div")
+		div.style.width = "100%"
+		div.style.height = "100%"
+		shadowRoot.appendChild(div)
+		graphContainerElement = div
+
 		/* Init user input */
 		this._options = Object.assign.apply(Object, [{}].concat(options))
 		this._style = inputData.style ? JSON.parse(JSON.stringify(inputData.style)) : {}
@@ -57,7 +66,7 @@ export class Virrvarr {
 		this._datastore = new Datastore(inputData.nodes, inputData.edges, this._ee, this._style, this._options)
 
 		/* Init Engine */
-		this._engine = new Engine(this._UI.width / 2, this._UI.height / 2, this._ee)
+		this._engine = new Engine(this._UI.width / 2, this._UI.height / 2, graphContainerElement, this._ee)
 
 		/* Graph has mounted! */
 		this._ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
@@ -412,18 +421,12 @@ export class Virrvarr {
 		if (!this._datastore.allNodes && !this._datastore.allEdges) {
 			return
 		}
-		const filename = "virrvarr.json"
 		const data = {
 			style: this._style,
 			nodes: includeOnlyLiveData ? this._datastore.liveNodes : this._datastore.allNodes,
 			edges: includeOnlyLiveData ? this._datastore.liveEdges : this._datastore.allEdges
 		}
-		const blob = new Blob([JSON.stringify(data, null, null)], { type: "text/json" })
-		const aElement = document.createElement("a")
-		aElement.download = filename
-		aElement.href = window.URL.createObjectURL(blob)
-		aElement.dataset.downloadurl = ["text/json", aElement.download, aElement.href].join(":")
-		aElement.click()
+		return data
 	}
 
 	/**

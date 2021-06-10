@@ -81,6 +81,10 @@ export default class Datastore {
 		this.entityProcessor = new EntityProcessor(this.ee, styles, userDefinedOptions)
 		this.selectionProcessor = new SelectionProcessor(this.ee, this)
 		this.updateEdgeIDs()
+		this.nodeMap = new Map()
+		this.edgeMap = new Map()
+		this.allNodes.forEach(node => this.nodeMap.set(node.id, node))
+		this.allEdges.forEach(edge => this.edgeMap.set(edge.id, edge))
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 	}
@@ -122,22 +126,18 @@ export default class Datastore {
 	 * @param {{isHidden: boolean, id: string}[]} newValues - An array of new values to be applied to the given nodes
 	 */
 	updateNodesHiddenStatus(newValues) {
-		const nodeMap = new Map()
-		this.allNodes.forEach(node => nodeMap.set(node.id, node))
 		newValues.forEach(newStatus => {
-			if (nodeMap.has(newStatus.id)) {
-				const node = nodeMap.get(newStatus.id)
+			const node = this.getNodeByID(newStatus.id)
+			if (node) {
 				node.isHidden = newStatus.isHidden
 			}
 		})
 	}
 
 	updateHiddenEdges() {
-		const nodeMap = new Map()
-		this.allNodes.forEach(node => nodeMap.set(node.id, node))
 		this.allEdges.forEach(edge => {
-			const source = nodeMap.get(edge.sourceNode)
-			const target = nodeMap.get(edge.targetNode)
+			const source = this.nodeMap.get(edge.sourceNode)
+			const target = this.nodeMap.get(edge.targetNode)
 			if (this.isNodeLive(source) && this.isNodeLive(target)) {
 				edge.isHidden = false
 			} else {
@@ -164,7 +164,7 @@ export default class Datastore {
 	 */
 	updateDataset(newNodes, newEdges) {
 		this.allNodes = newNodes.map(node => {
-			const existingNode = this.allNodes.find(oldNode => oldNode.id === node.id)
+			const existingNode = this.getNodeByID(node.id)
 			if (existingNode) {
 				existingNode.updateData(node.type, node.name, node.icon, node.data, node.isHidden)
 				return existingNode
@@ -172,7 +172,7 @@ export default class Datastore {
 			return new VVNode(node.id, node.type, node.name, node.icon, node.data, node.isHidden)
 		})
 		this.allEdges = newEdges.map(edge => {
-			const existingEdge = this.allEdges.find(oldEdge => oldEdge.id === edge.id)
+			const existingEdge = this.getEdgeByID(edge.id)
 			if (existingEdge) {
 				existingEdge.updateData(
 					edge.type,
@@ -201,6 +201,10 @@ export default class Datastore {
 		})
 		this.updateHiddenEdges()
 		this.updateEdgeIDs()
+		this.nodeMap.clear()
+		this.edgeMap.clear()
+		this.allNodes.forEach(node => this.nodeMap.set(node.id, node))
+		this.allEdges.forEach(edge => this.edgeMap.set(edge.id, edge))
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 		this.updateLiveData()
@@ -212,7 +216,7 @@ export default class Datastore {
 	 * @return {VVNode|null} - Node object or null
 	 */
 	getNodeByID(ID) {
-		return this.allNodes.find(node => node.id === ID)
+		return this.nodeMap.get(ID)
 	}
 
 	/**
@@ -221,7 +225,7 @@ export default class Datastore {
 	 * @return {VVEdge|null} - Edge object or null
 	 */
 	getEdgeByID(ID) {
-		return this.allEdges.find(edge => edge.id === ID)
+		return this.edgeMap.get(ID)
 	}
 
 	/**
@@ -293,8 +297,8 @@ export default class Datastore {
 			})
 
 			//If nodes have been removed there could be broken edges. Mark these as filtered as well.
-			const foundSource = this.allNodes.find(node => edge.sourceNode === node.id && !node.isFiltered)
-			const foundTarget = this.allNodes.find(node => edge.targetNode === node.id && !node.isFiltered)
+			const foundSource = !this.getNodeByID(edge.sourceNode).isFiltered
+			const foundTarget = !this.getNodeByID(edge.targetNode).isFiltered
 			if (!foundSource || !foundTarget) {
 				isFiltered = true
 			}

@@ -17,7 +17,7 @@ const treemapForce = (groupBy, width, height, strength) => {
 	const power = strength ? strength : 0.7
 	let groups = []
 	let treemap = []
-	const multiplier = 0.6
+	const multiplier = 2.5
 
 	function force(alpha) {
 		if (!treemap.length) {
@@ -52,14 +52,14 @@ const treemapForce = (groupBy, width, height, strength) => {
 			maxSizeX = Math.max(maxSizeX, getWidth(node) * multiplier)
 			maxSizeY = Math.max(maxSizeY, getHeight(node) * multiplier)
 		})
-		const fullSize = maxSizeY * nodes.length + maxSizeX * nodes.length
+		const fullSize = Math.sqrt(maxSizeY * maxSizeX * nodes.length) * 3
 		if (!width && !height) {
-			treemapWidth = maxSizeX * nodes.length
-			treemapHeight = maxSizeY * nodes.length
+			treemapWidth = (fullSize / 26) * 16
+			treemapHeight = (fullSize / 26) * 10
 		} else if (!width) {
-			treemapWidth = fullSize - treemapHeight > 0 ? fullSize - treemapHeight : 400
+			treemapWidth = fullSize - treemapHeight > 0 ? fullSize - treemapHeight : 1000
 		} else if (!height) {
-			treemapHeight = fullSize - treemapWidth > 0 ? fullSize - treemapWidth : 400
+			treemapHeight = fullSize - treemapWidth > 0 ? fullSize - treemapWidth : 1000
 		}
 		halfTreemapWidth = treemapWidth / 2
 		halfTreemapHeight = treemapHeight / 2
@@ -166,8 +166,8 @@ const treemapForce = (groupBy, width, height, strength) => {
 		}))
 
 		//Not sure if this code should be located here in the long run, but for now
-		d3.select("#layout-extras").selectAll("*").remove()
-		d3.select("#layout-extras")
+		d3.select(treemapForce.element).selectAll("*").remove()
+		d3.select(treemapForce.element)
 			.selectAll(".treemap-zone")
 			.data(treemap)
 			.enter()
@@ -177,7 +177,7 @@ const treemapForce = (groupBy, width, height, strength) => {
 			.attr("y", d => d.y)
 			.attr("width", d => d.width)
 			.attr("height", d => d.height)
-			.attr("style", "fill:transparent;stroke:black;pointer-events:none;")
+			.attr("style", "fill:transparent;stroke:black;pointer-events:none; stroke-width:5px;")
 	}
 
 	return force

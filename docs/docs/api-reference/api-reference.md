@@ -128,6 +128,7 @@ maxedgeLabelWidth   |   String {Measurement}
 edgeLabelWidth   |   String {Measurement}
 enableZoomButtons   |   Boolean
 enableScaleGridOnZoom   |   Boolean
+hideDetailsZoomScale   |   number
 enableBuiltinContextMenu   |   Boolean
 enableFadeOnHover   |   boolean
 enableGrid   |   Boolean

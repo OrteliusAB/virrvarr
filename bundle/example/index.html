@@ -245,8 +245,14 @@
                     <button class="menu-button menu-button-confirm" onclick="setLayout('matrix')">Matrix</button>
                     <button class="menu-button menu-button-confirm" onclick="setLayout('grid')">Grid</button>
                     <button class="menu-button menu-button-confirm" onclick="setLayout('cluster')">Cluster</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('outlinecluster')">Outlined
+                        Cluster</button>
                     <button class="menu-button menu-button-confirm" onclick="setLayout('treemap')">Treemap</button>
                     <button class="menu-button menu-button-confirm" onclick="setLayout('radial')">Radial</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('fan')">Fan</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('table')">Table</button>
+                    <button class="menu-button menu-button-confirm" onclick="setLayout('adjacencymatrix')">Adjacency
+                        Matrix</button>
                     <button class="menu-button menu-button-warning" onclick="resetLayout()">Reset Layout</button>
                 </details>
 
@@ -273,6 +279,14 @@
                     <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('taxi')">Taxi</button>
                     <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('fulltaxi')">Full
                         Taxi</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('arctop')">Arc
+                        Top</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('arcright')">Arc
+                        Right</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('arcbottom')">Arc
+                        Bottom</button>
+                    <button class="menu-button menu-button-confirm" onclick="setDefaultLineType('arcleft')">Arc
+                        Left</button>
                 </details>
 
                 <details>
@@ -289,7 +303,8 @@
                         Mode</button>
                     <button class="menu-button menu-button-confirm" onclick="toggleCenterForce()">Center Force</button>
                     <button class="menu-button menu-button-confirm" onclick="toggleBoundingBox()">Bounding Box</button>
-                    <button class="menu-button menu-button-confirm" onclick="toggleRotateLabels()">Rotate Labels</button>
+                    <button class="menu-button menu-button-confirm" onclick="toggleRotateLabels()">Rotate
+                        Labels</button>
                     <button class="menu-button menu-button-confirm" onclick="toggleGrid()">Toggle Grid</button>
                     <button class="menu-button menu-button-warning" onclick="destroyGraph()">Destroy
                         Graph</button>
@@ -523,6 +538,24 @@
         }
 
         function setLayout(type) {
+            if (type === "outlinecluster") {
+                window.graph.setLayout("cluster", { showOutline: true })
+                return
+            }
+            if (type === "table") {
+                const headers = ["First Name", "Last Name", "Lorem Ipsum"]
+                const firstNameList = ["Donald", "Pierre", "Ham", "Simon", "Caroline", "Jessica", "Simone"]
+                const lastNameList = ["Johnsson", "West", "Smith", "Karlington", "Springfield", "Jobs", "Kach"]
+                const getData = () => {
+                    return [
+                        firstNameList[Math.floor(Math.random() * firstNameList.length)],
+                        lastNameList[Math.floor(Math.random() * lastNameList.length)],
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                    ]
+                }
+                window.graph.setLayout("table", { getData: getData, headers: headers })
+                return
+            }
             window.graph.setLayout(type)
         }
 

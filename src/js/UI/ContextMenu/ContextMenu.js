@@ -51,6 +51,8 @@ export default class ContextMenu {
 	 * @param {string?} direction The direction of the edge clicked (if applicable)
 	 */
 	createContextMenu(clickedItem, contextSectionsArray, customSectionsArray, mouseX, mouseY, direction = undefined) {
+		mouseY = mouseY - window.scrollY
+		mouseX = mouseX - window.scrollX
 		this.removeContextmenu()
 		if (!this.enableBuiltinContextMenu && customSectionsArray.length === 0) {
 			return

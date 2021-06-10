@@ -16,6 +16,7 @@ You can pass the following configuration to the layout:
 - useX -> If true the hierarchy will display from left to right, otherwise top to bottom
 - groupBy -> A function that takes the bound data on each node and returns a group identifier. By default nodes will be grouped by type.
 - distance -> A number that defines the distance between each axis. By default this will be computed based on node height/width.
+- useLine -> A boolean that forces all nodes into a single line. Useful for very large graphs, but will cause edges to be positoned in a less intuitive way.
 
 To use the hierarchy layout you supply the "hierarchy" type to the setLayout function:
 ```javascript
@@ -55,6 +56,7 @@ Cluster layout allows you to cluster nodes together into groups. This is useful 
 You can pass the following configuration to the layout:
 - groupBy -> A function that will take the bound data from the node and should return a value to be sorted on
 - strength -> How strong should the force be that pulls the nodes into the clusters? (must be in range 0-1!)
+- showOutline -> If true a rectangle will be rendered around the different clusters with a the title of the cluster above it. The title is derived from the group results.
 
 To use cluster layout you supply the "cluster" type to the setLayout function:
 ```javascript
@@ -76,15 +78,47 @@ graph.setLayout("treemap")
 ```
 
 ## Radial
-Radial layout orders nodes into a circle. This is particularly useful if nodes are heavily interconnected, and it it is difficult to make out what is actually connected to what.
+Radial layout orders nodes into a circle. This is particularly useful if nodes are heavily interconnected, and it it is difficult to make out what is actually connected to what. You can also use this force to create radial clusters (i.e. layers of circles) by providing a groupBy function. By default one single large circle will be made.
 
 You can pass the following configuration to the layout:
-- radius -> Radius of the circle
+- groupBy ->  A function that will take the bound data from the node and should return a value to be sorted on
 - strength -> How strong should the force be that pulls the nodes into the circle? (must be in range 0-1!)
 
 To use radial layout you supply the "radial" type to the setLayout function:
 ```javascript
 graph.setLayout("radial")
+```
+
+## Fan
+Fan layout orders nodes into long lines going out from a center point. This is a useful layout for visualising circular hierarchies.
+
+You can pass the following configuration to the layout:
+- groupBy ->  A function that will take the bound data from the node and should return a value to be sorted on
+- strength -> How strong should the force be that pulls the nodes into the circle? (must be in range 0-1!)
+
+To use fan layout you supply the "fan" type to the setLayout function:
+```javascript
+graph.setLayout("fan")
+```
+
+## Adjacency Matrix
+Adjacency Matrix layout allows you to render an adjacency matrix of all your nodes and their edges
+
+To use the adjacency matrix layout you supply the "adjacencymatrix" type to the setLayout function:
+```javascript
+graph.setLayout("adjacencymatrix")
+```
+
+## Table
+Table layout allows you to render a table of information with all nodes positioned to the left of said table, with their respective data next to them.
+
+You must(!) pass the following configuration to the layout:
+- headers ->  An array of strings with the table headers.
+- getData -> a function that will take a node's bound data as input and should result in an array of table cells as strings.
+
+To use the adjacency matrix layout you supply the "adjacencymatrix" type to the setLayout function:
+```javascript
+graph.setLayout("table", { headers: ["Header 1", "Header 2"], getData: () => ["Value 1", "Value 2"] })
 ```
 
 # Centering

@@ -10,6 +10,8 @@ export default class ZoomHandler {
 		this.graphContainerElement = graphContainerElement
 		this.enableZoomButtons = options.enableZoomButtons !== undefined ? options.enableZoomButtons : Env.ENABLE_ZOOM_BUTTONS
 		this.enableScaleGridOnZoom = options.enableScaleGridOnZoom !== undefined ? options.enableScaleGridOnZoom : Env.ENABLE_SCALE_GRID_ON_ZOOM
+		this.hideDetailsZoomScale = options.hideDetailsZoomScale !== undefined ? options.hideDetailsZoomScale : Env.HIDE_DETAILS_ZOOM_SCALE
+		this.isDetailsHidden = false
 		this.ee = eventEmitter
 		this.isLassoEnabled = false
 		this.ee.on(EventEnum.ZOOM_REQUESTED, (x, y, scale) => {
@@ -25,6 +27,19 @@ export default class ZoomHandler {
 				d3.select(this.graphContainerElement).select("g").attr("transform", d3.event.transform)
 				if (this.enableScaleGridOnZoom) {
 					d3.select(this.graphContainerElement).select(".grid").attr("transform", d3.event.transform)
+				}
+				if (this.hideDetailsZoomScale) {
+					if (d3.event.transform.k < this.hideDetailsZoomScale) {
+						if (!this.isDetailsHidden) {
+							this.graphContainerElement.style.setProperty("--virrvarr-content-display", "none")
+							this.isDetailsHidden = true
+						}
+					} else {
+						if (this.isDetailsHidden) {
+							this.graphContainerElement.style.removeProperty("--virrvarr-content-display")
+							this.isDetailsHidden = false
+						}
+					}
 				}
 			})
 		if (this.enableZoomButtons) {
@@ -42,7 +57,7 @@ export default class ZoomHandler {
 		const zoomButtons = this.zoomButtonContainer
 			.append("svg")
 			.attr("filter", "drop-shadow(0px 0px 2px rgba(0, 0, 0, .5))")
-			.attr("style", "position:absolute;height:110px;width:34px;right:15px;bottom:30px;")
+			.attr("style", "position:absolute;height:110px;width:34px;right:30px;bottom:30px;")
 			.append("g")
 			.attr("class", "virrvarr-zoom-controls")
 			.attr("style", "cursor:pointer;")
