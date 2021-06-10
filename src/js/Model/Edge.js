@@ -45,6 +45,10 @@ export default class VVEdge {
 		this.target = undefined //index reference
 	}
 
+	isInverse() {
+		return this.nameFrom || this.markerFrom
+	}
+
 	/**
 	 * Updates the main data points of the edge after it has been created
 	 * @param {string} type - Type of edge
