@@ -139,7 +139,7 @@ export default class ContextMenu {
 		if (shouldAddSeparatorBefore) {
 			ul.append("li").append("div").attr("class", "virrvarr-context-menu-divider")
 		}
-		section.forEach(menuItem => {
+		const MenuItemContainers = section.map(menuItem => {
 			const mainContainer = ul
 				.append("li")
 				.append("div")
@@ -162,8 +162,12 @@ export default class ContextMenu {
 				.attr("class", "virrvarr-context-menu-option-title")
 				.classed("virrvarr-context-menu-option-title-disabled", menuItem.disabled)
 				.text(() => menuItem.label)
-			const arrowIconContainer = mainContainer.append("div").attr("class", "virrvarr-context-menu-option-icon")
+			return mainContainer
+		})
+		section.forEach((menuItem, index) => {
 			if (menuItem.children) {
+				const mainContainer = MenuItemContainers[index]
+				const arrowIconContainer = mainContainer.append("div").attr("class", "virrvarr-context-menu-option-icon")
 				arrowIconContainer.style(
 					"background-image",
 					"url(\"data:image/svg+xml;utf8,<svg width='16px' height='16px' viewBox='0 0 16 16' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><path d='M3.70710678,4.29289322 C3.31658249,3.90236893 2.68341751,3.90236893 2.29289322,4.29289322 C1.90236893,4.68341751 1.90236893,5.31658249 2.29289322,5.70710678 L8,11.4142136 L13.7071068,5.70710678 C14.0976311,5.31658249 14.0976311,4.68341751 13.7071068,4.29289322 C13.3165825,3.90236893 12.6834175,3.90236893 12.2928932,4.29289322 L8,8.58578644 L3.70710678,4.29289322 Z' transform='translate(8.000000, 7.707107) rotate(-90.000000) translate(-8.000000, -7.707107) '/></svg>\")"
