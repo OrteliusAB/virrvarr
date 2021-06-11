@@ -23,8 +23,8 @@ const listForce = (groupBy, strength = undefined) => {
 			}
 			currentColumn += 1
 			const node = nodes[i]
-			node.vx -= (node.x - (currentColumn - 1) * size + halfSize) * l
-			node.vy -= (node.y - currentRow * size + halfSize) * l
+			node.vx -= (node.x - ((currentColumn - 1) * size - halfSize)) * l
+			node.vy -= (node.y - (currentRow * size - halfSize)) * l
 		}
 	}
 
