@@ -42,7 +42,7 @@ const radialForce = (groupBy, strength) => {
 		let lastRadius = 0
 		radiuses = groups
 			.map(group => {
-				return group.reduce((acc, node) => acc + getMaxMeasurement(node), 0) / 2
+				return group.reduce((acc, node) => acc + getMaxMeasurement(node), 0) / 3.14
 			})
 			.map(radius => {
 				if (radius > lastRadius + MIN_RADIUS_OFFSET) {
