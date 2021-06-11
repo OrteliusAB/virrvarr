@@ -238,9 +238,11 @@ export default class ContextMenu {
 	preProcessSection(section, ...args) {
 		return section
 			.map(item => {
-				let executedItem = item
+				let executedItem
 				if (typeof item === "function") {
 					executedItem = item(...args)
+				} else {
+					executedItem = { ...item }
 				}
 				if (executedItem.children) {
 					executedItem.children = executedItem.children.map(childSection => this.preProcessSection(childSection, ...args))
