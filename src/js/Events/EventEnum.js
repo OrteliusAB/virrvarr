@@ -47,6 +47,8 @@ const EVENTS = Object.freeze({
 
 	// Params: [...nodes], [...edges]
 	DATA_UPDATE_REQUESTED: "DATA_UPDATE_REQUESTED_EVENT",
+	// Params: style
+	STYLE_UPDATE_REQUESTED: "STYLE_UPDATE_REQUESTED_EVENT",
 	// Params: [...nodes], [...edges]
 	DATASTORE_UPDATED: "LIVE_DATA_UPDATED_EVENT",
 	// Params: [...nodes], [...edges]

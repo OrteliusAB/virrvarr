@@ -406,11 +406,11 @@ export class Virrvarr {
 	 * @return {void}
 	 */
 	updateDataset(newDataset) {
-		this._ee.trigger(EventEnum.DATA_UPDATE_REQUESTED, newDataset.nodes, newDataset.edges)
 		if (newDataset.style) {
 			this._style = JSON.parse(JSON.stringify(newDataset.style))
+			this._ee.trigger(EventEnum.STYLE_UPDATE_REQUESTED, this._style)
 		}
-		this._UI.updateStyles(this._style)
+		this._ee.trigger(EventEnum.DATA_UPDATE_REQUESTED, newDataset.nodes, newDataset.edges)
 	}
 
 	/**

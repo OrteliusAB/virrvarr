@@ -17,6 +17,7 @@ export default class UI {
 		this.graphContainerElement = graphContainerElement
 		this.style = styles
 		this.ee = eventEmitter
+		this.ee.on(EventEnum.STYLE_UPDATE_REQUESTED, newStyles => this.updateStyles(newStyles))
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
 		this.zoomHandler = new ZoomHandler(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.contextMenu = new ContextMenu(this.graphContainerElement, this.ee, userDefinedOptions)
