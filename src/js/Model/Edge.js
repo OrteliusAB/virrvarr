@@ -57,8 +57,8 @@ export default class VVEdge {
 	 * @param {string} multiplicityFrom - Multiplicity in the from direction
 	 * @param {string} multiplicityTo - Multiplicity in the to direction
 	 * @param {"line"|"cubicbezier"|"taxi"|"fulltaxi"} lineType - Line type for the edge
-	 * @param {"arrow"|"diamond"|"square"|"none"} markerFrom - Marker type in the from direction
-	 * @param {"arrow"|"diamond"|"square"|"none"} markerTo - Marker type in the to direction
+	 * @param {"arrow"|"diamond"|"square"|"circle"|"hollowcircle"|"hollowreversearrow"|"none"} markerFrom - Marker type in the from direction
+	 * @param {"arrow"|"diamond"|"square"|"circle"|"hollowcircle"|"hollowreversearrow"|"none"} markerTo - Marker type in the to direction
 	 * @param {any} data - Bound data
 	 */
 	updateData(type, nameFrom, nameTo, multiplicityFrom, multiplicityTo, lineType, markerFrom, markerTo, data) {

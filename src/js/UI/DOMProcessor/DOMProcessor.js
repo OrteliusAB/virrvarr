@@ -424,8 +424,25 @@ export default class DOMProcessor {
 			.attr("orient", "auto")
 			.attr("class", (edge.type ? edge.type : "normal") + "Marker")
 			.attr("class", "marker-" + (edge.type ? edge.type : "default"))
+		const markerType = inverse ? edge.markerFrom : edge.markerTo
+		if (markerType === "circle") {
+			marker.append("circle").attr("r", 7).attr("fill", "black").attr("cx", 7)
+			return marker.node()
+		} else if (markerType === "hollowcircle") {
+			marker.append("circle").attr("r", 7).attr("fill", "black").attr("cx", 7)
+			marker.append("circle").attr("r", 4).attr("fill", "white").attr("cx", 7)
+			return marker.node()
+		}
+		if (markerType === "hollowreversearrow") {
+			marker
+				.append("path")
+				.attr("d", () => {
+					return inverse ? "M12,0L1,-8L1,8Z" : "M12,-8L0,0L12,8Z"
+				})
+				.attr("style", "fill:white;stroke-width:2;stroke:black;")
+			return marker.node()
+		}
 		marker.append("path").attr("d", () => {
-			const markerType = inverse ? edge.markerFrom : edge.markerTo
 			if (markerType === "diamond") {
 				return "M0,0L6,6L12,0L6,-6Z"
 			} else if (markerType === "square") {
