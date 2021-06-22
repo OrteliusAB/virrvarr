@@ -10,8 +10,12 @@ export default class Measurements {
 		this.measurementDiv.setAttribute("style", "font-size:12px; position: absolute;float: left;white-space: nowrap;visibility: hidden;")
 		this.graphContainerElement.appendChild(this.measurementDiv)
 
+		const svgContainer = document.createElement("div")
+		svgContainer.setAttribute("style", "font-size:12px; position: absolute;float: left;white-space: nowrap;visibility: hidden;")
+		svgContainer.id = "measurement-svg-container"
 		const measurementSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		measurementSVG.id = "measurements-svg"
+		svgContainer.appendChild(measurementSVG)
 		this.measurementG = document.createElementNS("http://www.w3.org/2000/svg", "g")
 		measurementSVG.appendChild(this.measurementG)
 		this.graphContainerElement.appendChild(measurementSVG)
