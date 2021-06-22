@@ -10,15 +10,15 @@ export default class Measurements {
 		this.measurementDiv.setAttribute("style", "font-size:12px; position: absolute;float: left;white-space: nowrap;visibility: hidden;")
 		this.graphContainerElement.appendChild(this.measurementDiv)
 
-		const svgContainer = document.createElement("div")
-		svgContainer.setAttribute("style", "font-size:12px; position: absolute;float: left;white-space: nowrap;visibility: hidden;")
-		svgContainer.id = "measurement-svg-container"
+		this.svgContainer = document.createElement("div")
+		this.svgContainer.setAttribute("style", "font-size:12px; position: absolute;float: left;white-space: nowrap;visibility: hidden;display:none;")
+		this.svgContainer.id = "measurement-svg-container"
 		const measurementSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		measurementSVG.id = "measurements-svg"
-		svgContainer.appendChild(measurementSVG)
+		this.svgContainer.appendChild(measurementSVG)
 		this.measurementG = document.createElementNS("http://www.w3.org/2000/svg", "g")
 		measurementSVG.appendChild(this.measurementG)
-		this.graphContainerElement.appendChild(svgContainer)
+		this.graphContainerElement.appendChild(this.svgContainer)
 
 		this.measurementCache = new Map()
 	}
@@ -85,9 +85,11 @@ export default class Measurements {
 	 */
 	getSVGBBox(element, query) {
 		const computeBBox = () => {
+			this.svgContainer.style.display = "block"
 			this.measurementG.appendChild(element)
 			const bBox = element.getBBox()
 			this.measurementG.removeChild(element)
+			this.svgContainer.style.display = "none"
 			return bBox
 		}
 		if (query) {
