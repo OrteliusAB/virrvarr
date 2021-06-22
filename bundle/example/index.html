@@ -336,7 +336,7 @@
                         },
                         enableBuiltinContextMenu: true,
                         customContextMenu: {
-                            canvas: [
+                            canvas: () => ([
                                 [
                                     {
                                         label: "Disabled Item",
@@ -379,20 +379,19 @@
                                         ]
                                     }
                                 ]
-                            ],
-                            node: [
+                            ]),
+                            node: (data, id) => ([
                                 [
                                     {
                                         label: "Type specific option",
-                                        type: ["equivalent"],
                                         action: (data, id) => {
                                             console.log("This will only appear for nodes of type 'equivalent'")
                                         }
                                     },
-                                    (data, id) => ({
+                                    {
                                         label: "Node ID: " + id,
                                         action: (data, id) => console.log(data)
-                                    })
+                                    }
                                 ],
                                 [
                                     {
@@ -432,7 +431,7 @@
                                         }
                                     },
                                 ]
-                            ]
+                            ])
                         },
                         fixedEdgeLabelWidth: true,
                         maxEdgeLabelWidth: 130,

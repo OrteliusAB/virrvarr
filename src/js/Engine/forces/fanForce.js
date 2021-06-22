@@ -37,16 +37,18 @@ const fanForce = (groupBy, strength) => {
 		const degreeIncrements = Math.floor(360 / groupsMap.size)
 		Array.from(groupsMap.keys()).forEach((key, index) => {
 			const radian = MathUtils.calculateRadian(degreeIncrements * index)
-			const initialX = 300 * Math.cos(radian)
-			const initialY = 300 * Math.sin(radian)
+			const radianCos = Math.cos(radian)
+			const radianSin = Math.sin(radian)
+			const initialX = 300 * radianCos
+			const initialY = 300 * radianSin
 			let lastPosition = [initialX, initialY]
 			groupsMap.get(key).forEach(node => {
 				const maxMeasurement = getMaxMeasurement(node)
-				const x = maxMeasurement * Math.cos(radian) + lastPosition[0]
-				const y = maxMeasurement * Math.sin(radian) + lastPosition[1]
+				const x = maxMeasurement * radianCos + lastPosition[0]
+				const y = maxMeasurement * radianSin + lastPosition[1]
 				positionMap.set(node.id, [x, y])
-				const nextX = maxMeasurement * Math.cos(radian) + x
-				const nextY = maxMeasurement * Math.sin(radian) + y
+				const nextX = maxMeasurement * radianCos + x
+				const nextY = maxMeasurement * radianSin + y
 				lastPosition = [nextX, nextY]
 			})
 		})

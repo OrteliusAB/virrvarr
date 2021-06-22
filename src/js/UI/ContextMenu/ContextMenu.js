@@ -186,13 +186,8 @@ export default class ContextMenu {
 	createNodeContextMenu(clickedItem, mouseX, mouseY) {
 		const sections = [this.NodeMenu, this.UniversalMenu]
 		let customSections = []
-		if (this.customContextMenu.node) {
-			customSections = [...this.customContextMenu.node]
-				.map(section => {
-					return section.filter(menuItem => (menuItem.type ? menuItem.type.includes(clickedItem.type) : true))
-				})
-				.filter(section => section.length > 0)
-				.map(section => this.preProcessSection(section, clickedItem.data, clickedItem.id))
+		if (this.customContextMenu.node && typeof this.customContextMenu.node === "function") {
+			customSections = this.customContextMenu.node(clickedItem.data, clickedItem.id)
 		}
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY)
 	}
@@ -207,13 +202,8 @@ export default class ContextMenu {
 	createEdgeContextMenu(clickedItem, mouseX, mouseY, direction) {
 		const sections = [this.EdgeMenu, this.UniversalMenu]
 		let customSections = []
-		if (this.customContextMenu.edge) {
-			customSections = [...this.customContextMenu.edge]
-				.map(section => {
-					return section.filter(menuItem => (menuItem.type ? menuItem.type.includes(clickedItem.type) : true))
-				})
-				.filter(section => section.length > 0)
-				.map(section => this.preProcessSection(section, clickedItem.data, clickedItem.id, direction))
+		if (this.customContextMenu.edge && typeof this.customContextMenu.edge === "function") {
+			customSections = this.customContextMenu.edge(clickedItem.data, clickedItem.id, direction)
 		}
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY, direction)
 	}
@@ -227,33 +217,10 @@ export default class ContextMenu {
 	createCanvasContextMenu(clickedItem, mouseX, mouseY) {
 		const sections = [this.UniversalMenu]
 		let customSections = []
-		if (this.customContextMenu.canvas) {
-			customSections = [...this.customContextMenu.canvas].map(section => this.preProcessSection(section))
+		if (this.customContextMenu.canvas && typeof this.customContextMenu.canvas === "function") {
+			customSections = this.customContextMenu.canvas()
 		}
 		this.createContextMenu(clickedItem, sections, customSections, mouseX, mouseY)
-	}
-
-	/**
-	 * The preprocessor makes sure to execute custom function menu items that are nested in child arrays. The function is executed recursively for all children's children.
-	 * @param {*} section - Section to be preprocessed
-	 * @param  {...any} ...args - Arguments depending on if it is a node an edge or the canvas that has been clicked
-	 * @returns
-	 */
-	preProcessSection(section, ...args) {
-		return section
-			.map(item => {
-				let executedItem
-				if (typeof item === "function") {
-					executedItem = item(...args)
-				} else {
-					executedItem = { ...item }
-				}
-				if (executedItem.children) {
-					executedItem.children = executedItem.children.map(childSection => this.preProcessSection(childSection, ...args))
-				}
-				return executedItem
-			})
-			.filter(item => item)
 	}
 
 	/**

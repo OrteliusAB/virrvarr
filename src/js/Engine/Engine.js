@@ -148,7 +148,7 @@ export default class Engine {
 		this.clearLayoutGUI()
 		switch (layout) {
 			case "hierarchy":
-				this.simulation.force("layout", this.forceMap.get("hierarchy")(options.groupBy, options.useY, options.distance))
+				this.simulation.force("layout", this.forceMap.get("hierarchy")(options.groupBy, options.useY, options.distance, options.useLine))
 				this.linkForce.strength(Env.EDGE_STRENGTH)
 				break
 			case "adjacencymatrix":
