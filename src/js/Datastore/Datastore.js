@@ -199,12 +199,12 @@ export default class Datastore {
 				edge.data
 			)
 		})
-		this.updateHiddenEdges()
 		this.updateEdgeIDs()
 		this.nodeMap.clear()
 		this.edgeMap.clear()
 		this.allNodes.forEach(node => this.nodeMap.set(node.id, node))
 		this.allEdges.forEach(edge => this.edgeMap.set(edge.id, edge))
+		this.updateHiddenEdges()
 		this.applyFilters()
 		this.updateNumberOfHiddenEdgesOnNodes()
 		this.updateLiveData()
