@@ -196,7 +196,7 @@ export default class DOMProcessor {
 				return "url(#" + this.getMarkerId(l, false) + ")"
 			})
 			.attr("marker-start", l => {
-				if (l.nameFrom) {
+				if (l.nameFrom || l.markerFrom) {
 					return "url(#" + this.getMarkerId(l, true) + ")"
 				}
 				return ""
