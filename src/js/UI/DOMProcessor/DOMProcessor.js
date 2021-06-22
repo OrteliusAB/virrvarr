@@ -149,7 +149,7 @@ export default class DOMProcessor {
 	 * @returns {string} - Graphical Identifier
 	 */
 	getNodeGraphicalID(node) {
-		return node.id + (node.type ? node.type : "") + node.name
+		return node.id + (node.type ? node.type : "") + node.shape + node.name
 	}
 
 	/**
