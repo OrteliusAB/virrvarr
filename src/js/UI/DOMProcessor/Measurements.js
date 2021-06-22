@@ -18,7 +18,7 @@ export default class Measurements {
 		svgContainer.appendChild(measurementSVG)
 		this.measurementG = document.createElementNS("http://www.w3.org/2000/svg", "g")
 		measurementSVG.appendChild(this.measurementG)
-		this.graphContainerElement.appendChild(measurementSVG)
+		this.graphContainerElement.appendChild(svgContainer)
 
 		this.measurementCache = new Map()
 	}
