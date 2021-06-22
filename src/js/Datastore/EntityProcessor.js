@@ -1,4 +1,5 @@
 import Env from "../Config/Env"
+import EventEnum from "../Events/EventEnum"
 
 /**
  * The entity processor has two purposes
@@ -15,6 +16,7 @@ export default class EntityProcessor {
 		this.maxEdgeLabelWidth = userDefinedOptions.maxEdgeLabelWidth ? userDefinedOptions.maxEdgeLabelWidth : Env.LABEL_WIDTH * 2
 
 		this.ee = eventEmitter
+		this.ee.on(EventEnum.STYLE_UPDATE_REQUESTED, newStyles => (this.style = newStyles))
 	}
 
 	/**

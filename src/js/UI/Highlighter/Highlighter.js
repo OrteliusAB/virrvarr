@@ -41,6 +41,17 @@ export default class Highlighter {
 				if (nodeElement) {
 					const DOMElement = nodeElement.node()
 					if (!(this.enableOnionOnFocus && DOMElement.classList.contains("focused"))) {
+						const DOMNeighborhood = DOMElement.parentElement.children
+						let found = false
+						Array.from(DOMNeighborhood).forEach(node => {
+							if (node.classList.contains("onion-clone")) {
+								found = true
+							}
+						})
+						if ((found && data.eventType === "enter") || (!found && data.eventType === "leave")) {
+							//This can happen because the SVGRenderer stops events when nodes are being dragged to prevent event spamming.
+							return
+						}
 						this.toggleOnionBorder(DOMElement, this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
 					}
 				}

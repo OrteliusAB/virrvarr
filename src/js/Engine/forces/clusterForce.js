@@ -1,14 +1,17 @@
+import * as d3 from "d3"
 //Adapted from: https://observablehq.com/@d3/clustered-bubbles
 /**
  * Creates a cluster force that forces nodes together
  * @param {(any => "string" | "string")=} groupBy - Either a function that will take the bound data from the node or a name of a property on a node
  * @param {number=} strength - How strong should the force be that pulls the nodes together? (0-1)
+ * @param {boolean=} showOutline - Should a square with a title be rendered around each cluster?
  */
-const clusterForce = (groupBy, strength) => {
+const clusterForce = (groupBy, strength, showOutline = false) => {
 	const computeGroup = groupBy ? (typeof groupBy === "string" ? node => node[groupBy] : node => groupBy(node.data)) : node => node.type
 	const power = strength ? strength : 0.7
 	let groups = []
 	let nodes = []
+	const BORDER_PADDING = 200
 
 	const computeCentroid = nodes => {
 		let x = 0
@@ -33,6 +36,29 @@ const clusterForce = (groupBy, strength) => {
 				node.vy -= (node.y - cy) * l
 			})
 		})
+		if (showOutline) {
+			groups.forEach((group, index) => {
+				let xStart = Infinity
+				let yStart = Infinity
+				let xEnd = -Infinity
+				let yEnd = -Infinity
+				group.forEach(node => {
+					const halfWidth = node.width ? node.width / 2 : node.radius
+					const halfHeight = node.height ? node.height / 2 : node.radius
+					node.x - halfWidth < xStart && (xStart = node.x - halfWidth)
+					node.y - halfHeight < yStart && (yStart = node.y - halfHeight)
+					const nodeEndX = node.x + halfWidth
+					const nodeEndY = node.y + halfHeight
+					nodeEndX > xEnd && (xEnd = nodeEndX)
+					nodeEndY > yEnd && (yEnd = nodeEndY)
+				})
+				const g = d3.select(clusterForce.element).select(`[class="${index}"]`)
+				g.attr("transform", `translate(${xStart - BORDER_PADDING / 2}, ${yStart - BORDER_PADDING / 2})`)
+					.select("rect")
+					.attr("height", yEnd - yStart + BORDER_PADDING)
+				g.selectAll("rect").attr("width", xEnd - xStart + BORDER_PADDING)
+			})
+		}
 	}
 
 	force.initialize = newNodes => {
@@ -46,6 +72,19 @@ const clusterForce = (groupBy, strength) => {
 				newGroups.get(group).push(node)
 			}
 		})
+		if (showOutline) {
+			d3.select(clusterForce.element).selectAll("*").remove()
+			Array.from(newGroups.keys()).forEach((key, index) => {
+				const g = d3.select(clusterForce.element).append("g").classed(index, true)
+				g.append("rect").attr("stroke-width", "4px").attr("stroke", "#000000").attr("fill", "none")
+				g.append("rect").attr("stroke-width", "4px").attr("stroke", "#000000").attr("fill", "#f7f7f7").attr("y", -35).attr("height", 35)
+				g.append("text")
+					.text(key === undefined ? "N/A" : key)
+					.attr("style", "font-size:26px;")
+					.attr("y", -10)
+					.attr("x", 10)
+			})
+		}
 		groups = [...newGroups.values()]
 	}
 

@@ -17,19 +17,18 @@ export default class UI {
 		this.graphContainerElement = graphContainerElement
 		this.style = styles
 		this.ee = eventEmitter
+		this.ee.on(EventEnum.STYLE_UPDATE_REQUESTED, newStyles => this.updateStyles(newStyles))
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
 		this.zoomHandler = new ZoomHandler(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.contextMenu = new ContextMenu(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.tooltip = new Tooltip(this.graphContainerElement, this.ee)
-
 		this.stylesID = ("A" + Math.random()).replace(".", "")
-		CSSUtil.initializeGraphStyles(this.style, this.stylesID)
-
+		CSSUtil.initializeGraphStyles(this.style, this.stylesID, graphContainerElement)
 		this.rootG = this.initializeDOM()
 		this.selectionLasso = new SelectionLasso(this.graphContainerElement, this.ee)
 		this.highlighter = new Highlighter(this.graphContainerElement, this.ee, userDefinedOptions)
 		this.grid = new Grid(this.graphContainerElement, this.ee, userDefinedOptions)
-		this.DOMProcessor = new DOMProcessor(this.rootG, this.ee, userDefinedOptions)
+		this.DOMProcessor = new DOMProcessor(this.graphContainerElement, this.ee, userDefinedOptions)
 	}
 
 	get zoom() {
@@ -74,15 +73,15 @@ export default class UI {
 		rootG.append("g").attr("id", "edge-container")
 		rootG.append("g").attr("id", "label-container")
 		rootG.append("g").attr("id", "multiplicity-container")
-		rootG.append("g").attr("id", "node-container")
 		rootG.append("g").attr("id", "layout-extras")
+		rootG.append("g").attr("id", "node-container")
 		return rootG
 	}
 
 	updateStyles(newStyles) {
 		this.style = newStyles
-		d3.select(`#${this.stylesID}`).remove()
-		CSSUtil.initializeGraphStyles(this.style, this.stylesID)
+		d3.select(this.graphContainerElement).select(`#${this.stylesID}`).remove()
+		CSSUtil.initializeGraphStyles(this.style, this.stylesID, this.graphContainerElement)
 	}
 
 	destroy() {
@@ -92,6 +91,6 @@ export default class UI {
 		this.rootG.select("#label-container").selectAll(".label").remove()
 		this.rootG.select("#layout-extras").selectAll("*").remove()
 		d3.select(this.graphContainerElement).select("svg").remove()
-		d3.select(`#${this.stylesID}`).remove()
+		d3.select(this.graphContainerElement).select(`#${this.stylesID}`).remove()
 	}
 }

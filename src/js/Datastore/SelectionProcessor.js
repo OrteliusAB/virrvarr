@@ -17,6 +17,7 @@ export default class EntityProcessor {
 		this.lastLassoCoveredSelection = null
 		this.lassoExiting = false
 		this.lassoExitingTimeout = null
+		this.lastLassoPosition = []
 		this.ee.on(EventEnum.NODE_MULTI_SELECT_MODE_TOGGLED, isEnabled => (this.multiSelectMode = isEnabled))
 		this.ee.on(EventEnum.LASSO_ENTER, () => {
 			if (this.lassoExitingTimeout) {
@@ -32,7 +33,16 @@ export default class EntityProcessor {
 			}, 100)
 			this.lastLassoCoveredSelection = null
 		})
-		this.ee.on(EventEnum.LASSO_MOVED, (x, y, width, height) => this.selectLassoArea(x, y, width, height))
+		this.ee.on(EventEnum.LASSO_MOVED, (x, y, width, height) => {
+			this.lastLassoPosition = [x, y, width, height]
+			this.ee.trigger(EventEnum.RELATIVE_POSITION_UPDATE_REQUESTED)
+		})
+		this.ee.on(EventEnum.RELATIVE_POSITIONS_UPDATED, () => {
+			if (this.lastLassoPosition.length) {
+				this.selectLassoArea(this.lastLassoPosition[0], this.lastLassoPosition[1], this.lastLassoPosition[2], this.lastLassoPosition[3])
+				this.lastLassoPosition = []
+			}
+		})
 		this.ee.on(EventEnum.CLICK_ENTITY, data => {
 			if (!this.lastLassoCoveredSelection && !this.lassoExiting) {
 				if (data) {
@@ -117,7 +127,7 @@ export default class EntityProcessor {
 	}
 
 	/**
-	 * Handles updating the when the selection lasso has moved
+	 * Handles updating the seletion when the selection lasso has moved
 	 * @param {number} x - x coordinate of the lasso
 	 * @param {number} y - y coordinate of the lasso
 	 * @param {number} width - width of the lasso

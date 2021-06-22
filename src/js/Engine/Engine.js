@@ -7,14 +7,22 @@ import hierarchyForce from "./forces/hierarchyForce"
 import gridForce from "./forces/gridForce"
 import matrixForce from "./forces/matrixForce"
 import treemapForce from "./forces/treemapForce"
+import radialForce from "./forces/radialForce"
+import fanForce from "./forces/fanForce"
+import adjacencyMatrixForce from "./forces/adjacencyMatrixForce"
+import tableForce from "./forces/tableForce"
 
 /**
  * The Engine class is responsible for running the physics simulation of the graph.
  */
 export default class Engine {
-	constructor(forceCenterX, forceCenterY, eventEmitter) {
+	constructor(forceCenterX, forceCenterY, graphContainerElement, eventEmitter) {
+		this.layoutElement = graphContainerElement.querySelector("#layout-extras")
+		this.edges = []
 		this.ee = eventEmitter
 		this.ee.on(EventEnum.DOM_PROCESSOR_FINISHED, (nodes, edges) => {
+			this.edges.splice(0, this.edges.length)
+			edges.forEach(edge => this.edges.push(edge))
 			this.updateSimulation(nodes, edges)
 			this.ee.trigger(EventEnum.ENGINE_UPDATE_FINISHED, nodes, edges)
 		})
@@ -70,6 +78,17 @@ export default class Engine {
 				return this.getEdgeDistance(edge)
 			})
 			.strength(Env.EDGE_STRENGTH)
+		this.forceMap = new Map()
+		this.registerForce("boundingBox", boundingBoxForce)
+		this.registerForce("cluster", clusterForce)
+		this.registerForce("hierarchy", hierarchyForce)
+		this.registerForce("grid", gridForce)
+		this.registerForce("matrix", matrixForce)
+		this.registerForce("treemap", treemapForce)
+		this.registerForce("radial", radialForce)
+		this.registerForce("fan", fanForce)
+		this.registerForce("adjacencymatrix", adjacencyMatrixForce)
+		this.registerForce("table", tableForce)
 		this.simulation = this.initializeSimulation()
 	}
 
@@ -87,7 +106,7 @@ export default class Engine {
 	initializeSimulation() {
 		return d3
 			.forceSimulation()
-			.force("charge", d3.forceManyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE))
+			.force("charge", d3.forceManyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE).theta(1.1))
 			.force(
 				"collide",
 				d3
@@ -129,35 +148,39 @@ export default class Engine {
 		this.clearLayoutGUI()
 		switch (layout) {
 			case "hierarchy":
-				this.simulation.force("layout", hierarchyForce(options.groupBy, options.useY, options.distance))
+				this.simulation.force("layout", this.forceMap.get("hierarchy")(options.groupBy, options.useY, options.distance))
 				this.linkForce.strength(Env.EDGE_STRENGTH)
 				break
+			case "adjacencymatrix":
+				this.simulation.force("layout", this.forceMap.get("adjacencymatrix")())
+				this.linkForce.strength(0)
+				break
 			case "grid":
-				this.simulation.force("layout", gridForce(options.useY, options.useX, options.strength, options.size, options.multiplier))
+				this.simulation.force("layout", this.forceMap.get("grid")(options.useY, options.useX, options.strength, options.size, options.multiplier))
 				this.linkForce.strength(0.1)
 				break
 			case "matrix":
-				this.simulation.force("layout", matrixForce(options.groupBy, options.strength))
+				this.simulation.force("layout", this.forceMap.get("matrix")(options.groupBy, options.strength))
 				this.linkForce.strength(0)
 				break
 			case "cluster":
-				this.simulation.force("layout", clusterForce(options.groupBy, options.strength))
+				this.simulation.force("layout", this.forceMap.get("cluster")(options.groupBy, options.strength, options.showOutline))
 				this.linkForce.strength(0)
 				break
 			case "treemap":
-				this.simulation.force("layout", treemapForce(options.groupBy, options.width, options.height, options.strength))
+				this.simulation.force("layout", this.forceMap.get("treemap")(options.groupBy, options.width, options.height, options.strength))
 				this.linkForce.strength(0)
 				break
 			case "radial":
-				this.simulation.force(
-					"layout",
-					d3
-						.forceRadial()
-						.strength(options.strength ? options.strength : 0.9)
-						.x(this.forceCenterX)
-						.y(this.forceCenterY)
-						.radius(() => (options.radius ? options.radius : 1400))
-				)
+				this.simulation.force("layout", this.forceMap.get("radial")(options.groupBy, options.strength))
+				this.linkForce.strength(0)
+				break
+			case "table":
+				this.simulation.force("layout", this.forceMap.get("table")(options.headers, options.getData))
+				this.linkForce.strength(0)
+				break
+			case "fan":
+				this.simulation.force("layout", this.forceMap.get("fan")(options.groupBy, options.strength))
 				this.linkForce.strength(0)
 				break
 			default:
@@ -169,6 +192,55 @@ export default class Engine {
 		this.restart()
 	}
 
+	/**
+	 * Add a force to the simulation
+	 * @param {string} forceID - ID of the force to add
+	 * @param {string} forceName - Identifier for the force within the simulation
+	 * @param {any} forceOptions - Options for the force
+	 */
+	addForce(forceID, forceName, forceOptions) {
+		if (!this.forceMap.has(forceID)) {
+			console.error("Force does not exists: ", forceID)
+			return
+		}
+		this.simulation.force(forceName, this.forceMap.get(forceID)(forceOptions))
+		this.alpha(1)
+		this.restart()
+	}
+
+	/**
+	 * Removes a force from the simulation
+	 * @param {string} forceName - Identifier for the force within the simulation
+	 */
+	removeForce(forceName) {
+		this.clearLayoutGUI()
+		this.simulation.force(forceName, null)
+		this.alpha(1)
+		this.restart()
+	}
+
+	/**
+	 * Registers a new force in the engine.
+	 * @param {string} id - Identifier for the force type
+	 * @param {Function} forceFunction - Force compatible function
+	 * @returns
+	 */
+	registerForce(id, forceFunction) {
+		if (this.forceMap.has(id)) {
+			console.error("Force already exists: ", id)
+			return
+		}
+		const layoutGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+		layoutGroup.id = id
+		this.layoutElement.appendChild(layoutGroup)
+		forceFunction.element = layoutGroup
+		forceFunction.edges = this.edges
+		this.forceMap.set(id, forceFunction)
+	}
+
+	/**
+	 * Ends the main layout force
+	 */
 	clearLayout() {
 		this.clearLayoutGUI()
 		this.simulation.force("layout", null)
@@ -177,8 +249,11 @@ export default class Engine {
 		this.restart()
 	}
 
+	/**
+	 * Clears the entire layout GUI
+	 */
 	clearLayoutGUI() {
-		d3.select("#layout-extras").selectAll("*").remove()
+		d3.select(this.layoutElement).selectAll("g").selectAll("*").remove()
 	}
 
 	/**

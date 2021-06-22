@@ -5,7 +5,7 @@ import Env from "../Config/Env.js"
  * @param {object} style - User provided styles parameters
  * @param {string} id - ID of the UI-class of this Virrvarr instance
  */
-const initializeGraphStyles = (style, id) => {
+const initializeGraphStyles = (style = {}, styleID, graphContainer) => {
 	let cssString = ""
 	cssString = /*css*/ `
                 /* Global */
@@ -167,6 +167,11 @@ const initializeGraphStyles = (style, id) => {
                 .virrvarr .disabled {
                     opacity: ${Env.DEFAULT_FADE_OPACITY};
                     pointer-events: none;
+                }
+
+                .virrvarr g #node-container .node g,
+                .virrvarr g #label-container .label g {
+                    display: var(--virrvarr-content-display, block)
                 }
 
                 /* Default edge style */
@@ -433,9 +438,9 @@ const initializeGraphStyles = (style, id) => {
 
 	const css = document.createElement("style")
 	css.type = "text/css"
-	css.id = id
+	css.id = styleID
 	css.appendChild(document.createTextNode(cssString))
-	document.getElementsByTagName("head")[0].appendChild(css)
+	graphContainer.appendChild(css)
 }
 
 const tween = (element, property, initialValue, target, startTime, animationTime, setter) => {

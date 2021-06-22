@@ -29,8 +29,8 @@ nameFrom   |   String
 multiplicityTo   |   String
 multiplicityFrom   |   String
 lineType   |   String
-markerFrom   |   "arrow" | "diamond" | "square" | "none"
-markerTo   |   "arrow" | "diamond" | "square" | "none"
+markerFrom   |   "arrow","diamond","square","circle","hollowcircle","hollowreversearrow","none"
+markerTo   |   "arrow","diamond","square","circle","hollowcircle","hollowreversearrow","none"
 type   |   String (id of node style object)
 data   |   Any (data bound to object)
 
@@ -128,6 +128,7 @@ maxedgeLabelWidth   |   String {Measurement}
 edgeLabelWidth   |   String {Measurement}
 enableZoomButtons   |   Boolean
 enableScaleGridOnZoom   |   Boolean
+hideDetailsZoomScale   |   number
 enableBuiltinContextMenu   |   Boolean
 enableFadeOnHover   |   boolean
 enableGrid   |   Boolean

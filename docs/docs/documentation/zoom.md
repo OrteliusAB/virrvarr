@@ -15,3 +15,13 @@ const options = {
     }
 const graph = new Virrvarr(graphContainer, data, options)
 ```
+
+Graph details such as Node captions, icons and labels can be configured to be hidden at a given zoom (scale) breakpoint. This can help make the graph look less cluttery when zoomed far out, and boost performance in graphs with many nodes.
+
+You can configure the setting like so:
+```javascript
+const options = {
+        hideDetailsZoomScale: 0.3 //Details will be hidden when the graph is further zoomed out than a scale of 0.3.
+    }
+const graph = new Virrvarr(graphContainer, data, options)
+```

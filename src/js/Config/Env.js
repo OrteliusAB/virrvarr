@@ -7,6 +7,7 @@ export default Object.freeze({
 	ENABLE_GRID: false,
 	ENABLE_SECONDARY_GRID: true,
 	ENABLE_SCALE_GRID_ON_ZOOM: true,
+	HIDE_DETAILS_ZOOM_SCALE: 0.2,
 	DEFAULT_FADE_ON_HOVER: false,
 	DEFAULT_USE_CONTEXT_MENU: true,
 	SHOW_CONTEXT_MENU: true,
@@ -127,6 +128,6 @@ export default Object.freeze({
 	GRAVITY: 0.02,
 	CHARGE: -2000,
 	CHARGE_MAX_DISTANCE: 1200,
-	SCALE_EXTENT: [0.05, 5],
+	SCALE_EXTENT: [0.01, 5],
 	INITIAL_SCALE: 0.3
 })

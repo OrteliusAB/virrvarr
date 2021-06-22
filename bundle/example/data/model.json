@@ -146,7 +146,7 @@
         {"id": "n44", "name": "Literal", "type": "literal"},
         {"id": "n45", "name": "Literal", "type": "literal"},
         {"id": "n46", "name": "Literal", "type": "literal"},
-        {"id": "n47", "name": "DEFAULT NODE"}	
+        {"id": "n47", "name": "DEFAULT NODE"} 
     ],
     "edges": [
         {"id": "L0", "sourceNode": "n0", "targetNode": "n1", "nameTo": "focus"},

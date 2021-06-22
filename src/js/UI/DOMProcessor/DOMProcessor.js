@@ -1,5 +1,6 @@
 import MathUtil from "../../Utils/MathUtils"
 import EventEnum from "../../Events/EventEnum"
+import Measurements from "./Measurements"
 import Env from "../../Config/Env"
 import * as d3 from "d3"
 
@@ -7,7 +8,7 @@ import * as d3 from "d3"
  * The DOM Processor class is responsible for managing the DOM using the provided node and edge data, as well as provided configuration.
  */
 export default class DOMProcessor {
-	constructor(rootG, eventEmitter, userDefinedOptions) {
+	constructor(graphContainerElement, eventEmitter, userDefinedOptions) {
 		this.enableFadeOnHover = userDefinedOptions.enableFadeOnHover !== undefined ? userDefinedOptions.enableFadeOnHover : Env.DEFAULT_FADE_ON_HOVER
 		this.showMultiplicity = true
 		this.enableMultiLineNodeLabels =
@@ -16,7 +17,8 @@ export default class DOMProcessor {
 		this.lineType = userDefinedOptions.lineType !== undefined ? userDefinedOptions.lineType : Env.DEFAULT_LINE_TYPE
 		this.markerSize = userDefinedOptions.markerSize !== undefined ? userDefinedOptions.markerSize : Env.DEFAULT_MARKER_SIZE
 
-		this.rootG = rootG
+		this.measurements = new Measurements(graphContainerElement)
+		this.rootG = d3.select(graphContainerElement).select("g")
 		this.nodes = []
 		this.edges = []
 		this.selection = null
@@ -58,9 +60,12 @@ export default class DOMProcessor {
 			this.attachEntityClickListeners()
 			this.ee.trigger(EventEnum.DOM_PROCESSOR_FINISHED, nodes, edges)
 		})
+		this.ee.on(EventEnum.RELATIVE_POSITION_UPDATE_REQUESTED, () => {
+			this.computeRelativeNodeAndLabelPositions()
+		})
 		this.ee.on(EventEnum.ENGINE_TICK, () => {
 			if (this.listeningForTick) {
-				this.tick()
+				requestAnimationFrame(this.tick.bind(this))
 			}
 		})
 		this.ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
@@ -99,6 +104,30 @@ export default class DOMProcessor {
 	}
 
 	/**
+	 * Computes the relative positions and sizes of nodes and labels. This is used for things like the selection lasso.
+	 */
+	computeRelativeNodeAndLabelPositions() {
+		this.nodeElements.each(function (d) {
+			const node = d3.select(this).select("*:not(.onion-clone)").node()
+			const boundingClientRect = node.getBoundingClientRect()
+			d.relativeX = boundingClientRect.x
+			d.relativeY = boundingClientRect.y
+			d.relativeWidth = boundingClientRect.width
+			d.relativeHeight = boundingClientRect.height
+		})
+		this.labels.each(function (d) {
+			const group = d3.select(this)
+			const direction = group.classed("to") ? "To" : "From"
+			const rect = group.select("rect:not(.onion-clone)").node()
+			const boundingClientRect = rect.getBoundingClientRect()
+			d[`label${direction}RelativeX`] = d.relativeX = boundingClientRect.x
+			d[`label${direction}RelativeY`] = d.relativeY = boundingClientRect.y
+			d[`label${direction}RelativeWidth`] = d.relativeWidth = boundingClientRect.width
+			d[`label${direction}RelativeHeight`] = d.relativeHeight = boundingClientRect.height
+		})
+	}
+
+	/**
 	 * Generates a graphical identifier for an edge. The graphical identifier is used to determine not just the unique edge, but also its DOM representation
 	 * @param {VVEdge} edge
 	 * @returns {string} - Graphical Identifier
@@ -130,12 +159,14 @@ export default class DOMProcessor {
 	updateMarkers(edges) {
 		const defs = this.rootG.select("defs")
 		defs.selectAll("marker").remove()
+		const fragment = document.createDocumentFragment()
 		edges.forEach(l => {
-			this.drawMarker(defs, l, false)
+			fragment.appendChild(this.drawMarker(l, false))
 			if (l.nameFrom || l.markerFrom) {
-				this.drawMarker(defs, l, true)
+				fragment.appendChild(this.drawMarker(l, true))
 			}
 		})
+		defs.node().appendChild(fragment)
 	}
 
 	/**
@@ -165,7 +196,7 @@ export default class DOMProcessor {
 				return "url(#" + this.getMarkerId(l, false) + ")"
 			})
 			.attr("marker-start", l => {
-				if (l.nameFrom) {
+				if (l.nameFrom || l.markerFrom) {
 					return "url(#" + this.getMarkerId(l, true) + ")"
 				}
 				return ""
@@ -213,6 +244,7 @@ export default class DOMProcessor {
 	 * @param {object[]} nodes - List of all nodes
 	 */
 	updateNodes(nodes) {
+		const fragment = document.createDocumentFragment()
 		const selector = this.rootG
 			.select("#node-container")
 			.selectAll(".node")
@@ -273,8 +305,12 @@ export default class DOMProcessor {
 			)
 			.each((d, i, c) => {
 				const element = d3.select(c[i])
-				this.drawNode(element, d)
+				fragment.appendChild(c[i])
+				element.node().appendChild(this.drawNode(element, d))
 			})
+		this.rootG.select("#node-container").node().appendChild(fragment)
+		//Clear old badges
+		this.clearAllFloatingNodeMetaData()
 		//Draw counter badges for imploded edges
 		nodes.forEach(node => this.drawCounterBadgeForNode(node))
 		//Draw pin badge for fixated nodes
@@ -282,8 +318,19 @@ export default class DOMProcessor {
 		this.nodeElements = this.rootG.select("#node-container").selectAll(".node")
 	}
 
+	/**
+	 * Removes all floating meta data badges and pins
+	 */
+	clearAllFloatingNodeMetaData() {
+		this.rootG.select(".virrvarr-floating-node-meta").remove()
+	}
+
+	/**
+	 * Evaluates if a node should have a pin badge, and if so draws it.
+	 * Note that this function assumes that any previous pin has already been removed.
+	 * @param {VVNode} node
+	 */
 	drawPinBadgeForNode(node) {
-		this.rootG.select(`[id='pin-${node.id}']`).remove()
 		if (node.fx && node.fy && !node.animating) {
 			const element = this.rootG.select(`[id='${node.id}']`).select(function () {
 				return this.parentNode
@@ -292,8 +339,12 @@ export default class DOMProcessor {
 		}
 	}
 
+	/**
+	 * Evaluates if a node should have a counter badge and if so draws it.
+	 * Note that this function assumes that any previous badge has already been removed.
+	 * @param {VVNode} node
+	 */
 	drawCounterBadgeForNode(node) {
-		this.rootG.select(`[id='badge-${node.id}-hidden-edge-counter']`).remove()
 		if (node.hiddenEdgeCount) {
 			const element = this.rootG.select(`[id='${node.id}']`).select(function () {
 				return this.parentNode
@@ -360,8 +411,9 @@ export default class DOMProcessor {
 	 * @param {object} edge - Edge object
 	 * @param {boolean} inverse - Is the edge inverse?
 	 */
-	drawMarker(defs, edge, inverse) {
-		defs.append("marker")
+	drawMarker(edge, inverse) {
+		const marker = d3
+			.select(document.createElementNS("http://www.w3.org/2000/svg", "marker"))
 			.attr("id", this.getMarkerId(edge, inverse))
 			.attr("viewBox", "0 -8 14 16")
 			.attr("refX", inverse ? 0 : 12)
@@ -372,20 +424,37 @@ export default class DOMProcessor {
 			.attr("orient", "auto")
 			.attr("class", (edge.type ? edge.type : "normal") + "Marker")
 			.attr("class", "marker-" + (edge.type ? edge.type : "default"))
-			.append("path")
-			.attr("d", () => {
-				const markerType = inverse ? edge.markerFrom : edge.markerTo
-				if (markerType === "diamond") {
-					return "M0,0L6,6L12,0L6,-6Z"
-				} else if (markerType === "square") {
-					return "M12,-12L12,12L0,12L0,-12Z"
-				} else if (markerType === "none") {
-					return ""
-				} else {
-					//Arrow
-					return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z"
-				}
-			})
+		const markerType = inverse ? edge.markerFrom : edge.markerTo
+		if (markerType === "circle") {
+			marker.append("circle").attr("r", 7).attr("fill", "black").attr("cx", 7)
+			return marker.node()
+		} else if (markerType === "hollowcircle") {
+			marker.append("circle").attr("r", 7).attr("fill", "black").attr("cx", 7)
+			marker.append("circle").attr("r", 4).attr("fill", "white").attr("cx", 7)
+			return marker.node()
+		}
+		if (markerType === "hollowreversearrow") {
+			marker
+				.append("path")
+				.attr("d", () => {
+					return inverse ? "M12,0L1,-8L1,8Z" : "M12,-8L0,0L12,8Z"
+				})
+				.attr("style", "fill:white;stroke-width:2;stroke:black;")
+			return marker.node()
+		}
+		marker.append("path").attr("d", () => {
+			if (markerType === "diamond") {
+				return "M0,0L6,6L12,0L6,-6Z"
+			} else if (markerType === "square") {
+				return "M12,-12L12,12L0,12L0,-12Z"
+			} else if (markerType === "none") {
+				return ""
+			} else {
+				//Arrow
+				return inverse ? "M12,-8L0,0L12,8Z" : "M0,-8L12,0L0,8Z"
+			}
+		})
+		return marker.node()
 	}
 
 	/**
@@ -452,7 +521,7 @@ export default class DOMProcessor {
 			} else {
 				value = d.nameTo ? d.nameTo : d.nameFrom
 			}
-			return value.toString().truncate(width)
+			return this.measurements.truncate(value.toString(), width)
 		})
 	}
 
@@ -462,6 +531,10 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction - Direction of the edge
 	 */
 	labelMouseEnter(edgeData, direction) {
+		if (this.dragSelection.length > 0) {
+			//Do not do anything if a node is being dragged
+			return
+		}
 		const inverse = direction === "from"
 		this.rootG
 			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
@@ -497,6 +570,10 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction - Direction of the edge
 	 */
 	labelMouseLeave(edgeData, direction) {
+		if (this.dragSelection.length > 0) {
+			//Do not do anything if a node is being dragged
+			return
+		}
 		this.handleHoverEvent(edgeData, "leave", direction)
 		const inverse = direction === "from"
 		this.rootG
@@ -534,7 +611,9 @@ export default class DOMProcessor {
 	 * @param {object} data - Node object
 	 */
 	drawNode(element, data) {
-		const contentGroupElement = element.append("g")
+		let measurementQuery = data.shape + (data.icon ? "icon" : "noicon") + "firstText"
+		const contentGroupElementNode = document.createElementNS("http://www.w3.org/2000/svg", "g")
+		const contentGroupElement = d3.select(contentGroupElementNode)
 		let contentGroupOffsetX = 0
 		let textOffsetY = 0
 		let textAnchor = "middle"
@@ -555,7 +634,7 @@ export default class DOMProcessor {
 				element
 					.insert("circle", "g")
 					.attr("r", d => d.radius)
-					.attr("style", "stroke-width:2;fill:#fff;stroke:#000;stroke-dasharray:0;pointer-events:none;")
+					.attr("style", "stroke-width:0;fill:#fff;pointer-events:none;")
 					.attr("id", data.id)
 					.attr("class", "layered-circle")
 				element
@@ -581,9 +660,8 @@ export default class DOMProcessor {
 				if (data.icon) {
 					const icon = this.drawIcon(element, data.icon)
 					icon.attr("y", -Env.DEFAULT_NODE_ICON_SIZE / 2)
-					icon.attr("x", -element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE)
-					contentGroupOffsetX +=
-						-element.node().getBBox().width / 2 + Env.ADDITIONAL_TEXT_SPACE + Env.DEFAULT_NODE_ICON_SIZE + Env.DEFAULT_NODE_ICON_PADDING
+					icon.attr("x", -data.width / 2 + Env.ADDITIONAL_TEXT_SPACE)
+					contentGroupOffsetX += -data.width / 2 + Env.ADDITIONAL_TEXT_SPACE + Env.DEFAULT_NODE_ICON_SIZE + Env.DEFAULT_NODE_ICON_PADDING
 					textAnchor = "start"
 				}
 				break
@@ -608,16 +686,16 @@ export default class DOMProcessor {
 		if (!this.enableMultiLineNodeLabels) {
 			this.drawTextline(
 				contentGroupElement.select("text"),
-				data.name.truncate(data.maxTextWidth),
+				this.measurements.truncate(data.name, data.maxTextWidth),
 				data.type ? data.type : "default",
-				contentGroupElement.node().getBBox().height + textOffsetY
+				this.measurements.getSVGBBox(contentGroupElementNode, measurementQuery).height + textOffsetY
 			)
 		} else {
 			const text = data.name
-			let truncatedText = text.truncate(data.maxTextWidth)
+			let truncatedText = this.measurements.truncate(text, data.maxTextWidth)
 			if (truncatedText.length < text.length && truncatedText.lastIndexOf(" ") > -1) {
 				truncatedText = truncatedText.substring(0, truncatedText.lastIndexOf(" "))
-				let otherStringTruncated = text.substring(truncatedText.length + 1).truncate(data.maxTextWidth)
+				let otherStringTruncated = this.measurements.truncate(text.substring(truncatedText.length + 1), data.maxTextWidth)
 				if (otherStringTruncated.length + truncatedText.length + 1 < text.length) {
 					otherStringTruncated = otherStringTruncated.substring(0, otherStringTruncated.length - 3) + "..."
 				}
@@ -625,13 +703,14 @@ export default class DOMProcessor {
 					contentGroupElement.select("text"),
 					truncatedText,
 					data.type ? data.type : "default",
-					contentGroupElement.node().getBBox().height + textOffsetY
+					this.measurements.getSVGBBox(contentGroupElementNode, measurementQuery).height + textOffsetY
 				)
+				measurementQuery = measurementQuery + "secondText"
 				this.drawTextline(
 					contentGroupElement.select("text"),
 					otherStringTruncated,
 					data.type ? data.type : "default",
-					contentGroupElement.node().getBBox().height
+					this.measurements.getSVGBBox(contentGroupElementNode, measurementQuery).height
 				)
 			} else {
 				if (truncatedText.length < text.length) {
@@ -641,14 +720,14 @@ export default class DOMProcessor {
 					contentGroupElement.select("text"),
 					truncatedText,
 					data.type ? data.type : "default",
-					contentGroupElement.node().getBBox().height + textOffsetY
+					this.measurements.getSVGBBox(contentGroupElementNode, measurementQuery).height + textOffsetY
 				)
 			}
 		}
-		contentGroupElement.attr(
-			"transform",
-			`translate(${contentGroupOffsetX}, ${-contentGroupElement.node().getBBox().height / 2 - contentGroupElement.node().getBBox().y})`
-		)
+		measurementQuery = measurementQuery + "finalized"
+		const finalBBox = this.measurements.getSVGBBox(contentGroupElementNode, measurementQuery)
+		contentGroupElement.attr("transform", `translate(${contentGroupOffsetX}, ${-finalBBox.height / 2 - finalBBox.y})`)
+		return contentGroupElementNode
 	}
 
 	/**
@@ -692,7 +771,7 @@ export default class DOMProcessor {
 	 */
 	drawNodeCollapsedEdgeCounter(element, data) {
 		const count = `${data.hiddenEdgeCount}`
-		const textWidth = count.width()
+		const textWidth = this.measurements.getTextWidth(count)
 		const fontSize = 14
 		const areaHeight = data.radius ? data.radius * 2 : data.height
 		const areaWidth = data.radius ? data.radius * 2 : data.width
@@ -867,6 +946,10 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction? - If an edge is hovered then this will show the potential direction.
 	 */
 	handleHoverEvent(hoveredData, eventType, direction = undefined) {
+		if (this.dragSelection.length > 0) {
+			//Do not do anything if a node is being dragged
+			return
+		}
 		this.ee.trigger(EventEnum.HOVER_ENTITY, {
 			eventType,
 			id: hoveredData.id,
@@ -921,17 +1004,9 @@ export default class DOMProcessor {
 	 */
 	tick() {
 		//Nodes
-		this.nodeElements
-			.attr("transform", node => {
-				return "translate(" + node.x + "," + node.y + ")"
-			})
-			.each(function (d) {
-				const node = d3.select(this).select("*:not(.onion-clone)").node()
-				d.relativeX = node.getBoundingClientRect().x
-				d.relativeY = node.getBoundingClientRect().y
-				d.relativeWidth = node.getBoundingClientRect().width
-				d.relativeHeight = node.getBoundingClientRect().height
-			})
+		this.nodeElements.attr("transform", node => {
+			return "translate(" + node.x + "," + node.y + ")"
+		})
 		//Edges
 		this.edgePath.attr("d", l => {
 			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
@@ -946,10 +1021,63 @@ export default class DOMProcessor {
 			} else {
 				l.angle = 0
 			}
-			//Calculate curve point (this will also be used later for multiplicity and label positioning)
-			const pathStart = MathUtil.calculateIntersection(l.target, l.source, 1)
-			const pathEnd = MathUtil.calculateIntersection(l.source, l.target, 1)
 			const lineTypeToUse = l.lineType ? l.lineType : this.lineType
+			//Calculate curve point (this will also be used later for multiplicity and label positioning)
+			let pathStart
+			let pathEnd
+			if (!lineTypeToUse.startsWith("arc")) {
+				pathStart = MathUtil.calculateIntersection(l.target, l.source, 1)
+				pathEnd = MathUtil.calculateIntersection(l.source, l.target, 1)
+			}
+			//Arc lines
+			if (lineTypeToUse === "arctop" || lineTypeToUse === "arcright" || lineTypeToUse === "arcbottom" || lineTypeToUse === "arcleft") {
+				let edgeStartX
+				let edgeStartY
+				let edgeEndX
+				let edgeEndY
+				let flip
+				if (lineTypeToUse === "arctop") {
+					edgeStartX = l.source.x
+					edgeEndX = l.target.x
+					edgeStartY = l.source.y - (l.source.radius ? l.source.radius : l.source.height / 2)
+					edgeEndY = l.target.y - (l.target.radius ? l.target.radius : l.target.height / 2)
+					flip = edgeEndX > edgeStartX ? 1 : 0
+					const midpointX = edgeStartX + (edgeEndX - edgeStartX) / 2
+					const yCurvePoint = edgeStartY - Math.abs((edgeEndX - edgeStartX) / 2)
+					l.curvePoint = { x: midpointX, y: yCurvePoint }
+				} else if (lineTypeToUse === "arcright") {
+					edgeStartX = l.source.x + (l.source.radius ? l.source.radius : l.source.width / 2)
+					edgeStartY = l.source.y
+					edgeEndX = l.target.x + (l.target.radius ? l.target.radius : l.target.width / 2)
+					edgeEndY = l.target.y
+					flip = edgeEndY > edgeStartY ? 1 : 0
+					const midpointX = edgeStartX + Math.abs((edgeEndY - edgeStartY) / 2)
+					const yCurvePoint = edgeStartY + (edgeEndY - edgeStartY) / 2
+					l.curvePoint = { x: midpointX, y: yCurvePoint }
+				} else if (lineTypeToUse === "arcbottom") {
+					edgeStartX = l.source.x
+					edgeEndX = l.target.x
+					edgeStartY = l.source.y + (l.source.radius ? l.source.radius : l.source.height / 2)
+					edgeEndY = l.target.y + (l.target.radius ? l.target.radius : l.target.height / 2)
+					flip = edgeEndX < edgeStartX ? 1 : 0
+					const midpointX = edgeStartX + (edgeEndX - edgeStartX) / 2
+					const yCurvePoint = edgeStartY + Math.abs((edgeEndX - edgeStartX) / 2)
+					l.curvePoint = { x: midpointX, y: yCurvePoint }
+				} else if (lineTypeToUse === "arcleft") {
+					edgeStartX = l.source.x - (l.source.radius ? l.source.radius : l.source.width / 2)
+					edgeStartY = l.source.y
+					edgeEndX = l.target.x - (l.target.radius ? l.target.radius : l.target.width / 2)
+					edgeEndY = l.target.y
+					flip = edgeEndY < edgeStartY ? 1 : 0
+					const midpointX = edgeStartX - Math.abs((edgeEndY - edgeStartY) / 2)
+					const yCurvePoint = edgeStartY + (edgeEndY - edgeStartY) / 2
+					l.curvePoint = { x: midpointX, y: yCurvePoint }
+				}
+				return `M ${edgeStartX}, ${edgeStartY}
+				A ${(edgeStartY - edgeEndY) / 2},
+				${(edgeStartY - edgeEndY) / 2} 0 0, ${flip}
+				${edgeEndX}, ${edgeEndY}`
+			}
 			//Taxi lines
 			if ((lineTypeToUse === "taxi" && l.multiEdgeCount === 1) || lineTypeToUse === "fulltaxi") {
 				let midPointY = pathStart.y + (pathEnd.y - pathStart.y) / 2
@@ -1004,35 +1132,25 @@ export default class DOMProcessor {
 			return "translate(" + (pos.x + n.x) + "," + (pos.y + n.y) + ")"
 		})
 		//Labels
-		this.labels
-			.attr("transform", function (l) {
-				if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
-					return ""
+		this.labels.attr("transform", function (l) {
+			if (l.source.x === l.target.x && l.source.y === l.target.y && l.source.id !== l.target.id) {
+				return ""
+			}
+			const group = d3.select(this)
+			const midX = l.curvePoint.x
+			let midY = l.curvePoint.y
+			if (l.nameFrom) {
+				if (group.classed("to")) {
+					midY += Env.LABEL_HEIGHT / 2 + 1
+				} else if (group.classed("from")) {
+					midY -= Env.LABEL_HEIGHT / 2 + 1
 				}
-				const group = d3.select(this)
-				const midX = l.curvePoint.x
-				let midY = l.curvePoint.y
-				if (l.nameFrom) {
-					if (group.classed("to")) {
-						midY += Env.LABEL_HEIGHT / 2 + 1
-					} else if (group.classed("from")) {
-						midY -= Env.LABEL_HEIGHT / 2 + 1
-					}
-				}
-				if (l.angle) {
-					return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
-				} else {
-					return "translate(" + midX + "," + midY + ")"
-				}
-			})
-			.each(function (d) {
-				const group = d3.select(this)
-				const direction = group.classed("to") ? "To" : "From"
-				const rect = group.select("rect:not(.onion-clone)").node()
-				d[`label${direction}RelativeX`] = d.relativeX = rect.getBoundingClientRect().x
-				d[`label${direction}RelativeY`] = d.relativeY = rect.getBoundingClientRect().y
-				d[`label${direction}RelativeWidth`] = d.relativeWidth = rect.getBoundingClientRect().width
-				d[`label${direction}RelativeHeight`] = d.relativeHeight = rect.getBoundingClientRect().height
-			})
+			}
+			if (l.angle) {
+				return "translate(" + midX + "," + midY + ") rotate(" + l.angle + ")"
+			} else {
+				return "translate(" + midX + "," + midY + ")"
+			}
+		})
 	}
 }
