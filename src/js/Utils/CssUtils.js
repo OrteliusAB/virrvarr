@@ -142,11 +142,11 @@ const initializeGraphStyles = (style = {}, styleID, graphContainer) => {
                 }
                 
 			    .virrvarr-floating-node-meta {
-                    display: ${style.common.hideNodeBadgesOnNoHover ? "none" : Env.NODE_BADGES_DEFAULT_DISPLAY};
+                    display: ${style.common.hideNodeBadgesOnNoHover ? "none" : "var(--virrvarr-content-display, block)"} !important;
                 }
 
-                g > .virrvarr-floating-node-meta {
-                    display: block;
+                .node:hover .virrvarr-floating-node-meta {
+                    display: ${style.common.hideNodeBadgesOnNoHover ? "block" : "var(--virrvarr-content-display, block)"} !important;
                 }
                 
                 .virrvarr-node-edge-counter-badge-text {
@@ -170,8 +170,9 @@ const initializeGraphStyles = (style = {}, styleID, graphContainer) => {
                 }
 
                 .virrvarr g #node-container .node g,
+                .virrvarr g #node-container .node image,
                 .virrvarr g #label-container .label g {
-                    display: var(--virrvarr-content-display, block)
+                    display: var(--virrvarr-content-display, block);
                 }
 
                 /* Default edge style */

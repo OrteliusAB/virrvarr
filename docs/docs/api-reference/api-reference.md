@@ -169,6 +169,8 @@ setMultiSelectMode   |   Function<(isEnabled)>   |   Sets the multi select mode 
 setMultiSelectDragMode   |   Function<(isEnabled)>   |   Sets the multi select drag mode of the graph
 setRotateLabels   |   Function<(isEnabled)>   |   Toggles if edge labels should be rotated
 setGrid   |   Function<("primary"|"secondary"|boolean)>   |   Toggles the background grid
+getNodes   |   Function<(onlyLiveData)>   |   Retrieves nodes from the graph.
+getEdges   |   Function<(onlyLiveData)>   |   Retrieves edges from the graph.
 implodeOrExplodeNode   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction) isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeLeafs   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), but only if the nodes do not branch out any further (i.e. have any TO connections). isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeRecursive   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), and then recursively continues until it hits the end of the tree. isImplode indicates if it is a implode or explode operation

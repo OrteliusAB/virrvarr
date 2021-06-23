@@ -49,7 +49,7 @@ export class Virrvarr {
 
 		/* Init user input */
 		this._options = Object.assign.apply(Object, [{}].concat(options))
-		this._style = inputData.style ? JSON.parse(JSON.stringify(inputData.style)) : {}
+		this._style = inputData.style ? inputData.style : {}
 
 		/* Init EventEmitter */
 		this._ee = new EventEmitter()
@@ -407,10 +407,28 @@ export class Virrvarr {
 	 */
 	updateDataset(newDataset) {
 		if (newDataset.style) {
-			this._style = JSON.parse(JSON.stringify(newDataset.style))
+			this._style = newDataset.style ? newDataset.style : {}
 			this._ee.trigger(EventEnum.STYLE_UPDATE_REQUESTED, this._style)
 		}
 		this._ee.trigger(EventEnum.DATA_UPDATE_REQUESTED, newDataset.nodes, newDataset.edges)
+	}
+
+	/**
+	 * Returns nodes in the data store
+	 * @param {boolean} - Only include live nodes?
+	 * @returns All nodes in the data store
+	 */
+	getNodes(onlyLiveData = false) {
+		return onlyLiveData ? this._datastore.liveNodes : this._datastore.allNodes
+	}
+
+	/**
+	 * Returns edges in the data store
+	 * @param {boolean} - Only include live nodes?
+	 * @returns All edges in the data store
+	 */
+	getEdges(onlyLiveData = false) {
+		return onlyLiveData ? this._datastore.liveEdges : this._datastore.allEdges
 	}
 
 	/**
