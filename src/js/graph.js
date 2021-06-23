@@ -32,6 +32,7 @@ export class Virrvarr {
 	 * @param {number} options.markerSize - Size in px of the markers at the ends of edges.
 	 * @param {boolean=} options.enableOnionOnFocus - Should nodes and edge labels get an onion border on focus (selection)?
 	 * @param {boolean=} options.enableOnionOnHover - Should nodes and edge labels get an onion border on hover?
+	 * @param {boolean=} options.enableEdgeOnion - Should edge labels also get a onion border?
 	 * @param {number=} options.onionNumberOfLayers - How many layers should onion borders have by default?
 	 * @param {string=} options.onionBaseColor - What should the base color be of the onion borders?
 	 * @param {number=} options.onionLayerSize - How big should each layer in the onion border be by default?

@@ -139,6 +139,7 @@ markerSize   |   Number
 lineType   |   String
 enableOnionOnFocus   |   Boolean
 enableOnionOnHover   |   Boolean
+enableEdgeOnion   |   Boolean
 onionNumberOfLayers   |   Number
 onionBaseColor   |   String {Measurement}
 onionLayerSize   |   Number

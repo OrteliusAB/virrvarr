@@ -31,6 +31,9 @@ export default class Highlighter {
 		this.ee.on(EventEnum.LASSO_MODE_TOGGLED, isEnabled => (this.isLassoActive = isEnabled))
 		this.ee.on(EventEnum.HOVER_ENTITY, data => {
 			if (this.enableOnionOnHover) {
+				if (!this.enableEdgeOnion && data.direction) {
+					return
+				}
 				const nodeElementNode = d3.select(this.graphContainerElement).select(`[id='${data.id}']`)
 				//If an edge label has been hovered then it then we have to dig a bit more:
 				const nodeElementLabel = d3
@@ -60,6 +63,7 @@ export default class Highlighter {
 
 		this.enableOnionOnFocus = typeof userDefinedOptions.enableOnionOnFocus === "boolean" ? userDefinedOptions.enableOnionOnFocus : Env.ENABLE_ONION_ON_FOCUS
 		this.enableOnionOnHover = typeof userDefinedOptions.enableOnionOnHover === "boolean" ? userDefinedOptions.enableOnionOnHover : Env.ENABLE_ONION_ON_HOVER
+		this.enableEdgeOnion = typeof userDefinedOptions.enableEdgeOnion === "boolean" ? userDefinedOptions.enableEdgeOnion : Env.ENABLE_EDGE_ONION
 		this.onionNumberOfLayers = userDefinedOptions.onionNumberOfLayers ? userDefinedOptions.onionNumberOfLayers : Env.DEFAULT_ONION_LAYERS
 		this.onionBaseColor = userDefinedOptions.onionBaseColor ? userDefinedOptions.onionBaseColor : Env.DEFAULT_ONION_COLOR
 		this.onionLayerSize = userDefinedOptions.onionLayerSize ? userDefinedOptions.onionLayerSize : Env.DEFAULT_ONION_SIZE
@@ -201,7 +205,9 @@ export default class Highlighter {
 			const focusedState = label.classed("focused")
 			label.classed("focused", !focusedState)
 			if (this.enableOnionOnFocus && !(this.enableOnionOnHover && label.node().matches(":hover"))) {
-				this.toggleOnionBorder(label.node(), this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
+				if (this.enableEdgeOnion) {
+					this.toggleOnionBorder(label.node(), this.onionLayerSize, this.onionBaseColor, this.onionNumberOfLayers)
+				}
 			}
 			d3.select(this.graphContainerElement)
 				.selectAll(`marker[id$="${entityID}${isFrom ? "inverse" : ""}"]`)
