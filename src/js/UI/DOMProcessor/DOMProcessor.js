@@ -295,6 +295,7 @@ export default class DOMProcessor {
 							if (!this.pinMode) {
 								node.unPin()
 							}
+							this.rootG.select(`[id='pin-${node.id}']`).remove()
 							this.drawPinBadgeForNode(node)
 							this.ee.trigger(EventEnum.NODE_DRAG_ENDED, node)
 						}
