@@ -10,6 +10,7 @@ import * as d3 from "d3"
 const treemapForce = (groupBy, width, height, strength) => {
 	const computeGroup = groupBy ? (typeof groupBy === "string" ? node => node[groupBy] : node => groupBy(node.data)) : node => node.type
 	let nodes = []
+	let element
 	let treemapWidth = width
 	let treemapHeight = height
 	let halfTreemapWidth
@@ -32,6 +33,10 @@ const treemapForce = (groupBy, width, height, strength) => {
 				node.vy -= (node.y - centerY) * l
 			})
 		})
+	}
+
+	force.element = newElement => {
+		element = newElement
 	}
 
 	const getWidth = node => (node.radius ? node.radius * 2 : node.width)
@@ -166,8 +171,8 @@ const treemapForce = (groupBy, width, height, strength) => {
 		}))
 
 		//Not sure if this code should be located here in the long run, but for now
-		d3.select(treemapForce.element).selectAll("*").remove()
-		d3.select(treemapForce.element)
+		d3.select(element).selectAll("*").remove()
+		d3.select(element)
 			.selectAll(".treemap-zone")
 			.data(treemap)
 			.enter()

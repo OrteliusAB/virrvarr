@@ -7,6 +7,8 @@ import BaryCenter from "./BaryCenter"
  */
 const tableForce = (headers = [], getData) => {
 	let nodes = []
+	let element
+	let edges
 	let maxHeight = 0
 	let maxWidth = 0
 	let totalSideLength = 0
@@ -21,17 +23,25 @@ const tableForce = (headers = [], getData) => {
 		}
 	}
 
+	force.element = newElement => {
+		element = newElement
+	}
+
+	force.edges = newEdges => {
+		edges = newEdges
+	}
+
 	const getWidth = node => (node.radius ? node.radius * 2 : node.width)
 	const getHeight = node => (node.radius ? node.radius * 2 : node.height)
 
 	force.initialize = newNodes => {
-		nodes = BaryCenter(newNodes, tableForce.edges)
+		nodes = BaryCenter(newNodes, edges)
 		maxHeight = nodes.reduce((acc, node) => Math.max(acc, getHeight(node)), 0) + 20
 		maxWidth = nodes.reduce((acc, node) => Math.max(acc, getWidth(node)), 0) + 20
 		totalSideLength = maxHeight * nodes.length
 		heightOffset = totalSideLength / 2
 
-		const selector = d3.select(tableForce.element)
+		const selector = d3.select(element)
 		selector.selectAll("*").remove()
 		const mainGroup = selector.append("g")
 		const nodeData = nodes.map(node => getData(node.data))

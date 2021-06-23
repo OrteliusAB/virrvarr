@@ -11,6 +11,7 @@ const clusterForce = (groupBy, strength, showOutline = false) => {
 	const power = strength ? strength : 0.7
 	let groups = []
 	let nodes = []
+	let element
 	const BORDER_PADDING = 200
 
 	const computeCentroid = nodes => {
@@ -52,13 +53,17 @@ const clusterForce = (groupBy, strength, showOutline = false) => {
 					nodeEndX > xEnd && (xEnd = nodeEndX)
 					nodeEndY > yEnd && (yEnd = nodeEndY)
 				})
-				const g = d3.select(clusterForce.element).select(`[class="${index}"]`)
+				const g = d3.select(element).select(`[class="${index}"]`)
 				g.attr("transform", `translate(${xStart - BORDER_PADDING / 2}, ${yStart - BORDER_PADDING / 2})`)
 					.select("rect")
 					.attr("height", yEnd - yStart + BORDER_PADDING)
 				g.selectAll("rect").attr("width", xEnd - xStart + BORDER_PADDING)
 			})
 		}
+	}
+
+	force.element = newElement => {
+		element = newElement
 	}
 
 	force.initialize = newNodes => {
@@ -73,9 +78,9 @@ const clusterForce = (groupBy, strength, showOutline = false) => {
 			}
 		})
 		if (showOutline) {
-			d3.select(clusterForce.element).selectAll("*").remove()
+			d3.select(element).selectAll("*").remove()
 			Array.from(newGroups.keys()).forEach((key, index) => {
-				const g = d3.select(clusterForce.element).append("g").classed(index, true)
+				const g = d3.select(element).append("g").classed(index, true)
 				g.append("rect").attr("stroke-width", "4px").attr("stroke", "#000000").attr("fill", "none")
 				g.append("rect").attr("stroke-width", "4px").attr("stroke", "#000000").attr("fill", "#f7f7f7").attr("y", -35).attr("height", 35)
 				g.append("text")

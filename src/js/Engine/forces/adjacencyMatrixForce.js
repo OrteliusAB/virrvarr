@@ -5,6 +5,8 @@ import BaryCenter from "./BaryCenter"
  */
 const adjacencyMatrixForce = () => {
 	let nodes = []
+	let element
+	let edges
 	let maxHeight = 0
 	let size = 0
 	let totalSideLength = 0
@@ -18,11 +20,19 @@ const adjacencyMatrixForce = () => {
 		}
 	}
 
+	force.element = newElement => {
+		element = newElement
+	}
+
+	force.edges = newEdges => {
+		edges = newEdges
+	}
+
 	const getWidth = node => (node.radius ? node.radius * 2 : node.width)
 	const getHeight = node => (node.radius ? node.radius * 2 : node.height)
 
 	force.initialize = newNodes => {
-		nodes = BaryCenter(newNodes, adjacencyMatrixForce.edges)
+		nodes = BaryCenter(newNodes, edges)
 		const maxWidth = nodes.reduce((acc, node) => Math.max(acc, getWidth(node)), 0)
 		maxHeight = nodes.reduce((acc, node) => Math.max(acc, getHeight(node)), 0)
 		size = Math.max(maxWidth, maxHeight)
@@ -35,14 +45,14 @@ const adjacencyMatrixForce = () => {
 		for (let i = 0; i < nodes.length; i++) {
 			matrix.push(new Array(nodes.length).fill(0))
 		}
-		adjacencyMatrixForce.edges.forEach(edge => {
+		edges.forEach(edge => {
 			matrix[indexMap.get(edge.sourceNode)][indexMap.get(edge.targetNode)] = 1
 		})
 
 		const startX = -offset - size / 2
 		const startY = -offset
 
-		const selector = d3.select(adjacencyMatrixForce.element)
+		const selector = d3.select(element)
 		selector.selectAll("*").remove()
 		const highlightGroup = selector.append("g")
 		const edgeGroup = selector.append("g")

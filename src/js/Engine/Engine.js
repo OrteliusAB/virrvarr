@@ -230,12 +230,21 @@ export default class Engine {
 			console.error("Force already exists: ", id)
 			return
 		}
-		const layoutGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
-		layoutGroup.id = id
-		this.layoutElement.appendChild(layoutGroup)
-		forceFunction.element = layoutGroup
-		forceFunction.edges = this.edges
-		this.forceMap.set(id, forceFunction)
+		const forceWrapper = (...args) => {
+			const force = forceFunction(...args)
+			if (force.element) {
+				const layoutGroup = document.createElementNS("http://www.w3.org/2000/svg", "g")
+				layoutGroup.id = id
+				this.layoutElement.appendChild(layoutGroup)
+				force.element(layoutGroup)
+			}
+			if (force.edges) {
+				force.edges(this.edges)
+			}
+			return force
+		}
+		this.forceMap.set(id, forceWrapper)
+		return forceWrapper
 	}
 
 	/**
