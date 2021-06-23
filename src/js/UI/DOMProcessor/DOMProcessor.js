@@ -548,7 +548,7 @@ export default class DOMProcessor {
 		//Timeout the sorting to save CPU cycles, and stop a sorting from taking place if the mouse just passed by
 		this.handleHoverEvent(edgeData, "enter", direction)
 		setTimeout(() => {
-			const marker = this.rootG.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`).select("path")
+			const marker = this.rootG.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`).select("path, text")
 			if (marker._groups[0].length > 0 && marker.classed("hovered")) {
 				//Sort the labels which brings the hovered one to the foreground
 				this.rootG.selectAll(".label").sort((a, b) => {
