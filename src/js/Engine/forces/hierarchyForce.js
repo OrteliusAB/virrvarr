@@ -72,6 +72,7 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = fa
 			.map(key => newGroups[key])
 		halfSize = ((groups.length - 1) * offsetDistance) / 2
 		groupHalfLineDistance = groups.map(group => group.length * lineDistance)
+		lineDistance *= 1.5
 	}
 
 	return force

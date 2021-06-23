@@ -220,6 +220,14 @@ export class Virrvarr {
 	}
 
 	/**
+	 * Sets the maximum distance for which to compute charge force between nodes.
+	 * @param {number} distance - Maximum distance to compute charge force for
+	 */
+	setNodeChargeMaxDistance(distance) {
+		this._engine.setMaxDistanceCharge(distance)
+	}
+
+	/**
 	 * Removes the bounding box from the graph if present
 	 */
 	clearBoundingBox() {

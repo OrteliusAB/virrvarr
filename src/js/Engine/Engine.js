@@ -78,6 +78,7 @@ export default class Engine {
 				return this.getEdgeDistance(edge)
 			})
 			.strength(Env.EDGE_STRENGTH)
+		this.manyBodyForce = d3.forceManyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE).theta(1.1)
 		this.forceMap = new Map()
 		this.registerForce("boundingBox", boundingBoxForce)
 		this.registerForce("cluster", clusterForce)
@@ -106,7 +107,7 @@ export default class Engine {
 	initializeSimulation() {
 		return d3
 			.forceSimulation()
-			.force("charge", d3.forceManyBody().strength(Env.CHARGE).distanceMax(Env.CHARGE_MAX_DISTANCE).theta(1.1))
+			.force("charge", this.manyBodyForce)
 			.force(
 				"collide",
 				d3
@@ -142,6 +143,10 @@ export default class Engine {
 		this.simulation.force("boundingbox", null)
 		this.alpha(1)
 		this.restart()
+	}
+
+	setMaxDistanceCharge(value) {
+		this.manyBodyForce.distanceMax(value ? value : Env.CHARGE_MAX_DISTANCE)
 	}
 
 	setLayout(layout, options) {

@@ -158,6 +158,7 @@ updateDataset   |   Function<(newDataset)>   |   This function updates the datas
 resetZoom   |   Function<()>   |   Resets the zoom its initial position
 zoomToNode   |   Function<(nodeID)>   |   Zooms in on a specific node in the graph
 setBoundingBox   |   Function<(width, height)>   |   Sets a bounding box for the graph
+setNodeChargeMaxDistance   |   Function<(distance)>   |   Sets the maximum distance for which to compute charge force between nodes.
 clearBoundingBox   |   Function<()>   |   Clears the bounding box for the graph
 setLayout   |   Function<(type, config)>   |   Sets a new graph layout
 resetLayout   |   Function<()>   |   Resets the graph layout to the default layout
