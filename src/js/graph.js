@@ -310,20 +310,22 @@ export class Virrvarr {
 	 * Implodes/explodes all nodes one step out from the provided node.
 	 * @param {string} nodeID - ID of the node
 	 * @param {boolean} isImplode - If true this is an implode operation, if false this is an explode operation
+	 * @param {"to"|"from"|"both"} direction - Direction in which to carry out the operation
 	 * @return {void}
 	 */
-	implodeOrExplodeNode(nodeID, isImplode) {
-		this._ee.trigger(EventEnum.IMPLODE_EXPLODE_REQUESTED, nodeID, isImplode)
+	implodeOrExplodeNode(nodeID, isImplode, direction) {
+		this._ee.trigger(EventEnum.IMPLODE_EXPLODE_REQUESTED, nodeID, isImplode, direction)
 	}
 
 	/**
 	 * Implodes/explodes all leaf nodes one step out from the provided node. I.e. nodes that have no further connections.
 	 * @param {string} nodeID - ID of the node
 	 * @param {boolean} isImplode - If true this is an implode operation, if false this is an explode operation
+	 * @param {"to"|"from"|"both"} direction - Direction in which to carry out the operation
 	 * @return {void}
 	 */
-	implodeOrExplodeNodeLeafs(nodeID, isImplode) {
-		this._ee.trigger(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, nodeID, isImplode)
+	implodeOrExplodeNodeLeafs(nodeID, isImplode, direction) {
+		this._ee.trigger(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, nodeID, isImplode, direction)
 	}
 
 	/**

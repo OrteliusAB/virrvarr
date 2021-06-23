@@ -58,13 +58,13 @@ export default class Datastore {
 			this.updateNumberOfHiddenEdgesOnNodes()
 			this.updateLiveData()
 		})
-		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, (id, isImplode) => {
-			this.implodeOrExplodeNode(id, isImplode)
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_REQUESTED, (id, isImplode, direction) => {
+			this.implodeOrExplodeNode(id, isImplode, direction)
 			this.updateNumberOfHiddenEdgesOnNodes()
 			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
-		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, (id, isImplode) => {
-			this.implodeOrExplodeNodeLeafs(id, isImplode)
+		this.ee.on(EventEnum.IMPLODE_EXPLODE_LEAFS_REQUESTED, (id, isImplode, direction) => {
+			this.implodeOrExplodeNodeLeafs(id, isImplode, direction)
 			this.updateNumberOfHiddenEdgesOnNodes()
 			this.implodeExplodedNodesAnimation(id, isImplode)
 		})
@@ -400,7 +400,9 @@ export default class Datastore {
 				node.hiddenEdgeCount = null
 				return
 			}
-			node.hiddenEdgeCount = this.allEdges.filter(edge => edge.isHidden && !edge.isFiltered && edge.sourceNode === node.id).length
+			node.hiddenEdgeCount = this.allEdges.filter(
+				edge => edge.isHidden && !edge.isFiltered && (edge.sourceNode === node.id || edge.targetNode === node.id)
+			).length
 		})
 	}
 
@@ -437,25 +439,51 @@ export default class Datastore {
 	 * Sets all nodes connected to the provided root node to hidden=true/false (in the TO direction)
 	 * @param {string} rootNodeID - ID of the root node of the operation
 	 * @param {boolean} isImplode - If true this is an implode operation, if false this an explode operation
+	 * @param {"to", "from", "both"} direction - Direction in which to carry out the operation
 	 * @return {object} - Affected nodes and edges
 	 */
-	implodeOrExplodeNode(rootNodeID, isImplode) {
-		const connectedEdges = this.allEdges.filter(edge => edge.sourceNode === rootNodeID)
-		const connectedNodes = connectedEdges.map(edge => edge.targetNode).filter(node => node !== rootNodeID)
-		const collateralEdges = this.allEdges.filter(edge => {
-			if (connectedNodes.includes(edge.sourceNode) && connectedNodes.includes(edge.targetNode)) {
-				//Processed nodes connecting to each other. This should always be included.
-				return true
-			} else if (connectedNodes.includes(edge.sourceNode)) {
-				//Going outwards
-				return this.isNodeLive(this.getNodeByID(edge.targetNode))
-			} else if (connectedNodes.includes(edge.targetNode)) {
-				//Going inwards
-				return this.isNodeLive(this.getNodeByID(edge.sourceNode))
-			} else {
-				return false
-			}
-		})
+	implodeOrExplodeNode(rootNodeID, isImplode, direction = "both") {
+		let connectedEdges
+		let connectedNodes
+		let collateralEdges
+		if (direction === "to" || direction === "both") {
+			connectedEdges = this.allEdges.filter(edge => edge.sourceNode === rootNodeID)
+			connectedNodes = connectedEdges.map(edge => edge.targetNode).filter(node => node !== rootNodeID)
+			collateralEdges = this.allEdges.filter(edge => {
+				if (connectedNodes.includes(edge.sourceNode) && connectedNodes.includes(edge.targetNode)) {
+					//Processed nodes connecting to each other. This should always be included.
+					return true
+				} else if (connectedNodes.includes(edge.sourceNode)) {
+					//Going outwards
+					return this.isNodeLive(this.getNodeByID(edge.targetNode))
+				} else if (connectedNodes.includes(edge.targetNode)) {
+					//Going inwards
+					return this.isNodeLive(this.getNodeByID(edge.sourceNode))
+				} else {
+					return false
+				}
+			})
+		}
+		if (direction === "from" || direction === "both") {
+			connectedEdges = [...connectedEdges, ...this.allEdges.filter(edge => edge.targetNode === rootNodeID)]
+			connectedNodes = [...connectedNodes, ...connectedEdges.map(edge => edge.sourceNode).filter(node => node !== rootNodeID)]
+			collateralEdges = [
+				...this.allEdges.filter(edge => {
+					if (connectedNodes.includes(edge.targetNode) && connectedNodes.includes(edge.sourceNode)) {
+						//Processed nodes connecting to each other. This should always be included.
+						return true
+					} else if (connectedNodes.includes(edge.targetNode)) {
+						//Going outwards
+						return this.isNodeLive(this.getNodeByID(edge.sourceNode))
+					} else if (connectedNodes.includes(edge.sourceNode)) {
+						//Going inwards
+						return this.isNodeLive(this.getNodeByID(edge.targetNode))
+					} else {
+						return false
+					}
+				})
+			]
+		}
 
 		const edges = [...connectedEdges, ...collateralEdges]
 		const nodes = connectedNodes.map(nodeID => this.getNodeByID(nodeID))
@@ -471,15 +499,44 @@ export default class Datastore {
 	 * Sets all nodes connected to the node with the provided ID to hidden=true/false (in the TO direction) where no further branching continues.
 	 * @param {string} rootNodeID - ID of the root node of the operation
 	 * @param {boolean} isImplode - If true this is an implode operation, if false this an explode operation
+	 * @param {"to", "from", "both"} direction - Direction in which to carry out the operation
 	 * @return {object} - Affected nodes and edges
 	 */
-	implodeOrExplodeNodeLeafs(rootNodeID, isImplode) {
-		const connectedEdges = this.allEdges
-			.filter(edge => edge.sourceNode === rootNodeID)
-			.filter(edge => !this.allEdges.find(secondaryEdge => secondaryEdge.sourceNode === edge.targetNode))
-		const connectedNodes = connectedEdges.map(edge => edge.targetNode)
-		const collateralEdges = this.allEdges.filter(edge => connectedNodes.includes(edge.sourceNode) || connectedNodes.includes(edge.targetNode))
-
+	implodeOrExplodeNodeLeafs(rootNodeID, isImplode, direction = "both") {
+		let connectedEdges = []
+		let connectedNodes = []
+		let collateralEdges = []
+		if (direction === "to" || direction === "both") {
+			connectedEdges = this.allEdges
+				.filter(edge => edge.sourceNode === rootNodeID && edge.targetNode !== rootNodeID)
+				.filter(
+					edge =>
+						!this.allEdges.find(
+							secondaryEdge =>
+								secondaryEdge.sourceNode === edge.targetNode || (secondaryEdge.targetNode === edge.targetNode && edge.sourceNode !== rootNodeID)
+						)
+				)
+			connectedNodes = connectedEdges.map(edge => edge.targetNode)
+			collateralEdges = this.allEdges.filter(edge => connectedNodes.includes(edge.sourceNode) || connectedNodes.includes(edge.targetNode))
+		}
+		if (direction === "from" || direction === "both") {
+			const fromConnectedEdges = this.allEdges
+				.filter(edge => edge.targetNode === rootNodeID && edge.sourceNode !== rootNodeID)
+				.filter(
+					edge =>
+						!this.allEdges.find(
+							secondaryEdge =>
+								secondaryEdge.targetNode === edge.sourceNode || (secondaryEdge.sourceNode === edge.sourceNode && edge.targetNode !== rootNodeID)
+						)
+				)
+			const fromConnectedNodes = fromConnectedEdges.map(edge => edge.sourceNode)
+			const fromCollateralEdges = this.allEdges.filter(
+				edge => fromConnectedNodes.includes(edge.sourceNode) || fromConnectedNodes.includes(edge.targetNode)
+			)
+			connectedEdges = [...connectedEdges, ...fromConnectedEdges]
+			connectedNodes = [...connectedNodes, ...fromConnectedNodes]
+			collateralEdges = [...collateralEdges, ...fromCollateralEdges]
+		}
 		const edges = [...connectedEdges, ...collateralEdges]
 		const nodes = connectedNodes.map(nodeID => this.getNodeByID(nodeID))
 

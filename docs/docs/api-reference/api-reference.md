@@ -171,8 +171,8 @@ setRotateLabels   |   Function<(isEnabled)>   |   Toggles if edge labels should 
 setGrid   |   Function<("primary"|"secondary"|boolean)>   |   Toggles the background grid
 getNodes   |   Function<(onlyLiveData)>   |   Retrieves nodes from the graph.
 getEdges   |   Function<(onlyLiveData)>   |   Retrieves edges from the graph.
-implodeOrExplodeNode   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction) isImplode indicates if it is a implode or explode operation
-implodeOrExplodeNodeLeafs   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), but only if the nodes do not branch out any further (i.e. have any TO connections). isImplode indicates if it is a implode or explode operation
+implodeOrExplodeNode   |   Function<(nodeID, isImplode, direction)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the provided direction - "to", "from" or "both") isImplode indicates if it is a implode or explode operation
+implodeOrExplodeNodeLeafs   |   Function<(nodeID, isImplode, direction)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the provided direction), but only if the nodes do not branch out any further (i.e. have any further connections). isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeRecursive   |   Function<(nodeID, isImplode)>   |   Implodes/Explodes nodes directly connected to the given node ID (in the TO direction), and then recursively continues until it hits the end of the tree. isImplode indicates if it is a implode or explode operation
 implodeOrExplodeNodeNonCircular   |   Function<(nodeID, isImplode)>   |   Works very similarly to recursive, but only affects node paths that have no path back to the origin node.
 destroyGraph   |   Function<()>   |   Completely removes the graph and all its components from the DOM, and deletes its content. This is necessary sometimes if working with frontend frameworks.

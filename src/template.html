@@ -397,13 +397,13 @@
                                     {
                                         label: "Implode Node",
                                         action: (data, id) => {
-                                            window.graph.implodeOrExplodeNode(id, true)
+                                            window.graph.implodeOrExplodeNode(id, true, "to")
                                         }
                                     },
                                     {
                                         label: "Implode Node Leafs",
                                         action: (data, id) => {
-                                            window.graph.implodeOrExplodeNodeLeafs(id, true)
+                                            window.graph.implodeOrExplodeNodeLeafs(id, true, "to")
                                         }
                                     },
                                     {
@@ -421,7 +421,7 @@
                                     {
                                         label: "Explode Node",
                                         action: (data, id) => {
-                                            window.graph.implodeOrExplodeNode(id, false)
+                                            window.graph.implodeOrExplodeNode(id, false, "to")
                                         }
                                     },
                                     {
