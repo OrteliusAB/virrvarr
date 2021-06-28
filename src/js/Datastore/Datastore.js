@@ -36,6 +36,7 @@ export default class Datastore {
 		}
 		this.ee = eventEmitter
 		this.ee.on(EventEnum.DATA_UPDATE_REQUESTED, (nodes, edges) => this.updateDataset(nodes, edges))
+		this.ee.on(EventEnum.LOAD_STATE, (nodes, edges) => this.loadState(nodes, edges))
 		this.ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
 			this.entityProcessor.executePreProcessor(this.nodes, this.edges)
 			this.ee.trigger(EventEnum.DATASTORE_UPDATED, this.nodes, this.edges)
@@ -155,6 +156,37 @@ export default class Datastore {
 				edge.id = edgeIndex
 			}
 		})
+	}
+
+	/**
+	 * Loads a state into the data store.
+	 * @param {object[]} newNodes - All nodes to be included in the new data set
+	 * @param {object[]} newEdges - All edges to be included in the new data set
+	 */
+	loadState(newNodes, newEdges) {
+		this.allNodes = newNodes.map(node => {
+			const vvNode = new VVNode()
+			Object.keys(node).forEach(key => {
+				vvNode[key] = node[key]
+			})
+			return vvNode
+		})
+		this.allEdges = newEdges.map(edge => {
+			const vvEdge = new VVEdge()
+			Object.keys(edge).forEach(key => {
+				vvEdge[key] = edge[key]
+			})
+			return vvEdge
+		})
+		this.updateEdgeIDs()
+		this.nodeMap.clear()
+		this.edgeMap.clear()
+		this.allNodes.forEach(node => this.nodeMap.set(node.id, node))
+		this.allEdges.forEach(edge => this.edgeMap.set(edge.id, edge))
+		this.updateHiddenEdges()
+		this.applyFilters()
+		this.updateNumberOfHiddenEdgesOnNodes()
+		this.updateLiveData()
 	}
 
 	/**

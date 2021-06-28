@@ -306,6 +306,8 @@
                     <button class="menu-button menu-button-confirm" onclick="toggleRotateLabels()">Rotate
                         Labels</button>
                     <button class="menu-button menu-button-confirm" onclick="toggleGrid()">Toggle Grid</button>
+                    <button class="menu-button menu-button-confirm" onclick="saveState()">Save State</button>
+                    <button class="menu-button menu-button-confirm" onclick="loadState()">Load State</button>
                     <button class="menu-button menu-button-warning" onclick="destroyGraph()">Destroy
                         Graph</button>
                 </details>
@@ -612,6 +614,18 @@
                 data.nodes[data.nodes.length - 1].name = "DEFAULT NODE"
             }
             window.graph.updateDataset(data)
+        }
+
+        function saveState() {
+            const state = window.graph.saveState()
+            localStorage.setItem("graphstate", JSON.stringify(state))
+        }
+
+        function loadState() {
+            const state = localStorage.getItem("graphstate")
+            if (state) {
+                window.graph.loadState(JSON.parse(state))
+            }
         }
 
         window.addEventListener("keydown", e => {

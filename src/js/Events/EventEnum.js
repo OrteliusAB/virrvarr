@@ -92,6 +92,9 @@ const EVENTS = Object.freeze({
 	// Params: nodes, edges
 	ENGINE_LAYOUT_RESET_REQUESTED: "ENGINE_LAYOUT_RESET_REQUESTED_EVENT",
 
+	// Params: style, nodes, edges
+	LOAD_STATE: "LOAD_STATE_EVENT",
+
 	// Params: N/A
 	GRAPH_HAS_MOUNTED: "GRAPH_HAS_MOUNTED_EVENT",
 	// Params: N/A

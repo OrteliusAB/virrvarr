@@ -446,16 +446,31 @@ export class Virrvarr {
 	 * Exports the graph dataset into a JSON file that can be loaded into the graph at a later time
 	 * @param {boolean} includeOnlyLiveData - Should only live data be included in the export, or the entire dataset?
 	 */
-	saveGraphAsJSON(includeOnlyLiveData) {
+	saveState(includeOnlyLiveData) {
 		if (!this._datastore.allNodes && !this._datastore.allEdges) {
 			return
 		}
-		const data = {
+		const state = {
 			style: this._style,
 			nodes: includeOnlyLiveData ? this._datastore.liveNodes : this._datastore.allNodes,
 			edges: includeOnlyLiveData ? this._datastore.liveEdges : this._datastore.allEdges
 		}
-		return data
+		return state
+	}
+
+	/**
+	 * Loads an exported state of nodes and edges into the graph.
+	 * @param {{style: {}, nodes: {}[], edges: {}[]}} newState
+	 */
+	loadState(newState) {
+		this.updateDataset({
+			style: newState.style,
+			nodes: [],
+			edges: []
+		})
+		this._ee.trigger(EventEnum.LOAD_STATE, newState.nodes, newState.edges, newState.style)
+		this._style = newState.style ? newState.style : {}
+		this._ee.trigger(EventEnum.STYLE_UPDATE_REQUESTED, this._style)
 	}
 
 	/**
