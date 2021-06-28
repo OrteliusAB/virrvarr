@@ -22,6 +22,8 @@ export default class DOMProcessor {
 		this.nodes = []
 		this.edges = []
 		this.selection = null
+		this.hoveredEntity = null
+		this.hoveredDirection = null
 		this.dragSelection = []
 		this.listeningForTick = false
 		this.pinMode = false
@@ -289,7 +291,7 @@ export default class DOMProcessor {
 						this.lastDragX = d3.event.x
 						this.lastDragY = d3.event.y
 					})
-					.on("end", () => {
+					.on("end", d => {
 						for (let i = 0; i < this.dragSelection.length; i++) {
 							const node = this.dragSelection[i]
 							if (!this.pinMode) {
@@ -302,6 +304,13 @@ export default class DOMProcessor {
 						this.dragSelection = []
 						this.lastDragX = 0
 						this.lastDragY = 0
+						//While dragging the hover listeners have been shut off. Reset the selection if necessary.
+						if (d !== this.hoveredEntity) {
+							this.handleHoverEvent(d, "leave")
+							if (this.hoveredEntity) {
+								this.handleHoverEvent(this.hoveredEntity, "enter", this.hoveredDirection)
+							}
+						}
 					})
 			)
 			.each((d, i, c) => {
@@ -532,14 +541,10 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction - Direction of the edge
 	 */
 	labelMouseEnter(edgeData, direction) {
-		if (this.dragSelection.length > 0) {
-			//Do not do anything if a node is being dragged
-			return
-		}
 		const inverse = direction === "from"
 		this.rootG
 			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
-			.select("path")
+			.select("*")
 			.classed("hovered", true)
 		this.rootG
 			.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`)
@@ -571,15 +576,11 @@ export default class DOMProcessor {
 	 * @param {"to"|"from"} direction - Direction of the edge
 	 */
 	labelMouseLeave(edgeData, direction) {
-		if (this.dragSelection.length > 0) {
-			//Do not do anything if a node is being dragged
-			return
-		}
 		this.handleHoverEvent(edgeData, "leave", direction)
 		const inverse = direction === "from"
 		this.rootG
 			.selectAll(`marker[id="${this.getMarkerId(edgeData, inverse)}"]`)
-			.select("path")
+			.select("*")
 			.classed("hovered", false)
 		this.rootG
 			.selectAll(`[class*="${this.getMarkerId(edgeData, inverse)}"]`)
@@ -943,10 +944,12 @@ export default class DOMProcessor {
 	/**
 	 * Handles what happens when an item is hovered
 	 * @param {object} hoveredData - Object that has been hovered
-	 * @param {"enter"|"exit"} eventType - What type of event it is.
+	 * @param {"enter"|"leave"} eventType - What type of event it is.
 	 * @param {"to"|"from"} direction? - If an edge is hovered then this will show the potential direction.
 	 */
 	handleHoverEvent(hoveredData, eventType, direction = undefined) {
+		this.hoveredEntity = eventType === "enter" ? hoveredData : null
+		this.hoveredDirection = eventType === "enter" ? direction : null
 		if (this.dragSelection.length > 0) {
 			//Do not do anything if a node is being dragged
 			return

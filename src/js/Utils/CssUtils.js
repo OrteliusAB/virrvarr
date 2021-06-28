@@ -230,11 +230,11 @@ const initializeGraphStyles = (style = {}, styleID, graphContainer) => {
                 .marker-default path{
                     fill: ${Env.DEFAULT_EDGE_COLOR};
                 }
-                .marker-default path.hovered{
+                .marker-default *.hovered{
                     stroke: ${Env.DEFAULT_LABEL_HOVER_BACKGROUND_COLOR} !important;
                     fill: ${Env.DEFAULT_LABEL_HOVER_BACKGROUND_COLOR} !important;
                 }
-                .marker-default path.focused{
+                .marker-default *.focused{
                     fill: ${Env.DEFAULT_FOCUS_COLOR} !important;
                     stroke: ${Env.DEFAULT_FOCUS_COLOR} !important;
                 }
@@ -421,15 +421,15 @@ const initializeGraphStyles = (style = {}, styleID, graphContainer) => {
                 .marker-${edgeType.id} path{
                     ${edgeType.arrowColor ? `fill:${edgeType.arrowColor};` : ""}
                 }
-                .marker-${edgeType.id} path.hovered{
+                .marker-${edgeType.id} *.hovered{
                     ${edgeType.hoverColor ? `stroke:${edgeType.hoverColor};` : ""}
                     ${edgeType.hoverColor ? `fill:${edgeType.hoverColor};` : ""}
                 }
-                .marker-${edgeType.id} path.focused{
+                .marker-${edgeType.id} *.focused{
                     ${edgeType.focusedColor ? `fill:${edgeType.focusedColor};` : ""}
                     ${edgeType.focusedColor ? `stroke:${edgeType.focusedColor};` : ""}
                 }
-                .marker-${edgeType.id} path.focused.hovered{
+                .marker-${edgeType.id} *.focused.hovered{
                     ${edgeType.focusedHoverColor ? `fill:${edgeType.focusedHoverColor};` : ""}
                     ${edgeType.focusedHoverColor ? `stroke:${edgeType.focusedHoverColor};` : ""}
                 }
