@@ -66,9 +66,7 @@ export default class DOMProcessor {
 			this.computeRelativeNodeAndLabelPositions()
 		})
 		this.ee.on(EventEnum.ENGINE_TICK, () => {
-			if (this.listeningForTick) {
-				requestAnimationFrame(this.tick.bind(this))
-			}
+			this.tick()
 		})
 		this.ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
 			this.listeningForTick = true
