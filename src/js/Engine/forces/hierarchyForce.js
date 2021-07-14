@@ -60,6 +60,7 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = tr
 			orderMeasurement = Math.max(orderMeasurement, computeOrderMeasurement(node))
 		})
 		offsetDistance = levelMeasurement * offsetSizeMultiplier
+		offsetDistance < 500 && (offsetDistance = 500)
 		halfSize = ((groups.length - 1) * offsetDistance) / 2
 		orderMeasurement *= 1.5
 
