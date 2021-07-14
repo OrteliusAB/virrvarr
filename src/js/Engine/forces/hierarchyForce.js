@@ -18,6 +18,7 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = tr
 	let groups = []
 	let offsetDistance = 0
 	let halfSize = 0
+	let halfWidth = 0
 	let orderMeasurement = 0
 	const offsetSizeMultiplier = 4
 
@@ -33,7 +34,7 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = tr
 				}
 				node[parameter] = coordinate
 				if (useLine) {
-					node[lineParameter] = nodeIndex * orderMeasurement
+					node[lineParameter] = nodeIndex * orderMeasurement - halfWidth
 				}
 			})
 		})
@@ -61,7 +62,6 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = tr
 		})
 		offsetDistance = levelMeasurement * offsetSizeMultiplier
 		offsetDistance < 500 && (offsetDistance = 500)
-		halfSize = ((groups.length - 1) * offsetDistance) / 2
 		orderMeasurement *= 1.5
 
 		//Compute level groups
@@ -141,6 +141,8 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = tr
 			}, [])
 
 			groups = hierarchies
+			halfSize = ((groups.length - 1) * offsetDistance) / 2
+			halfWidth = (Math.max(...hierarchies.map(level => level.length)) * orderMeasurement) / 2
 		}
 	}
 
