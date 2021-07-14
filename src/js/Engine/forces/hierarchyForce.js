@@ -93,6 +93,11 @@ const hierarchyForce = (groupBy, useY = true, distance = undefined, useLine = tr
 					return 0
 				})
 				.map(key => newGroups[key])
+			if (useLine) {
+				const [, acyclicEdges] = makeAcyclic(nodes, edges)
+				groups = edgeOrder(groups, acyclicEdges)
+				groups = straightenEdges(groups, [...acyclicEdges])
+			}
 		} else {
 			//Auto compute a hierarchy layout
 			//Compute the sub graphs inside of the graph

@@ -49,12 +49,23 @@ export const edgeOrder = (hierarchy, edges, fakeHierarchy, fakeEdges = []) => {
 	//When it has been determined what node is most likely to need to lie to the left we can recursively check if any other node is better suited
 	//This is necessary because the initial "optimal" node is just an approximation
 	const findLeftOptimality = (index, matrix) => {
-		const foundLeftSums = matrix.map(row => (row.sum[index] > 0 ? row.sum[index] : 0))
-		const maxIndex = foundLeftSums.indexOf(Math.max(...foundLeftSums))
-		if (foundLeftSums[maxIndex] !== 0) {
-			return findLeftOptimality(maxIndex, matrix)
+		let optimalIndex = index
+		let depth = 0
+		while (true) {
+			const foundLeftSums = matrix.map(row => (row.sum[optimalIndex] > 0 ? row.sum[optimalIndex] : 0))
+			const maxIndex = foundLeftSums.indexOf(Math.max(...foundLeftSums))
+			if (foundLeftSums[maxIndex] !== 0) {
+				optimalIndex = maxIndex
+				depth++
+				if (depth > 9999) {
+					//This will be as near optimal as it.
+					break
+				}
+				continue
+			}
+			break
 		}
-		return index
+		return optimalIndex
 	}
 
 	//Order scan is from start level to end level
@@ -62,29 +73,23 @@ export const edgeOrder = (hierarchy, edges, fakeHierarchy, fakeEdges = []) => {
 	//This loop could probably be made faster in the future.
 	const orderHierarchyLevels = (hierarchy, isReverse = false) => {
 		hierarchy.forEach((level, levelIndex) => {
+			const nodeSourceIndexMap = new Map(level.map(node => [node.id, []]))
+			allEdges.forEach(edge => {
+				if (!isReverse && nodeSourceIndexMap.has(edge.targetNode)) {
+					nodeSourceIndexMap.get(edge.targetNode).push(findNodeIndexInLevel(edge.sourceNode))
+				} else if (isReverse && nodeSourceIndexMap.has(edge.sourceNode)) {
+					nodeSourceIndexMap.get(edge.sourceNode).push(findNodeIndexInLevel(edge.targetNode))
+				}
+			})
 			const matrix = level.map(node => {
-				const nodeSourceIndexes = allEdges.reduce((acc, edge, index) => {
-					if (!isReverse && edge.targetNode === node.id) {
-						acc.push(findNodeIndexInLevel(edge.sourceNode))
-					} else if (isReverse && edge.sourceNode === node.id) {
-						acc.push(findNodeIndexInLevel(edge.targetNode))
-					}
-					return acc
-				}, [])
+				const nodeSourceIndexes = nodeSourceIndexMap.get(node.id)
 				return {
 					node,
 					sum: level.map(neighbourNode => {
 						if (neighbourNode.id === node.id) {
 							return 0
 						}
-						const neighbourSourceIndexes = allEdges.reduce((acc, edge, index) => {
-							if (!isReverse && edge.targetNode === neighbourNode.id) {
-								acc.push(findNodeIndexInLevel(edge.sourceNode))
-							} else if (isReverse && edge.sourceNode === neighbourNode.id) {
-								acc.push(findNodeIndexInLevel(edge.targetNode))
-							}
-							return acc
-						}, [])
+						const neighbourSourceIndexes = nodeSourceIndexMap.get(neighbourNode.id)
 						//These parameters describe the penalty of being to the left / right of the neighbour in terms of crossings
 						let nodeIsToTheLeft = 0
 						let nodeIsToTheRight = 0
