@@ -1,5 +1,5 @@
 import * as d3 from "d3"
-import BaryCenter from "./BaryCenter"
+import BaryCenter from "../../Utils/Algorithms/BaryCenter"
 /**
  * Creates an adjacency matrix of nodes and their edges ordered by barycenter
  */
@@ -69,26 +69,6 @@ const adjacencyMatrixForce = () => {
 					.attr("x", startX + size * j)
 					.attr("y", startY + size * i)
 					.attr("style", "fill:transparent;stroke:none;")
-					.on("mouseover", function () {
-						d3.select(this.parentNode).selectAll(".adjacency-matrix-line").attr("style", "fill:white; opacity: 0.5;pointer-events:none;")
-					})
-					.on("mouseout", function () {
-						d3.select(this.parentNode).selectAll(".adjacency-matrix-line").attr("style", "fill:transparent;pointer-events:none;")
-					})
-				g.append("rect")
-					.attr("class", "adjacency-matrix-line")
-					.attr("width", size * nodes.length)
-					.attr("height", size)
-					.attr("x", startX)
-					.attr("y", startY + i * size)
-					.attr("style", "fill:transparent;pointer-events:none;")
-				g.append("rect")
-					.attr("class", "adjacency-matrix-line")
-					.attr("width", size)
-					.attr("height", nodes.length * size)
-					.attr("x", startX + j * size)
-					.attr("y", startY)
-					.attr("style", "fill:transparent;pointer-events:none;")
 				edgeGroup
 					.append("rect")
 					.attr("width", size)

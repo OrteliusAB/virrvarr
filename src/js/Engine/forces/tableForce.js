@@ -1,5 +1,5 @@
 import * as d3 from "d3"
-import BaryCenter from "./BaryCenter"
+import BaryCenter from "../../Utils/Algorithms/BaryCenter"
 /**
  * Creates an adjacency matrix of nodes and their edges and orders them by barycenter
  * @param {string[]} headers - Array of headers to be used for the table. Can be blank strings, but must be included!
