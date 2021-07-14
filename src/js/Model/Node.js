@@ -68,6 +68,12 @@ export default class VVNode {
 		if (typeof isHidden === "boolean") {
 			this.isHidden = isHidden
 		}
+		this.shape = null
+		this.radius = null
+		this.width = null
+		this.height = null
+		this.relativeWidth = null
+		this.relativeheight = null
 	}
 
 	/**
