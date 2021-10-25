@@ -73,8 +73,8 @@ export class Virrvarr {
 		this._ee.on(EventEnum.GRAPH_HAS_MOUNTED, () => {
 			if (inputData.nodes.length > 0) {
 				this._engine.enableCenterForce()
-				setTimeout(() => this._UI.zoomHandler.resetZoom(), 300)
-				setTimeout(() => this._engine.disableCenterForce(), 4000)
+				setTimeout(() => this._engine && this._UI.zoomHandler.resetZoom(), 300)
+				setTimeout(() => this._engine && this._engine.disableCenterForce(), 4000)
 			}
 		})
 		this._ee.trigger(EventEnum.GRAPH_HAS_MOUNTED)
