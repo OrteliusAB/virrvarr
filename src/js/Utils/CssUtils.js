@@ -9,6 +9,10 @@ const initializeGraphStyles = (style = {}, styleID, graphContainer) => {
 	let cssString = ""
 	cssString = /*css*/ `
                 /* Global */
+                svg {
+                    display: block;
+                }
+
                 .virrvarr * {
                     transition: fill 0.1s, opacity 0.1s;
                     user-select: none;
