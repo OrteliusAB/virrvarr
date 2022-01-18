@@ -592,7 +592,7 @@ export default class Datastore {
 	implodeOrExplodeNodeRecursive(nodeID, isImplode, processedNodeIDs = []) {
 		if (!processedNodeIDs.includes(nodeID)) {
 			processedNodeIDs.push(nodeID)
-			const { updatedNodes } = this.implodeOrExplodeNode(nodeID, isImplode)
+			const { updatedNodes } = this.implodeOrExplodeNode(nodeID, isImplode, "to")
 			updatedNodes.forEach(node => this.implodeOrExplodeNodeRecursive(node.id, isImplode, processedNodeIDs))
 		}
 	}
