@@ -103,38 +103,32 @@ export default class EntityProcessor {
 		edges.forEach(edge => {
 			//Multi edge counter
 			let i = 0
-			if (isNaN(edge.multiEdgeCount)) {
-				const sameEdges = []
-
-				edges.forEach(otherEdge => {
-					if (
-						(edge.source === otherEdge.source && edge.target === otherEdge.target) ||
-						(edge.target === otherEdge.source && edge.source === otherEdge.target)
-					) {
-						sameEdges.push(otherEdge)
-					}
-				})
-
-				for (i = 0; i < sameEdges.length; i++) {
-					sameEdges[i].multiEdgeCount = sameEdges.length
-					sameEdges[i].multiEdgeIndex = i
+			const sameEdges = []
+			edges.forEach(otherEdge => {
+				if (
+					(edge.source === otherEdge.source && edge.target === otherEdge.target) ||
+					(edge.target === otherEdge.source && edge.source === otherEdge.target)
+				) {
+					sameEdges.push(otherEdge)
 				}
+			})
+
+			for (i = 0; i < sameEdges.length; i++) {
+				sameEdges[i].multiEdgeCount = sameEdges.length
+				sameEdges[i].multiEdgeIndex = i
 			}
 
 			//Self edge counter
-			if (isNaN(edge.selfEdgeCount)) {
-				const selfEdges = []
-
-				edges.forEach(otherEdge => {
-					if (edge.source === otherEdge.source && edge.target === otherEdge.target) {
-						selfEdges.push(otherEdge)
-					}
-				})
-
-				for (i = 0; i < selfEdges.length; i++) {
-					selfEdges[i].selfEdgeCount = selfEdges.length
-					selfEdges[i].selfEdgeIndex = i
+			const selfEdges = []
+			edges.forEach(otherEdge => {
+				if (edge.source === otherEdge.source && edge.target === otherEdge.target) {
+					selfEdges.push(otherEdge)
 				}
+			})
+
+			for (i = 0; i < selfEdges.length; i++) {
+				selfEdges[i].selfEdgeCount = selfEdges.length
+				selfEdges[i].selfEdgeIndex = i
 			}
 		})
 	}
