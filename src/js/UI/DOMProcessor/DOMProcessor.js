@@ -330,7 +330,7 @@ export default class DOMProcessor {
 	 * Removes all floating meta data badges and pins
 	 */
 	clearAllFloatingNodeMetaData() {
-		this.rootG.select(".virrvarr-floating-node-meta").remove()
+		this.rootG.selectAll(".virrvarr-floating-node-meta").remove()
 	}
 
 	/**
