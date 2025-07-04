@@ -21,15 +21,15 @@ export default class ZoomHandler {
 		this.ee.on(EventEnum.GRAPH_WILL_UNMOUNT, () => this.destroy())
 		this.zoom = d3
 			.zoom()
-			.filter(() => !d3.event.ctrlKey && !d3.event.button && !this.isLassoEnabled) //Necessary to stop d3.zoom from grabbing the event.
+			.filter(event => !this.isLassoEnabled && !event.ctrlKey && !event.button) //Necessary to stop d3.zoom from grabbing the event.
 			.scaleExtent(Env.SCALE_EXTENT)
-			.on("zoom", () => {
-				d3.select(this.graphContainerElement).select("g").attr("transform", d3.event.transform)
+			.on("zoom", event => {
+				d3.select(this.graphContainerElement).select("g").attr("transform", event.transform)
 				if (this.enableScaleGridOnZoom) {
-					d3.select(this.graphContainerElement).select(".grid").attr("transform", d3.event.transform)
+					d3.select(this.graphContainerElement).select(".grid").attr("transform", event.transform)
 				}
 				if (this.hideDetailsZoomScale) {
-					if (d3.event.transform.k < this.hideDetailsZoomScale) {
+					if (event.transform.k < this.hideDetailsZoomScale) {
 						if (!this.isDetailsHidden) {
 							this.graphContainerElement.style.setProperty("--virrvarr-content-display", "none")
 							this.isDetailsHidden = true

@@ -9,6 +9,11 @@ export default class Tooltip {
 		this.graphContainerElement = graphContainerElement
 		this.ee = eventEmitter
 		this.tooltip = this.initializeTooltip()
+		if (!this.pointerEvent) {
+			this.graphContainerElement.addEventListener("mousemove", event => {
+				this.pointerEvent = event
+			})
+		}
 		this.ee.on(EventEnum.MOUSE_OVER_NODE, node => {
 			this.showTooltip(node)
 		})
@@ -30,7 +35,10 @@ export default class Tooltip {
 	 * @param {object} node - The node object where the tooltip should be
 	 */
 	showTooltip(node) {
-		const coordinates = d3.mouse(document.documentElement)
+		if (!this.pointerEvent) {
+			return
+		}
+		const coordinates = d3.pointer(this.pointerEvent, document.documentElement)
 		this.tooltip
 			.style("left", coordinates[0] - window.pageXOffset + "px")
 			.style("top", coordinates[1] + 20 - window.pageYOffset + "px")

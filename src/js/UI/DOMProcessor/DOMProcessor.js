@@ -259,8 +259,8 @@ export default class DOMProcessor {
 			.call(
 				d3
 					.drag()
-					.filter(() => !d3.event.button) //By default the filter will block the event if ctrl is down.
-					.on("start", d => {
+					.filter(event => !event.button) //By default the filter will block the event if ctrl is down.
+					.on("start", (event, d) => {
 						if (
 							this.isMultiSelecDragtModeEnabled &&
 							this.selection &&
@@ -276,20 +276,20 @@ export default class DOMProcessor {
 							this.ee.trigger(EventEnum.NODE_DRAG_START, this.dragSelection[i])
 							this.dragSelection[i].pin(this.dragSelection[i].x, this.dragSelection[i].y)
 						}
-						this.lastDragX = d3.event.x
-						this.lastDragY = d3.event.y
+						this.lastDragX = event.x
+						this.lastDragY = event.y
 					})
-					.on("drag", () => {
+					.on("drag", event => {
 						for (let i = 0; i < this.dragSelection.length; i++) {
 							this.ee.trigger(EventEnum.NODE_DRAG_DRAGGED, this.dragSelection[i])
-							const newX = this.dragSelection[i].fx + d3.event.x - this.lastDragX
-							const newY = this.dragSelection[i].fy + d3.event.y - this.lastDragY
+							const newX = this.dragSelection[i].fx + event.x - this.lastDragX
+							const newY = this.dragSelection[i].fy + event.y - this.lastDragY
 							this.dragSelection[i].pin(newX, newY)
 						}
-						this.lastDragX = d3.event.x
-						this.lastDragY = d3.event.y
+						this.lastDragX = event.x
+						this.lastDragY = event.y
 					})
-					.on("end", d => {
+					.on("end", (event, d) => {
 						for (let i = 0; i < this.dragSelection.length; i++) {
 							const node = this.dragSelection[i]
 							if (!this.pinMode) {
@@ -504,10 +504,10 @@ export default class DOMProcessor {
 			.attr("y", -Env.LABEL_HEIGHT / 2)
 			.attr("width", width)
 			.attr("height", Env.LABEL_HEIGHT)
-			.on("mouseenter", edgeData => {
+			.on("mouseenter", (event, edgeData) => {
 				this.labelMouseEnter(edgeData, direction)
 			})
-			.on("mouseleave", edgeData => {
+			.on("mouseleave", (event, edgeData) => {
 				this.labelMouseLeave(edgeData, direction)
 			})
 	}
@@ -669,16 +669,16 @@ export default class DOMProcessor {
 				console.error("NO SHAPE FOUND FOR NODE")
 		}
 		element
-			.on("mouseenter", d => {
+			.on("mouseenter", (event, d) => {
 				this.handleHoverEvent(d, "enter")
 			})
-			.on("mouseleave", d => {
+			.on("mouseleave", (event, d) => {
 				this.handleHoverEvent(d, "leave")
 			})
-			.on("mousemove", d => {
+			.on("mousemove", (event, d) => {
 				this.ee.trigger(EventEnum.MOUSE_OVER_NODE, d)
 			})
-			.on("mouseout", d => {
+			.on("mouseout", (event, d) => {
 				this.ee.trigger(EventEnum.MOUSE_LEFT_NODE, d)
 			})
 		this.drawTextBlock(contentGroupElement, textAnchor)
@@ -862,8 +862,8 @@ export default class DOMProcessor {
 		let timeout = null
 		this.rootG
 			.selectAll(".node")
-			.on("click", d => {
-				d3.event.stopPropagation()
+			.on("click", (event, d) => {
+				event.stopPropagation()
 				clearTimeout(timeout)
 				timeout = setTimeout(() => {
 					this.ee.trigger(EventEnum.CLICK_ENTITY, {
@@ -872,23 +872,23 @@ export default class DOMProcessor {
 					})
 				}, Env.DOUBLE_CLICK_THRESHOLD)
 			})
-			.on("dblclick", d => {
-				d3.event.stopPropagation()
+			.on("dblclick", (event, d) => {
+				event.stopPropagation()
 				clearTimeout(timeout)
 				this.ee.trigger(EventEnum.DBL_CLICK_ENTITY, {
 					id: d.id,
 					data: d.data
 				})
 			})
-			.on("contextmenu", d => {
-				d3.event.preventDefault()
-				d3.event.stopPropagation()
+			.on("contextmenu", (event, d) => {
+				event.preventDefault()
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.RIGHT_CLICK_ENTITY, d)
 			})
 		this.rootG
 			.selectAll(".label .from")
-			.on("click", d => {
-				d3.event.stopPropagation()
+			.on("click", (event, d) => {
+				event.stopPropagation()
 				clearTimeout(timeout)
 				timeout = setTimeout(() => {
 					this.ee.trigger(EventEnum.CLICK_ENTITY, {
@@ -898,23 +898,23 @@ export default class DOMProcessor {
 					})
 				}, Env.DOUBLE_CLICK_THRESHOLD)
 			})
-			.on("dblclick", d => {
-				d3.event.stopPropagation()
+			.on("dblclick", (event, d) => {
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.DBL_CLICK_ENTITY, {
 					id: d.id,
 					data: d.data,
 					direction: "from"
 				})
 			})
-			.on("contextmenu", d => {
-				d3.event.preventDefault()
-				d3.event.stopPropagation()
+			.on("contextmenu", (event, d) => {
+				event.preventDefault()
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.RIGHT_CLICK_ENTITY, d, "from")
 			})
 		this.rootG
 			.selectAll(".label .to")
-			.on("click", d => {
-				d3.event.stopPropagation()
+			.on("click", (event, d) => {
+				event.stopPropagation()
 				clearTimeout(timeout)
 				timeout = setTimeout(() => {
 					this.ee.trigger(EventEnum.CLICK_ENTITY, {
@@ -924,17 +924,17 @@ export default class DOMProcessor {
 					})
 				}, Env.DOUBLE_CLICK_THRESHOLD)
 			})
-			.on("dblclick", d => {
-				d3.event.stopPropagation()
+			.on("dblclick", (event, d) => {
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.DBL_CLICK_ENTITY, {
 					id: d.id,
 					data: d.data,
 					direction: "to"
 				})
 			})
-			.on("contextmenu", d => {
-				d3.event.preventDefault()
-				d3.event.stopPropagation()
+			.on("contextmenu", (event, d) => {
+				event.preventDefault()
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.RIGHT_CLICK_ENTITY, d, "to")
 			})
 	}

@@ -55,14 +55,14 @@ export default class UI {
 			.classed("svgGraph", true)
 			.attr("width", "100%")
 			.attr("height", "100%")
-			.on("click", () => {
+			.on("click", event => {
 				//Do not bubble the event
-				d3.event.stopPropagation()
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.CLICK_ENTITY, null)
 			})
-			.on("contextmenu", () => {
-				d3.event.preventDefault()
-				d3.event.stopPropagation()
+			.on("contextmenu", event => {
+				event.preventDefault()
+				event.stopPropagation()
 				this.ee.trigger(EventEnum.RIGHT_CLICK_ENTITY, null)
 			})
 			.call(this.zoom)
