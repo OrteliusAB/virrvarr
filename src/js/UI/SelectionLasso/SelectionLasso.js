@@ -30,13 +30,13 @@ export default class SelectionLasso {
 	 */
 	initializeLasso() {
 		d3.select(this.graphContainerElement)
-			.on("mousedown", () => this.isLassoEnabled && this.showLasso())
-			.on("mousemove", () => this.isLassoEnabled && this.isLassoActive && this.moveLasso())
+			.on("mousedown", event => this.isLassoEnabled && this.showLasso(event))
+			.on("mousemove", event => this.isLassoEnabled && this.isLassoActive && this.moveLasso(event))
 			.on("mouseup", () => this.isLassoActive && this.hideLasso())
-			.on("mouseout", () => {
+			.on("mouseout", event => {
 				let outsideContainer = true
-				if (d3.event.relatedTarget) {
-					let target = d3.event.relatedTarget
+				if (event.relatedTarget) {
+					let target = event.relatedTarget
 					while (target.parentElement) {
 						if (target.parentElement === this.graphContainerElement) {
 							outsideContainer = false
@@ -53,15 +53,15 @@ export default class SelectionLasso {
 			.select(this.graphContainerElement)
 			.append("div")
 			.attr("id", "selection-lasso")
-			.on("mousemove", () => this.isLassoEnabled && this.isLassoActive && this.moveLasso())
+			.on("mousemove", event => this.isLassoEnabled && this.isLassoActive && this.moveLasso(event))
 			.node()
 	}
 
 	/**
 	 * Move the lasso based on new mouse coordinates
 	 */
-	moveLasso() {
-		const coordinates = d3.mouse(this.graphContainerElement)
+	moveLasso(event) {
+		const coordinates = d3.pointer(event, this.graphContainerElement)
 		const newX = coordinates[0] + this.graphContainerElement.getBoundingClientRect().x - window.pageXOffset + window.scrollX
 		const newY = coordinates[1] + this.graphContainerElement.getBoundingClientRect().y - window.pageYOffset + window.scrollY
 		const relativeX = newX - this.originX
@@ -79,8 +79,8 @@ export default class SelectionLasso {
 	/**
 	 * Shows the lasso
 	 */
-	showLasso() {
-		const coordinates = d3.mouse(this.graphContainerElement)
+	showLasso(event) {
+		const coordinates = d3.pointer(event, this.graphContainerElement)
 		this.originX = coordinates[0] + this.graphContainerElement.getBoundingClientRect().x - window.pageXOffset + window.scrollX
 		this.originY = coordinates[1] + this.graphContainerElement.getBoundingClientRect().y - window.pageYOffset + window.scrollY
 		this.lasso.style.display = "block"

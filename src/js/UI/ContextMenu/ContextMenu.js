@@ -12,6 +12,11 @@ export default class ContextMenu {
 		this.graphContainerElement = graphContainerElement
 		this.ee = eventEmitter
 		if (this.enableBuiltinContextMenu || this.customContextMenu) {
+			if (!this.pointerEvent) {
+				this.graphContainerElement.addEventListener("mousemove", event => {
+					this.pointerEvent = event
+				})
+			}
 			this.ee.on(EventEnum.RIGHT_CLICK_ENTITY, (clickedItem, direction = null) => {
 				this.buildMenu(clickedItem, direction)
 			})
@@ -29,7 +34,10 @@ export default class ContextMenu {
 	 * @param {string?} direction - The direction of the edge clicked (if applicable)
 	 */
 	buildMenu(item, direction) {
-		const coordinates = d3.mouse(document.body)
+		if (!this.pointerEvent) {
+			return
+		}
+		const coordinates = d3.pointer(this.pointerEvent, document.body)
 		const mouseX = coordinates[0]
 		const mouseY = coordinates[1]
 		if (item === null) {
